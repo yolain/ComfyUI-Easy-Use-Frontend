@@ -1,0 +1,264 @@
+.comfyui-easyuse{
+  --sidebar-width: 40px;
+  --sidebar-icon-size: 1.1rem;
+  --p-datatable-header-cell-padding: 0.15rem 1rem;
+  --p-datatable-body-cell-padding: 0.15rem 1rem;
+  --p-primary-color: var(--theme-color-light)!important;
+  &.dark-theme{
+    --fg-color: #fff;
+    --bg-color: #242424;
+    --comfy-menu-bg: rgba(24,24,24,.9);
+    --comfy-input-bg: #262626;
+    --input-text: #ddd;
+    --descrip-text: #999;
+    --drag-text: #ccc;
+    --error-text: #ff4444;
+    --border-color: #29292c;
+    --tr-even-bg-color: rgba(28,28,28,.9);
+    --tr-odd-bg-color: rgba(19,19,19,.9);
+  }
+
+
+  ::-webkit-scrollbar {
+    width: 0em;
+
+    &-track {
+      background-color: transparent;
+    }
+
+    &-thumb {
+      background-color: transparent;
+      border-radius: 2px;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  body {
+    font-family: var(--font-family) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  textarea {
+    font-family: var(--font-family) !important;
+  }
+  hr{
+    border:1px solid var(--border-color);
+  }
+
+  // textarea
+  .comfy-multiline-input{
+    background-color: transparent;
+    border:1px solid var(--border-color);
+    border-radius:8px;
+    padding: 8px;
+    font-size: 12px;
+  }
+
+
+  // dialog
+  #comfy-settings-dialog{
+    border: 1px solid var(--border-color);
+    background: transparent;
+    backdrop-filter: blur(8px) brightness(120%);
+    box-shadow: none;
+  }
+  // modal
+  .comfy-modal {
+    border:1px solid var(--border-color);
+    box-shadow:none;
+    backdrop-filter: blur(8px) brightness(120%);
+  }
+  .cm-title{
+    background-color:transparent!important;
+  }
+  .cm-notice-board{
+    border-radius:10px!important;
+    border:1px solid var(--border-color)!important;
+  }
+  .cm-menu-container{
+    margin-bottom:50px!important;
+  }
+  .cn-manager-custom_milk_white,.cmm-manager-custom_milk_white{
+    .tg-column-name{
+      color:var(--input-text);
+    }
+    .tg-body-message{
+      text-align: center;
+      color: var(--descrip-text) !important;
+    }
+    .tg-body-frame{
+      .tg-cell{
+        color:var(--input-text);
+      }
+      .cn-node-name a,.cmm-node-name a{
+        color: var(--theme-color)!important;
+      }
+    }
+
+  }
+
+
+  // menu
+  .comfy-menu{
+    border-radius:16px;
+    box-shadow:0 0 1px var(--descrip-text);
+    backdrop-filter: blur(8px) brightness(120%);
+    button{
+      &.comfy-settings-btn{
+        font-size: 12px;
+      }
+    }
+    &-btns {
+      margin-bottom: 4px;
+    }
+  }
+  .comfy-menu button,.comfy-modal button {
+    font-size: 14px;
+    padding:4px 0;
+    margin-bottom:4px;
+  }
+  .comfy-menu-btns button,.comfy-list-actions button{
+    font-size: 10px;
+  }
+  .comfy-menu > button,
+  .comfy-menu-btns button,
+  .comfy-menu .comfy-list button,
+  .comfy-modal button {
+    border-width:1px;
+  }
+  #comfy-dev-save-api-button{
+    justify-content: center;
+  }
+  #queue-button {
+    position: relative;
+    overflow: hidden;
+    min-height: 30px;
+    z-index: 1;
+
+    &:after {
+      clear: both;
+      content: attr(data-attr);
+      background: green;
+      color: #FFF;
+      width: var(--process-bar-width);
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  #shareButton{
+    background:linear-gradient(to left,var(--theme-color),var(--theme-color-light))!important;
+    color:white!important;
+  }
+
+  .litegraph {
+    // contextmenu
+    &.litecontextmenu{
+      --height: 24px;
+      --padding: 6px;
+      font-family: var(--font-family);
+      padding: var(--padding) 0;
+      border-radius:8px;
+      //overflow: hidden;
+      backdrop-filter: blur(8px) brightness(120%);
+      .litemenu-title{
+        padding:var(--padding);
+      }
+      &>div:first-child{
+        &.litemenu-title{
+          margin-top:-6px;
+        }
+      }
+      .submenu{
+        height:var(--height);
+        line-height: var(--height);
+        padding:0 18px 0 12px;
+        //font-size: 11px;
+        margin:0;
+        background: transparent!important;
+        &.has_submenu {
+          border-right: none;
+          position: relative;
+          &:after{
+            content:"";
+            display:block;
+            width:0;
+            height:0;
+            border-width:4px 4px 0;
+            border-style:solid;
+            border-color:var(--input-text) transparent transparent ;
+            transform:translateY(-50%) rotate(-90deg);
+            top:50%;
+            position: absolute;
+          }
+        }
+        &.separator{
+          height: 1px;
+          width:100%;
+          background-color: var(--border-color)!important;
+          margin: var(--padding) 0;
+          border:none;
+        }
+        &:last-child{
+          &.separator{
+            display: none;
+          }
+        }
+        &:hover:not(.separator){
+          background: var(--theme-color)!important;
+        }
+      }
+
+    }
+
+    &.lite-search-item{
+      background-color: var(--comfy-input-bg)!important;
+      filter:brightness(100%);
+      &:hover {
+        filter:brightness(120%);
+        color: var(--input-text);
+      }
+    }
+  }
+  .graphdialog{
+    backdrop-filter: blur(8px) brightness(120%);
+    button{
+      @include flex-c();
+    }
+  }
+
+  // new front side bar
+  .side-tool-bar-container{
+    backdrop-filter: blur(8px) brightness(120%);
+  }
+
+  .comfy-modal-content{
+    width: 100%;
+  }
+}
+
+#comfyui-menu-monitor{
+  width:120px;
+  #crystools-monitor-container{
+    margin:0 auto!important;
+    & > div{
+      margin:2px 0!important;
+      & > div > div{
+        padding:0 4px!important;
+      }
+    }
+  }
+}
+
+
+

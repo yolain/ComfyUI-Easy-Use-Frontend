@@ -1,0 +1,363 @@
+/* css3浏览器兼容伪类 */
+@mixin css3($property,$value) {
+  -webkit-#{$property}: $value;
+  -khtml-#{$property}: $value;
+  -moz-#{$property}: $value;
+  -ms-#{$property}: $value;
+  -o-#{$property}: $value;
+  #{$property}: $value;
+}
+@mixin css3-flex(){
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+/* Flex - flex布局 */
+@mixin flex-w{
+  @include css3-flex;
+  @include css3(flex-wrap,wrap);
+}
+@mixin flex-a{
+  @include css3-flex;
+  @include css3(justify-content,space-around);
+  @include css3(align-items,center);
+}
+@mixin flex-b{
+  @include css3-flex;
+  @include css3(justify-content,space-between);
+  @include css3(align-items,center);
+}
+@mixin flex-b-start{
+  @include css3-flex;
+  @include css3(justify-content,space-between);
+  @include css3(align-items,flex-start);
+}
+@mixin flex-b-end{
+  @include css3-flex;
+  @include css3(justify-content,space-between);
+  @include css3(align-items,flex-end);
+}
+@mixin flex-y{
+  @include css3-flex;
+  @include css3(align-items,center);
+}
+@mixin flex-y-start{
+  @include css3-flex;
+  @include css3(justify-content,center);
+  @include css3(align-items,flex-start);
+}
+@mixin flex-y-end{
+  @include css3-flex;
+  @include css3(align-items,flex-end);
+}
+@mixin flex-x{
+  @include css3-flex;
+  @include css3(justify-content,center);
+}
+@mixin flex-x-start{
+  @include css3-flex;
+  @include css3(justify-content,flex-start);
+  @include css3(align-items,center);
+}
+@mixin flex-x-end{
+  @include css3-flex;
+  @include css3(justify-content,flex-end);
+}
+@mixin flex-c{
+  @include css3-flex;
+  @include css3(justify-content,center);
+  @include css3(align-items,center);
+}
+@mixin flex-column-up-down{
+  @include css3-flex;
+  @include css3(flex-direction,column);
+  @include css3(justify-content,space-between);
+}
+@mixin flex-1($num:1){
+  -webkit-box-flex: $num;
+  -ms-flex: $num;
+  -webkit-flex: $num;
+  flex:$num;
+}
+// 文本截断
+@mixin clamp($line:1) {
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  overflow: hidden;
+  word-break: break-all;
+  text-overflow:ellipsis;
+  -webkit-box-orient: vertical;
+}
+//清除浮动
+@mixin clearfix() {
+  zoom: 1;
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
+  &:after {
+    clear: both;
+    visibility: hidden;
+    font-size: 0;
+    height: 0;
+  }
+}
+
+/* Border - 边框 */
+@mixin b($px:1px,$c:var(--border-color)){
+  border:$px solid $c;
+} // 默认实线边框
+@mixin b--($px:1px,$c:var(--border-color)){
+  border:$px dashed $c;
+} // 默认虚线边框
+@mixin bt($px:1px,$c:var(--border-color)){
+  border-top:$px solid $c;
+} // 顶部实线
+@mixin bl($px:1px,$c:var(--border-color)){
+  border-left:$px solid $c;
+} // 左侧实线
+@mixin br($px:1px,$c:var(--border-color)){
+  border-right:$px solid $c;
+} // 右侧实线
+@mixin bb($px:1px,$c:var(--border-color)){
+  border-bottom:$px solid $c;
+} // 底部实线
+@mixin bt--($px:1px,$c:var(--border-color)){
+  border-top:$px dashed $c;
+} // 顶部虚线
+@mixin bl--($px:1px,$c:var(--border-color)){
+  border-left:$px dashed $c;
+} // 左侧虚线
+@mixin br--($px:1px,$c:var(--border-color)){
+  border-right:$px dashed $c;
+} // 右侧虚线
+@mixin bb--($px:1px,$c:var(--border-color)){
+  border-bottom:$px dashed $c;
+} // 底部虚线
+@mixin border(){
+ @include b();
+&--{@include b--();}
+&b{@include bb();&--{@include bb--();}}
+&t{@include bt();&--{@include bt--();}}
+&l{@include bl();&--{@include bl--();}}
+&r{@include br();&--{@include br--();}}
+}
+
+/* 字体变形 */
+@mixin fontHeight($value:matrix(1, 0, 0, 1.2, 0, 0)){
+  @include css3(transform,$value);
+}
+
+/* 背景 */
+@mixin bg($background:var(--bg-color)){
+  @include css3(background,$background);
+}// 设置背景颜色 默认白色
+@mixin bg-s($param:cover){
+  background-size:$param;
+}// 设置背景大小
+@mixin bg-p($x:50%,$y:50%){
+  background-position:$x $y;
+}// 设置背景位置
+@mixin bg-a($a:1){
+  background:linear-gradient(to top,rgba(250,250,250,$a),rgba(250,250,250,0));
+} // 背景从下往上透明
+@mixin bg-a-b($a:1){
+  background:linear-gradient(to top,rgba(0,0,0,$a),rgba(0,0,0,0));
+} // 背景从下往上透明(黑色)
+
+@mixin arrow-r($size:10px,$weight:2px,$color:var(--descrip-text)){
+  width:$size;
+  height:$size;
+  @include br($weight,$color);
+  @include bb($weight,$color);
+  transform: rotate(-45deg);
+} // 右箭头
+@mixin arrow-l($size:10px,$weight:2px,$color:var(--descrip-text)){
+  width:$size;
+  height:$size;
+  @include br($weight,$color);
+  @include bb($weight,$color);
+  transform: rotate(135deg);
+  border-radius:4px;
+} // 左箭头
+@mixin arrow-t($size:10px,$weight:1px,$color:var(--descrip-text)){
+  width:$size;
+  height:$size;
+  @include br($weight,$color);
+  @include bb($weight,$color);
+  transform: rotate(-135deg);
+} // 上箭头
+@mixin arrow-b($size:10px,$weight:1px,$color:var(--descrip-text)){
+  width:$size;
+  height:$size;
+  @include br($weight,$color);
+  @include bb($weight,$color);
+  transform: rotate(45deg);
+} // 下箭头
+@mixin triangle($size:6px,$color:var(--descrip-text)){
+  display:block;
+  width:0;
+  height:0;
+  border-width:$size $size 0;
+  border-style:solid;
+  border-color:$color transparent transparent ;/*透明 透明  黄*/
+}
+
+/* Size - 尺寸 */
+@mixin radius($num:8px){
+  border-radius:$num
+}
+@mixin size($width:40px,$height:40px){
+  width:$width;
+  height:$height;
+}
+@mixin size_s($size:40px){
+  @include size($size,$size);
+}
+@mixin size_r($size:40px,$r:100%){
+  @include size_s($size);
+  @include radius($r);
+}
+/* margin递归 */
+@mixin margin-loop($n:60,$i:5) {
+  @while($i <= $n){
+    &#{$i}{margin: ($i+0px);}
+    &t#{$i}{margin-top: ($i+0px);}
+    &b#{$i}{margin-bottom: ($i+0px);}
+    &l#{$i}{margin-left: ($i+0px);}
+    &r#{$i}{margin-right: ($i+0px);}
+    &v#{$i}{margin: ($i+0px) 0;}
+    &h#{$i}{margin: 0 ($i+0px);}
+    &va#{$i}{margin: ($i+0px) auto;}
+    &ha#{$i}{margin: auto ($i+0px);}
+    $i:$i + 5;
+  }
+}
+/* padding递归 */
+@mixin padding-loop($n:60,$i:5) {
+  @while($i <= $n){
+    &#{$i}{padding: ($i+0px);}
+    &t#{$i}{padding-top: ($i+0px);}
+    &b#{$i}{padding-bottom: ($i+0px);}
+    &l#{$i}{padding-left: ($i+0px);}
+    &r#{$i}{padding-right: ($i+0px);}
+    &v#{$i}{padding: ($i+0px) 0;}
+    &h#{$i}{padding: 0 ($i+0px);}
+    &va#{$i}{padding: ($i+0px) auto;}
+    &ha#{$i}{padding: auto ($i+0px);}
+    $i:$i + 5;
+  }
+}
+
+/* Transition - 过渡 */
+@mixin transition3($property:all,$function:ease-in-out){
+  @include css3(transition,$property .3s $function);
+} // 默认 0.3秒过渡动画
+@mixin transition5($property:all,$function:cubic-bezier(.55,0,.1,1)){
+  @include css3(transition,$property .5s $function);
+} // 默认 0.5秒过渡动画
+@mixin transition8($property:all,$function:cubic-bezier(.55,0,.1,1)){
+  @include css3(transition,$property .8s $function);
+} // 默认 0.8秒过渡动画
+@mixin transition10($property:all,$function:ease-in-out){
+  @include css3(transition,$property 1s $function);
+} // 默认 1秒过渡动画
+@mixin transition20($property:all,$function:ease-in-out){
+  @include css3(transition,$property 2s $function);
+} // 默认 2秒过渡动画
+
+/* CssFilter - css滤镜 */
+@mixin blur($params:5px){
+  @include css3(filter,blur($params));
+}
+@mixin contrast($params:100%){
+  @include css3(filter,contrast($params));
+}
+@mixin brightness($params:100%){
+  @include css3(filter,brightness($params));
+}
+@mixin grayscale($params:100%){
+  @include css3(filter,grayscale($params));
+}
+@mixin bg-blur($saturate:180%,$blur:40px){
+  @include css3(backdrop-filter,saturate($saturate) blur($blur));
+}
+
+@mixin hairline_bottom($color:var(--border-color-solid)){
+  &:after{
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    top: auto;
+    width: 100%;
+    height: 2rpx;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+    content: '';
+    position: absolute;
+    z-index: 2;
+    background-color: $color;
+    -webkit-transform: scaleY(0.5) translateY(100%);
+    transform: scaleY(0.5) translateY(100%);
+  }
+}
+@mixin remove_hairline_bottom(){
+  &:after{
+    display: none;
+  }
+}
+@mixin hairline_right($color:var(--border-color-solid)){
+  &:before{
+    bottom: 0;
+    left: auto;
+    right: 0px;
+    top: 0;
+    width: 2rpx;
+    height: 100%;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+    content: '';
+    position: absolute;
+    z-index: 2;
+    background-color: $color;
+    -webkit-transform: scaleX(0.5) translateX(100%);
+    transform: scaleX(0.5) translateX(100%);
+  }
+}
+@mixin remove_hairline_right(){
+  &:before {
+    display: none;
+  }
+}
+@mixin hairline_top($color:var(--border-color-solid)){
+  &:after{
+    bottom: auto;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    width: 100%;
+    height: 2rpx;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+    content: '';
+    position: absolute;
+    z-index: 2;
+    background-color: $color;
+    -webkit-transform: scaleY(0.5) translateY(-100%);
+    transform: scaleY(0.5) translateY(-100%);
+  }
+}
+@mixin remove_hairline_top(){
+  &:after{
+    display: none;
+  }
+}
+
+@mixin overflow_hidden(){
+  -wekit-backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  overflow: hidden;
+}

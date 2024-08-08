@@ -1,0 +1,31 @@
+{
+  "name": "comfyui-easy-use-frontend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:dev": "vite --mode dev build --watch",
+    "build": "vite build --watch",
+    "preview": "vite preview",
+    "test-ui": "playwright test"
+  },
+  "dependencies": {
+    "hotkeys-js": "^3.13.7",
+    "lodash": "^4.17.21",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.29"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.1",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "pug": "^2.0.4",
+    "pug-loader": "^2.4.0",
+    "rollup-plugin-watch": "^1.0.4",
+    "sass": "^1.77.8",
+    "sass-loader": "^16.0.0",
+    "terser": "^5.31.4",
+    "vite": "^5.3.5",
+    "vite-plugin-css-injected-by-js": "^3.5.1"
+  }
+}

@@ -1,0 +1,189 @@
+import hotkeys from "hotkeys-js";
+import {app, api, GroupNodeConfig} from "@/composable/comfyAPI";
+import {toast} from "@/components/toast.js";
+import {$t} from "@/composable/i18n.js";
+import {getSelectedNodes, isGetNode, isSetNode, jumpToNode, addNodesToGroup} from "@/composable/node.js";
+/* Variables */
+
+/* Register Extension */
+app.registerExtension({
+    name: 'Comfy.EasyUse.HotKeys',
+    setup() {
+        if(hotkeys !== undefined){
+            // todo: add setting to set hotkeys enable/disable
+
+            // Register hotkeys with Up, Down, Left, Right to jump Selected Node
+            hotkeys('up,down,left,right', function(event, handler){
+                event.preventDefault();
+                // Get Selected Nodes Jump
+                const selectNodes = getSelectedNodes();
+                if(selectNodes.length === 0) return;
+                const node = selectNodes[0];
+                switch (handler.key) {
+                    case 'up':
+                    case 'left':
+                        let prev_node_link_id = null
+                        if(isGetNode(node)){
+                            const widget_value = node.widgets_values?.[0]
+                            const all_nodes = node.graph?._nodes
+                            const prev_node = all_nodes?.find((n)=>{
+                                if(isSetNode(n)){
+                                    const widget_value_next = n.widgets_values?.[0]
+                                    if(widget_value_next === widget_value){
+                                        return n
+                                    }
+                                }
+                                return null
+                            })
+                            if(prev_node) jumpToNode(prev_node)
+                        }
+                        else if(node.inputs?.length>0){
+                            for(let i =0;i<node.inputs.length;i++){
+                                if(node.inputs[i].link){
+                                    prev_node_link_id = node.inputs[i].link
+                                    break
+                                }
+                            }
+                            if(prev_node_link_id){
+                                const links = node.graph?.links
+                                if(links[prev_node_link_id]){
+                                    const origin_id = links[prev_node_link_id]?.origin_id
+                                    const origin_node = node.graph?._nodes_by_id?.[origin_id]
+                                    if(origin_node) jumpToNode(origin_node)
+                                }
+                            }
+                        }
+                        break
+                    case 'down':
+                    case 'right':
+                        let next_node_link_id = null
+                        if(isSetNode(node)){
+                            const widget_value = node.widgets_values?.[0]
+                            const all_nodes = node.graph?._nodes
+                            const next_node = all_nodes?.find((n)=>{
+                                if(isGetNode(n)){
+                                    const widget_value_next = n.widgets_values?.[0]
+                                    if(widget_value_next === widget_value){
+                                        return n
+                                    }
+                                }
+                                return null
+                            })
+                            if(next_node) jumpToNode(next_node)
+                        }
+                        else if(node.outputs?.length>0){
+                            for(let i =0;i<node.outputs.length;i++){
+                                if(node.outputs[i].links?.length>0 && node.outputs[i].links[0]){
+                                    next_node_link_id = node.outputs[i].links[0]
+                                    break
+                                }
+                            }
+                            if(next_node_link_id){
+                                const links = node.graph?.links
+                                if(links[next_node_link_id]){
+                                    const target_id = links[next_node_link_id]?.target_id
+                                    const target_node = node.graph?._nodes_by_id?.[target_id]
+                                    if(target_node) jumpToNode(target_node)
+                                }
+                            }
+                        }
+                        break
+                }
+            })
+
+            // Register hotkeys with Shift + Up, Down, Left, Right to align Selected Node
+            hotkeys('shift+up,shift+down,shift+left,shift+right', function(event, handler){
+                event.preventDefault();
+                // Get Selected Nodes Jump
+                const selectNodes = getSelectedNodes();
+                if(selectNodes.length <= 1) return;
+                const nodes = selectNodes;
+                switch (handler.key) {
+                    case 'shift+up':
+                        LGraphCanvas.alignNodes(nodes, 'top', nodes[0])
+                        break
+                    case 'shift+down':
+                        LGraphCanvas.alignNodes(nodes, 'bottom', nodes[0])
+                        break
+                    case 'shift+left':
+                        LGraphCanvas.alignNodes(nodes, 'left', nodes[0])
+                        break
+                    case 'shift+right':
+                        LGraphCanvas.alignNodes(nodes, 'right', nodes[0])
+                        break
+                }
+            })
+
+            // Register hotkeys with Shift + g to add selected nodes to a group
+            hotkeys('shift+g', function(event, handler){
+                event.preventDefault();
+                // Get Selected Nodes Jump
+                addSelectedNodesToGroup()
+            })
+
+            // Register hotkeys with ALT+1~9 to add node template to canvas qulickly
+            const node_template_keys = []
+            Array.from(Array(10).keys()).forEach((i)=>node_template_keys.push(`alt+${i}`))
+            hotkeys(node_template_keys.join(','), async function(event, handler){
+                event.preventDefault();
+                const key = handler.key
+                let number = parseInt(key.split('+')[1])
+                const file = await api.getUserData('comfy.templates.json')
+                let templates = null
+                if(file.status == 200){
+                    try{
+                        templates = await file.json()
+                    }catch (e){
+                        toast.error($t('Get Node Templates File Failed'))
+                    }
+                }else if(localStorage['Comfy.NodeTemplates']){
+                    templates = JSON.parse(localStorage['Comfy.NodeTemplates'])
+                }else{
+                    toast.warn($t('No Node Templates Found'))
+                }
+                if(!templates) {
+                    toast.warn($t('No Node Templates Found'))
+                    return
+                }
+                number = number === 0 ? 9 : number-1
+                const template = templates[number]
+                if(!template){
+                    toast.warn($t('Node template with {key} not set').replace('{key}',key))
+                    return
+                }
+                try{
+                    const name = template?.name || 'Group'
+                    const data = template?.data ? JSON.parse(template.data) : []
+                    clipboardAction(async()=>{
+                        await GroupNodeConfig.registerFromWorkflow(data.groupNodes, {});
+                        localStorage["litegrapheditor_clipboard"] = template.data;
+                        app.canvas.pasteFromClipboard();
+                        if(!data.groupNodes){
+                            // todo: add setting to always set group name with node template paste to canvas
+                            addSelectedNodesToGroup(name)
+                        }
+                    })
+                }catch (e){
+                    toast.error(e)
+                }
+            })
+        }
+    }
+});
+
+
+/* Functions */
+const clipboardAction = async(cb) =>{
+    const old = localStorage['litegrapheditor_clipboard'];
+    await cb();
+    localStorage['litegrapheditor_clipboard'] = old;
+}
+const addSelectedNodesToGroup = (name)=>{
+    const selectNodes = getSelectedNodes();
+    if(selectNodes.length === 0) return;
+    const nodes = selectNodes;
+    let group = new LiteGraph.LGraphGroup();
+    group.title = name || 'Group';
+    addNodesToGroup(group, nodes);
+    app.canvas.graph.add(group);
+}

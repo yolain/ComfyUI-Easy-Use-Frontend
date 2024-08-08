@@ -1,0 +1,26 @@
+.#{$prefix}{
+  &theme,&primary{
+    color:var(--theme-color-light);
+    &.point:hover{
+      opacity: .8;
+    }
+  }
+  &success{
+    color:var(--success-color);
+    &.point:hover{
+      opacity: .8;
+    }
+  }
+  &error{
+    color:var(--error-color);
+    &.point:hover{
+      opacity: .8;
+    }
+  }
+  &warning,&-warn{
+    color:var(--warning-color);
+    &.point:hover{
+      opacity: .8;
+    }
+  }
+}

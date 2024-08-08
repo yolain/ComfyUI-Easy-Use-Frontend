@@ -1,0 +1,36 @@
+.#{$prefix}dialog{
+  max-width: 600px;
+  &-title{
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    color:var(--input-text);
+    margin:0;
+  }
+  &-images{
+    margin-top:10px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+    img{
+      width: 50%;
+      height: auto;
+      cursor: pointer;
+      box-sizing: border-box;
+      filter:brightness(80%);
+      &:hover {
+        filter: brightness(100%);
+      }
+    }
+    &.selected{
+      border: 4px solid var(--success-color);
+    }
+  }
+  &-hidden{
+    display: none;
+    height:0;
+  }
+}
+
+
