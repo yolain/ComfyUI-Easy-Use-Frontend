@@ -1,18 +1,13 @@
-<template>
-  <div :class="prefix" :data-id="id">
-    <template v-if="values?.length>0 && show">
-      <div :class="[prefix + '-item',{'positive': index == 3 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS}, {'negative': index == 6 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS}]" v-for="(item,index) in values" :key="index">
-        <div :class="prefix + '-item-input'">{{item.value}}</div>
-        <div :class="prefix + '-item-scroll'" ref="scroll">
-          <div :class="prefix + '-item-bar'" ref="bar" :style="{'top':item.top || (100 - calculatePercent(item.default,item.min,item.max) + '%')}" @mousedown="e=>mousedown(e,item,index)" @dblclick="e=>dblclick(e,item,index)"></div>
-          <div :class="prefix + '-item-area'" :style="{'height':item.height || calculatePercent(item.default,item.min,item.max) + '%'}"></div>
-        </div>
-        <div :class="prefix + '-item-label'">
-          <span>{{item.label}}</span>
-        </div>
-      </div>
-    </template>
-  </div>
+<template lang="pug">
+div(:class="prefix" :data-id="id")
+  template(v-if="values?.length>0 && show")
+    div(:class="[prefix + '-item',{'positive': index == 3 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS}, {'negative': index == 6 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS}]" v-for="(item,index) in values" :key="index")
+      div(:class="prefix + '-item-input'") {{item.value}}
+      div(:class="prefix + '-item-scroll'" ref="scroll")
+        div(:class="prefix + '-item-bar'" ref="bar" :style="{'top':item.top || (100 - calculatePercent(item.default,item.min,item.max) + '%')}" @mousedown="e=>mousedown(e,item,index)" @dblclick="e=>dblclick(e,item,index)")
+        div(:class="prefix + '-item-area'" :style="{'height':item.height || calculatePercent(item.default,item.min,item.max) + '%'}")
+      div(:class="prefix + '-item-label'")
+        span {{item.label}}
 </template>
 
 <script setup>
