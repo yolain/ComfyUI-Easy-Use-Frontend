@@ -79,6 +79,7 @@ app.registerExtension({
             // Change Theme
             if(detail?.value && detail?.oldValue){
                 await sleep(1)
+
                 // let colorPalette = detail.value == 'light' ? milk_white.ColorPalette : obsidian_dark.ColorPalette
                 // await loadColorPalette(colorPalette)
                 // app.canvas.updateBackground(colorPalette.colors.litegraph_base.BACKGROUND_IMAGE, colorPalette.colors.litegraph_base.CLEAR_BACKGROUND_COLOR);
@@ -86,6 +87,7 @@ app.registerExtension({
                 Object.assign(LGraphCanvas.link_type_colors, CUSTOM_LINK_TYPES_COLOR);
             }
         })
+
         setTimeout(_=> setCrystoolsUI(NewMenuPosition),1)
     },
 
@@ -450,8 +452,10 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
     let show_text = this.ds.scale > 0.5;
     ctx.save();
     ctx.globalAlpha = this.editor_alpha;
+    console.log(LiteGraph)
     let outline_color = LiteGraph.WIDGET_OUTLINE_COLOR;
     let background_color = LiteGraph.WIDGET_BGCOLOR;
+    console.log(background_color, outline_color)
     let text_color = LiteGraph.WIDGET_TEXT_COLOR;
     let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
     let margin = 12;
@@ -464,7 +468,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
         }
         w.last_y = y;
         ctx.strokeStyle = outline_color;
-        ctx.fillStyle = "#222";
+        ctx.fillStyle = background_color;
         ctx.textAlign = "left";
         ctx.lineWidth = 1;
         if (w.disabled)

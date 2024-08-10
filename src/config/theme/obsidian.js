@@ -1,5 +1,5 @@
 import { THEME_COLOR } from '../index.js'
-const VERSION = 103
+const VERSION = 104
 const bgcolor = LGraphCanvas.node_colors.bgcolor
 export default {
     ColorPalette: {
@@ -30,24 +30,24 @@ export default {
           },
           "litegraph_base": {
               "BACKGROUND_IMAGE": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQBJREFUeNrs1rEKwjAUhlETUkj3vP9rdmr1Ysammk2w5wdxuLgcMHyptfawuZX4pJSWZTnfnu/lnIe/jNNxHHGNn//HNbbv+4dr6V+11uF527arU7+u63qfa/bnmh8sWLBgwYJlqRf8MEptXPBXJXa37BSl3ixYsGDBMliwFLyCV/DeLIMFCxYsWLBMwSt4Be/NggXLYMGCBUvBK3iNruC9WbBgwYJlsGApeAWv4L1ZBgsWLFiwYJmCV/AK3psFC5bBggULloJX8BpdwXuzYMGCBctgwVLwCl7Be7MMFixYsGDBsu8FH1FaSmExVfAxBa/gvVmwYMGCZbBg/W4vAQYA5tRF9QYlv/QAAAAASUVORK5CYII=",
-              "CLEAR_BACKGROUND_COLOR": "#222222",
-              "NODE_TITLE_COLOR": "rgba(255,255,255,.75)",
-              "NODE_SELECTED_TITLE_COLOR": "#FFF",
+              "CLEAR_BACKGROUND_COLOR": "#09090b",
+              "NODE_TITLE_COLOR": "#d4d4d8",
+              "NODE_SELECTED_TITLE_COLOR": "#ffffff",
               "NODE_TEXT_SIZE": 14,
-              "NODE_TEXT_COLOR": "#b8b8b8",
+              "NODE_TEXT_COLOR": "#ffffff",
               "NODE_SUBTEXT_SIZE": 12,
-              "NODE_DEFAULT_COLOR": "rgba(0,0,0,.8)",
-              "NODE_DEFAULT_BGCOLOR": "rgba(22,22,22,.9)",
+              "NODE_DEFAULT_COLOR": "#09090b",
+              "NODE_DEFAULT_BGCOLOR": "rgba(24,24,27,.9)",
               "NODE_DEFAULT_BOXCOLOR": "rgba(255,255,255,.75)",
               "NODE_DEFAULT_SHAPE": "box",
               "NODE_BOX_OUTLINE_COLOR": THEME_COLOR,
               "DEFAULT_SHADOW_COLOR": "rgba(0,0,0,0)",
               "DEFAULT_GROUP_FONT": 24,
 
-              "WIDGET_BGCOLOR": "#242424",
-              "WIDGET_OUTLINE_COLOR": "#333",
-              "WIDGET_TEXT_COLOR": "#a3a3a8",
-              "WIDGET_SECONDARY_TEXT_COLOR": "#97979c",
+              "WIDGET_BGCOLOR": "#242427",
+              "WIDGET_OUTLINE_COLOR": "#3f3f46",
+              "WIDGET_TEXT_COLOR": "#d4d4d8",
+              "WIDGET_SECONDARY_TEXT_COLOR": "#d4d4d8",
 
               "LINK_COLOR": "#9A9",
               "EVENT_LINK_COLOR": "#A86",
@@ -55,7 +55,7 @@ export default {
           },
           "comfy_base": {
               "fg-color": "#fff",
-              "bg-color": "#242424",
+              "bg-color": "#09090b",
               "comfy-menu-bg": "rgba(24,24,24,.9)",
               "comfy-input-bg": "#262626",
               "input-text": "#ddd",

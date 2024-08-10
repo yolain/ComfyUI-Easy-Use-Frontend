@@ -4,16 +4,20 @@
   --p-datatable-header-cell-padding: 0.15rem 1rem;
   --p-datatable-body-cell-padding: 0.15rem 1rem;
   --p-primary-color: var(--theme-color-light)!important;
+  --border-color-solid: var(--border-color);
   &.dark-theme{
     --fg-color: #fff;
-    --bg-color: #242424;
-    --comfy-menu-bg: rgba(24,24,24,.9);
-    --comfy-input-bg: #262626;
-    --input-text: #ddd;
-    --descrip-text: #999;
+    --bg-color: #242427;
+    --content-bg:#18181b;
+    --content-fg:#fff;
+    --comfy-menu-bg: rgba(24,24,27,.9);
+    --comfy-input-bg: #27272a;
+    --input-text: #ffffff;
+    --descrip-text: #71717a;
     --drag-text: #ccc;
     --error-text: #ff4444;
-    --border-color: #29292c;
+    --border-color: #3f3f46;
+    --border-color-solid: #2a2a2e;
     --tr-even-bg-color: rgba(28,28,28,.9);
     --tr-odd-bg-color: rgba(19,19,19,.9);
   }
@@ -52,7 +56,7 @@
   // textarea
   .comfy-multiline-input{
     background-color: transparent;
-    border:1px solid var(--border-color);
+    border:1px solid var(--border-color-solid);
     border-radius:8px;
     padding: 8px;
     font-size: 12px;
