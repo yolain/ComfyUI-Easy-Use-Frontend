@@ -62,6 +62,7 @@ app.registerExtension({
                         const type = slot.type;
                         const name = node.is_auto_link ? this.widgets[0].value : slot.name;
 
+
                         if (this.title === 'Set'){
                             this.title = setIcon + name;
                             this.widgets[0].value = name;
@@ -75,10 +76,9 @@ app.registerExtension({
                         this.inputs[0].name = name;
 
                         setTimeout(_=>{
-                            if(name != this.widgets[0].value){
-                                this.title = setIcon + this.widgets[0].value;
-                            }
+                            this.title = setIcon + this.widgets[0].value;
                         },1)
+
                     }
 
                     //Update either way
@@ -233,9 +233,9 @@ app.registerExtension({
                     }
                     else{
                         this.onRename();
-                        // setTimeout(_=>{
-                        //     this.title = getIcon + this.widgets[0].value
-                        // },1)
+                        setTimeout(_=>{
+                            this.title = getIcon + this.widgets[0].value
+                        },1)
                     }
 
                 }
