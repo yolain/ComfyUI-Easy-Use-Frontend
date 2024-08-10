@@ -26,9 +26,9 @@ div(:class="prefix + ` ${prefix}-styles`", :data-id="id")
 </template>
 
 <script setup>
-import {api } from '@/composable/comfyAPI'
-import { $t,locale } from '@/composable/i18n'
-import {toast} from '@/components/toast'
+import {api } from '@/composable/comfyAPI.js'
+import { $t,locale } from '@/composable/i18n.js'
+import {toast} from '@/components/toast.js'
 import { ref, reactive, computed, watch, defineComponent, defineProps, defineEmits, onMounted } from 'vue'
 
 const prefix = 'comfyui-easyuse-selector'
@@ -54,7 +54,7 @@ const props = defineProps({
 })
 
 import {storeToRefs} from "pinia";
-import {useGraphStore} from "@/stores/graph";
+import {useGraphStore} from "@/stores/graph.js";
 const store = useGraphStore()
 const {selectors_styles} = storeToRefs(store)
 

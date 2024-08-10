@@ -19,3 +19,26 @@ New Front-end of [ComfyUI-Easy-Use](https://github.com/yolain/ComfyUI-Easy-Use) 
 
 - Re-design Group Map
 - More features...
+
+## Development
+
+### 1.Clone to the root directory of the ComfyUI-Easy-Use project.
+```bash
+cd ComfyUI/custom_nodes/ComfyUI-Easy-Use
+git clone https://github.com/yolain/ComfyUI-Easy-Use-Frontend
+```
+### 2.Install dependencies
+```bash
+cd ComfyUI-Easy-Use-Frontend
+npm install
+```
+### 3.Build the code
+- It will watch for code changes and build the `easyuse.js` into the `../web_version/dev/` folder.
+```bash
+npm run build:dev 
+```
+### 4. Modify the `config.yaml` file located in the root directory of the ComfyUI-Easy-Use project.
+```yaml
+# ... others  
+WEB_VERSION: dev
+```
