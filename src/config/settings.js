@@ -35,14 +35,14 @@ export default {
         name: $t('Enable contextMenu auto nest subdirectories'),
         tooltip: $t(''),
         type: 'boolean',
-        defaultValue: false,
+        defaultValue: true,
     },
     modelsThumbnails:{
         id: 'EasyUse.ContextMenu.ModelsThumbnails',
         name: $t('Enable models thumbnails display'),
         tooltip: $t(''),
         type: 'boolean',
-        defaultValue: false,
+        defaultValue: true,
     },
     rightMenuNodesSort:{
         id: 'EasyUse.ContextMenu.NodesSort',

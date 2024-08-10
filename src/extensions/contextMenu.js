@@ -37,7 +37,7 @@ app.registerExtension({
             }
             // 3. contextmenu on combo widget
             else if(options.scale){
-                const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, false);
+                const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, true);
                 if(enabled){
                     const newValues = displayThumbnails(values,options)
                     if(newValues)  {
@@ -362,7 +362,7 @@ function displayThumbnails(values, options){
             }
 
             let newContent
-            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, false);
+            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, true);
             if(thumbnail && enabled){
                 const protocol = window.location.protocol
                 const host = window.location.host
