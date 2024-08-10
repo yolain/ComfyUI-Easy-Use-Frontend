@@ -2,6 +2,7 @@ import {app,api} from "@/composable/comfyAPI";
 import {getNodeById} from "@/composable/node.js";
 import {$t} from "@/composable/i18n.js";
 import {drawRoundedRect, drawText} from "@/composable/canvas.js";
+import {getSetting} from "@/composable/settings.js";
 
 /* Register Extension */
 app.registerExtension({
@@ -11,6 +12,8 @@ app.registerExtension({
         const timeMap =  new Map();
         let lastId = 0;
         api.addEventListener('executing', data => {
+            const enabled = getSetting('EasyUse.Nodes.Runtime',null, true);
+            if(!enabled) return;
             const id = data?.node || data?.detail || null;
             const node = getNodeById(id);
             if (node) node.executionDuration = ``;
@@ -27,12 +30,12 @@ app.registerExtension({
     },
 
     beforeRegisterNodeDef(nodeType, nodeData) {
+
         const orig = nodeType.prototype.onDrawForeground;
         nodeType.prototype.onDrawForeground = function(...args) {
-          // todo: add setting to toggle time used show
           const [ctx] = args;
-            drawTime(ctx, this.executionDuration || ``);
-          return orig == null ? void 0 : orig.apply(this, args);
+          drawTime(ctx, this.executionDuration || ``);
+          return orig == null ? undefined : orig.apply(this, args);
         };
     }
 })

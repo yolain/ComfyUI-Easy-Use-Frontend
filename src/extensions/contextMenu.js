@@ -3,6 +3,7 @@ import {$t} from "@/composable/i18n.js";
 import {isLocalNetwork} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
 import {COMFYUI_NODE_BASIC_CATEGORY} from "@/config";
+import {getSetting} from "@/composable/settings.js";
 
 /* Variables */
 let thumbnails = []
@@ -36,9 +37,12 @@ app.registerExtension({
             }
             // 3. contextmenu on combo widget
             else if(options.scale){
-                const newValues = displayThumbnails(values,options)
-                if(newValues)  {
-                    return contextMenu.call(this, newValues, options);
+                const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, false);
+                if(enabled){
+                    const newValues = displayThumbnails(values,options)
+                    if(newValues)  {
+                        return contextMenu.call(this, newValues, options);
+                    }
                 }
             }
             // 4. contextmenu on canvas
@@ -135,7 +139,8 @@ function onMenuAdd(node, options, e, prev_menu, callback) {
 
         });
         // change sort order of parent context menu
-        if(base_category === '') entries = serializeParentNodeMenu(entries)
+        const enabled = getSetting('EasyUse.ContextMenu.NodesSort',null, true);
+        if(base_category === '' && enabled) entries = serializeParentNodeMenu(entries)
         new LiteGraph.ContextMenu( entries, { event: e, parentMenu: prev_menu }, ref_window );
     }
     inner_onMenuAdded('',prev_menu);
@@ -357,7 +362,8 @@ function displayThumbnails(values, options){
             }
 
             let newContent
-            if(thumbnail){
+            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, false);
+            if(thumbnail && enabled){
                 const protocol = window.location.protocol
                 const host = window.location.host
                 const base_url = `${protocol}//${host}`

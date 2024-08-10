@@ -40,7 +40,7 @@
       height: fit-content;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.88);
       padding: 9px 12px;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       font-size: 14px;
       pointer-events: all;
       @include flex-c();

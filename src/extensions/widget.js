@@ -225,7 +225,6 @@ app.registerExtension({
         // sv3d loader
         if (["easy sv3dLoader"].includes(nodeData.name)) {
             function changeSchedulerText(mode, batch_size, inputEl) {
-                console.log(mode)
                 switch (mode) {
                     case 'azimuth':
                         inputEl.readOnly = true

@@ -6,7 +6,7 @@ import {api, app} from "./comfyAPI";
  * @param id
  * @returns {*|null}
  */
-export const getUserSettingsValue = id => id ? app?.ui?.settings?.settingsValues?.[id] : null
+export const getUserSettingsValue = (id, defaultValue = undefined) => id ? app?.ui?.settings?.getSettingValue(id,defaultValue) : null
 
 /**
  * Get setting value by id
@@ -14,11 +14,11 @@ export const getUserSettingsValue = id => id ? app?.ui?.settings?.settingsValues
  * @param {string} storge_key - key to get value from local storage
  * @returns {string|object|null} - setting value
  */
-export function getSetting(id, storge_key=null){
+export function getSetting(id, storge_key=null, defaultValue=undefined){
     try{
-        let setting = id ? getUserSettingsValue(id) : null
-        if(!setting) setting = storge_key ? localStorage[storge_key] : localStorage[id]
-        return setting || null
+        let setting = id ? getUserSettingsValue(id, defaultValue) : null
+        if(setting === undefined && storge_key) setting = localStorage[id]
+        return setting
     }
     catch(e){
         console.error(e)
@@ -34,16 +34,23 @@ export function getSetting(id, storge_key=null){
  * @returns {Promise<void>}
  */
 export async function setSetting(id, value, storge_key=null) {
-    if(!id || !value) throw new Error('Invalid arguments')
-    if(!storge_key) storge_key = id
+    if(!id) throw new Error('Invalid arguments')
     try {
         if(app?.ui?.settings?.setSettingValue) app.ui.settings.setSettingValue(id, value)
         else await api.storeSetting(id, value)
-        localStorage[storge_key] =  typeof value === 'object' ? JSON.stringify(value) : value
+        if(storge_key) localStorage[storge_key] =  typeof value === 'object' ? JSON.stringify(value) : value
     }
     catch (e){
         console.error(e)
     }
+}
+
+/**
+ * Add setting
+ * @param value
+ */
+export function addSetting(settings){
+    app.ui.settings.addSetting(settings)
 }
 
 /**

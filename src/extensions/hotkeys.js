@@ -1,5 +1,6 @@
 import hotkeys from "hotkeys-js";
 import {app, api, GroupNodeConfig} from "@/composable/comfyAPI";
+import {getSetting} from "@/composable/settings";
 import {toast} from "@/components/toast.js";
 import {$t} from "@/composable/i18n.js";
 import {getSelectedNodes, isGetNode, isSetNode, jumpToNode, addNodesToGroup} from "@/composable/node.js";
@@ -10,11 +11,11 @@ app.registerExtension({
     name: 'Comfy.EasyUse.HotKeys',
     setup() {
         if(hotkeys !== undefined){
-            // todo: add setting to set hotkeys enable/disable
-
             // Register hotkeys with Up, Down, Left, Right to jump Selected Node
             hotkeys('up,down,left,right', function(event, handler){
                 event.preventDefault();
+                const enableJumpNearestNodes = getSetting('EasyUse.Hotkeys.JumpNearestNodes',null, true);
+                if(!enableJumpNearestNodes) return
                 // Get Selected Nodes Jump
                 const selectNodes = getSelectedNodes();
                 if(selectNodes.length === 0) return;
@@ -91,9 +92,12 @@ app.registerExtension({
                 }
             })
 
+
             // Register hotkeys with Shift + Up, Down, Left, Right to align Selected Node
             hotkeys('shift+up,shift+down,shift+left,shift+right', function(event, handler){
                 event.preventDefault();
+                const enableAlighSelectedNodes = getSetting('EasyUse.Hotkeys.AlignSelectedNodes',null, true);
+                if(!enableAlighSelectedNodes) return
                 // Get Selected Nodes Jump
                 const selectNodes = getSelectedNodes();
                 if(selectNodes.length <= 1) return;
@@ -114,56 +118,61 @@ app.registerExtension({
                 }
             })
 
+
             // Register hotkeys with Shift + g to add selected nodes to a group
-            hotkeys('shift+g', function(event, handler){
+            hotkeys('shift+g', function (event, handler) {
                 event.preventDefault();
+                const enableAddGroup = getSetting('EasyUse.Hotkeys.AddGroup',null, true);
+                if(!enableAddGroup) return
                 // Get Selected Nodes Jump
                 addSelectedNodesToGroup()
             })
 
             // Register hotkeys with ALT+1~9 to add node template to canvas qulickly
             const node_template_keys = []
-            Array.from(Array(10).keys()).forEach((i)=>node_template_keys.push(`alt+${i}`))
-            hotkeys(node_template_keys.join(','), async function(event, handler){
+            Array.from(Array(10).keys()).forEach((i) => node_template_keys.push(`alt+${i}`))
+            hotkeys(node_template_keys.join(','), async function (event, handler) {
                 event.preventDefault();
+                const enableNodesTemplate = getSetting('EasyUse.Hotkeys.NodesTemplate',null, true);
+                if(!enableNodesTemplate) return
                 const key = handler.key
                 let number = parseInt(key.split('+')[1])
                 const file = await api.getUserData('comfy.templates.json')
                 let templates = null
-                if(file.status == 200){
-                    try{
+                if (file.status == 200) {
+                    try {
                         templates = await file.json()
-                    }catch (e){
+                    } catch (e) {
                         toast.error($t('Get Node Templates File Failed'))
                     }
-                }else if(localStorage['Comfy.NodeTemplates']){
+                } else if (localStorage['Comfy.NodeTemplates']) {
                     templates = JSON.parse(localStorage['Comfy.NodeTemplates'])
-                }else{
+                } else {
                     toast.warn($t('No Node Templates Found'))
                 }
-                if(!templates) {
+                if (!templates) {
                     toast.warn($t('No Node Templates Found'))
                     return
                 }
-                number = number === 0 ? 9 : number-1
+                number = number === 0 ? 9 : number - 1
                 const template = templates[number]
-                if(!template){
-                    toast.warn($t('Node template with {key} not set').replace('{key}',key))
+                if (!template) {
+                    toast.warn($t('Node template with {key} not set').replace('{key}', key))
                     return
                 }
-                try{
+                try {
                     const name = template?.name || 'Group'
                     const data = template?.data ? JSON.parse(template.data) : []
-                    clipboardAction(async()=>{
+                    clipboardAction(async () => {
                         await GroupNodeConfig.registerFromWorkflow(data.groupNodes, {});
                         localStorage["litegrapheditor_clipboard"] = template.data;
                         app.canvas.pasteFromClipboard();
-                        if(!data.groupNodes){
+                        if (!data.groupNodes) {
                             // todo: add setting to always set group name with node template paste to canvas
                             addSelectedNodesToGroup(name)
                         }
                     })
-                }catch (e){
+                } catch (e) {
                     toast.error(e)
                 }
             })

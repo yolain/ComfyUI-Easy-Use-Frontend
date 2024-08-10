@@ -5,11 +5,13 @@
   --p-datatable-body-cell-padding: 0.15rem 1rem;
   --p-primary-color: var(--theme-color-light)!important;
   --border-color-solid: var(--border-color);
+  --border-radius: 8px;
   &.dark-theme{
     --fg-color: #fff;
     --bg-color: #242427;
     --content-bg:#18181b;
     --content-fg:#fff;
+    --content-hover-bg: #27272a;
     --comfy-menu-bg: rgba(24,24,27,.9);
     --comfy-input-bg: #27272a;
     --input-text: #ffffff;
@@ -57,7 +59,7 @@
   .comfy-multiline-input{
     background-color: transparent;
     border:1px solid var(--border-color-solid);
-    border-radius:8px;
+    border-radius:var(--border-radius);
     padding: 8px;
     font-size: 12px;
   }
@@ -172,7 +174,7 @@
       --padding: 6px;
       font-family: var(--font-family);
       padding: var(--padding) 0;
-      border-radius:8px;
+      border-radius:var(--border-radius);
       //overflow: hidden;
       backdrop-filter: blur(8px) brightness(120%);
       .litemenu-title{

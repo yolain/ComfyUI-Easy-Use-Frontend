@@ -43,11 +43,16 @@ export default {
     "Never": "已停用",
     "Auto Sorting": "自动排序",
     "Toggle `Show/Hide` can set mode of group, LongPress can set group nodes to never": "点击`启用中/已忽略`可设置组模式, 长按可停用该组节点",
-    // Quick
-    "Enable ALT+1~9 to paste nodes from nodes template (ComfyUI-Easy-Use)": "启用ALT1~9从节点模板粘贴到工作流 (ComfyUI-Easy-Use)",
-    "Enable process bar in queue button (ComfyUI-Easy-Use)": "启用提示词队列进度显示条 (ComfyUI-Easy-Use）",
-    "Enable ContextMenu Auto Nest Subdirectories (ComfyUI-Easy-Use)": "启用上下文菜单自动嵌套子目录 (ComfyUI-Easy-Use)",
-    "Enable tool bar fixed on the left-bottom (ComfyUI-Easy-Use)": "启用工具栏固定在左下角 (ComfyUI-Easy-Use)",
+    // Settings
+    "Enable Shift+Up/Down/Left/Right key to align selected nodes": "启用 `Shift+上/下/左/右` 键对齐选中的节点",
+    "Enable Shift+g to add selected nodes to a group": "启用 `Shift+g` 键将选中的节点添加一个组",
+    "Enable Up/Down/Left/Right key to jump nearest nodes": "启用 `上/下/左/右` 键跳转到最近的前后节点",
+    "Enable ALT+1~9 to paste nodes from nodes template": "启用 `ALT+1~9` 从节点模板粘贴到工作流中",
+    "Enable contextMenu auto nest subdirectories": "启用上下文菜单自动嵌套子目录",
+    "Enable right-click menu to add node A~Z sorting": "启用右键菜单中新建节点A~Z排序",
+    "Enable models thumbnails display": "启动模型预览图显示",
+    "Enable nodes runtime display": "启动节点运行时间显示",
+    "Enable chain get node and set node with parent nodes": "启用将获取点和设置点与父节点链在一起",
     "Too many thumbnails, have closed the display": "模型缩略图太多啦，为您关闭了显示",
     // selector
     "Get styles list Failed": "获取样式列表失败",

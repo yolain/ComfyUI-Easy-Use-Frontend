@@ -8,14 +8,14 @@
     @include flex-b();
     height:var(--height);
     padding-bottom:10px;
-    border-bottom:1px solid var(--border-color);
+    border-bottom:1px solid var(--border-color-solid);
     &_button{
       height:var(--height);
       width: var(--height);
-      border-radius: 8px;
-      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
       font-size:11px;
-      background:var(--comfy-input-bg);
+      background:var(--bg-color);
       box-shadow:none;
       cursor:pointer;
       @include flex-c();
@@ -34,10 +34,10 @@
     &_search{
       flex:1;
       margin-left:10px;
-      border-radius: 8px;
-      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
       font-size:11px;
-      background:var(--comfy-input-bg);
+      background:var(--bg-color);
       padding:0px 8px;
       height:var(--height);
       @include flex-y;
@@ -83,9 +83,9 @@
       margin-right: 8px;
       padding:4px;
       color: var(--input-text);
-      background-color: var(--comfy-input-bg);
-      border-radius: 8px;
-      border: 2px solid var(--border-color);
+      background-color: var(--bg-color);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
       font-size:11px;
       cursor:pointer;
       overflow: hidden;
@@ -100,7 +100,7 @@
         --ring-color: transparent;
         position: relative;
         box-shadow: none;
-        border: 2px solid var(--border-color);
+        border: 1px solid var(--border-color);
         border-radius: 2px;
         background: linear-gradient(135deg, var(--comfy-menu-bg) 0%, var(--comfy-input-bg) 60%);
         &[type=checkbox]{
@@ -108,7 +108,7 @@
           flex-shrink: 0;
           vertical-align: middle;
           appearance: none;
-          border: 2px solid var(--border-color);
+          border: 1px solid var(--border-color);
           background-origin: border-box;
           padding: 0;
           width: 1rem;
@@ -135,9 +135,10 @@
     left:-180px;
     top:-110px;
     z-index:2;
-    border:2px solid var(--border-color);
-    border-radius: 8px;
+    border:1px solid var(--border-color);
+    border-radius: var(--border-radius);
     background: var(--comfy-menu-bg);
+    @include bg-blur();
     overflow: hidden;
     img{
       width:150px;

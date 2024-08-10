@@ -1,10 +1,11 @@
-import { app, $el } from '@/composable/comfyAPI'
+import { api, app, $el } from '@/composable/comfyAPI'
 import {addCss, addPreconnect} from "@/composable/head";
-import {getSetting, setSetting} from "@/composable/settings";
+import {getSetting, setSetting, addSetting} from "@/composable/settings";
 import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR} from "@/config";
 import obsidian from "@/config/theme/obsidian";
 import obsidian_dark from "@/config/theme/obsidianDark";
 import milk_white from "@/config/theme/milkWhite";
+import settings from "@/config/settings";
 import sleep from "@/composable/sleep";
 
 /* Define Variable */
@@ -23,6 +24,19 @@ let control_mode = null
 let color_palettes = null
 let color_palette = null
 let monitor = null
+
+/* add settings */
+for(let i in settings) addSetting(settings[i])
+/* Comfy 官方缺少删除设置的接口 无法将v1版本的设置删除 */
+// const OldestMenuNestSub = getSetting('Comfy.EasyUse.MenuNestSub')
+// if(OldestMenuNestSub !== undefined){
+//     setSetting('EasyUse.ContextMenu.SubDirectories', OldestMenuNestSub)
+//     setSetting('EasyUse.ContextMenu.ModelsThumbnails', OldestMenuNestSub)
+// }
+// const OldestNodesTemplate = getSetting('Comfy.EasyUse.NodeTemplateShortcut')
+// if(OldestNodesTemplate !== undefined){
+//     setSetting('EasyUse.Hotkeys.NodesTemplate', OldestNodesTemplate)
+// }
 
 /* Register Extension */
 app.registerExtension({
@@ -79,10 +93,6 @@ app.registerExtension({
             // Change Theme
             if(detail?.value && detail?.oldValue){
                 await sleep(1)
-
-                // let colorPalette = detail.value == 'light' ? milk_white.ColorPalette : obsidian_dark.ColorPalette
-                // await loadColorPalette(colorPalette)
-                // app.canvas.updateBackground(colorPalette.colors.litegraph_base.BACKGROUND_IMAGE, colorPalette.colors.litegraph_base.CLEAR_BACKGROUND_COLOR);
                 Object.assign(app.canvas.default_connection_color_byType, CUSTOM_LINK_TYPES_COLOR);
                 Object.assign(LGraphCanvas.link_type_colors, CUSTOM_LINK_TYPES_COLOR);
             }
@@ -452,10 +462,8 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
     let show_text = this.ds.scale > 0.5;
     ctx.save();
     ctx.globalAlpha = this.editor_alpha;
-    console.log(LiteGraph)
     let outline_color = LiteGraph.WIDGET_OUTLINE_COLOR;
     let background_color = LiteGraph.WIDGET_BGCOLOR;
-    console.log(background_color, outline_color)
     let text_color = LiteGraph.WIDGET_TEXT_COLOR;
     let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
     let margin = 12;
