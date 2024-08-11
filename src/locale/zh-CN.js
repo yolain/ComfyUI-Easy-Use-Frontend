@@ -50,7 +50,7 @@ export default {
     "Enable ALT+1~9 to paste nodes from nodes template": "启用 `ALT+1~9` 从节点模板粘贴到工作流中",
     "Enable contextMenu auto nest subdirectories": "启用上下文菜单自动嵌套子目录",
     "Enable right-click menu to add node A~Z sorting": "启用右键菜单中新建节点A~Z排序",
-    "Enable models thumbnails display": "启动模型预览图显示",
+    "Enable model thumbnails display": "启动模型预览图显示",
     "Enable nodes runtime display": "启动节点运行时间显示",
     "Enable chain get node and set node with parent nodes": "启用将获取点和设置点与父节点链在一起",
     "Too many thumbnails, have closed the display": "模型缩略图太多啦，为您关闭了显示",

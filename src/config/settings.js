@@ -39,7 +39,7 @@ export default {
     },
     modelsThumbnails:{
         id: 'EasyUse.ContextMenu.ModelsThumbnails',
-        name: $t('Enable models thumbnails display'),
+        name: $t('Enable model thumbnails display'),
         tooltip: $t(''),
         type: 'boolean',
         defaultValue: true,
