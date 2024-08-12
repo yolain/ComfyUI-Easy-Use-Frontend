@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="prefix + ` ${prefix}-styles`", :data-id="id" v-click-outside="hiddenImage")
+div(:class="prefix + ` ${prefix}-styles`", :data-id="id" @mouseleave="hiddenImage")
   template(v-if="styles.length>0 && show")
     div(:class="prefix+'__header'")
       div(:class="prefix+'__header_button'" @click="reset()")
@@ -8,7 +8,7 @@ div(:class="prefix + ` ${prefix}-styles`", :data-id="id" v-click-outside="hidden
         i.mdi.mdi-magnify
         textarea.search(v-model="search_value" dir="ltr", :rows="1", :placeholder="$t('Type here to search styles ...')")
     div(:class="prefix+'__content'" @mouseleave="sortStyles")
-      div(:class="prefix+'-item'" v-for="(item,index) in styles", :key="index", @mouseenter="displayImage(item)",  @mouseleave="hiddenImage(item)")
+      div(:class="prefix+'-item'" v-for="(item,index) in styles", :key="index", @mouseenter="displayImage(item)",  @mouseleave.stop="hiddenImage(item)")
         span(:class="[prefix+'-item__tag',{'hide':!selectedStyles.includes(item.name) && l(item.name).indexOf(l(search_value)) == -1 && (!item.name_cn || l(item.name_cn).indexOf(l(search_value)) == -1)}]" @click="chooseStyle(item)")
           input(type="checkbox" :name="item.name", :checked="selectedStyles.includes(item.name)")
           span {{locale == 'zh-CN' && item.name_cn ? item.name_cn : item.name}}
@@ -111,21 +111,18 @@ const reset = _=>{
 // image
 const preview = reactive({})
 const displayImage = async(item) =>{
-  if(item.imageShow) return
   if(!item.imageSrc){
     if(item.imageLoading) return
     item.imageLoading = true
     const url = await getStyleImage(item.imgName).finally(()=> item.imageLoading = false)
     item.imageSrc = url
   }
-  item.imageShow = true
   preview.name = locale == 'zh-CN' && item.name_cn ? item.name_cn : item.name
   preview.positive = item.prompt
   preview.negative = item.negative_prompt
   preview.src = item.imageSrc
 }
 const hiddenImage = item => {
-  item.imageShow = false
   preview.src = ''
   preview.name = ''
   preview.positive = ''
