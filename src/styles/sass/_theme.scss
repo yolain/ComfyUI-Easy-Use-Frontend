@@ -5,4 +5,32 @@
    --error-color: #ff4d4f;
    --warning-color: #faad14;
    --font-family: Inter, -apple-system, BlinkMacSystemFont, Helvetica Neue, sans-serif;
+
+   --p-inputtext-background: var(--p-form-field-background);
+   --p-inputtext-disabled-background: var(--p-form-field-disabled-background);
+   --p-inputtext-filled-background: var(--p-form-field-filled-background);
+   --p-inputtext-filled-focus-background: var(--p-form-field-filled-focus-background);
+   --p-inputtext-border-color: var(--p-form-field-border-color);
+   --p-inputtext-hover-border-color: var(--p-form-field-hover-border-color);
+   --p-inputtext-focus-border-color: var(--p-form-field-focus-border-color);
+   --p-inputtext-invalid-border-color: var(--p-form-field-invalid-border-color);
+   --p-inputtext-color: var(--p-form-field-color);
+   --p-inputtext-disabled-color: var(--p-form-field-disabled-color);
+   --p-inputtext-placeholder-color: var(--p-form-field-placeholder-color);
+   --p-inputtext-shadow: var(--p-form-field-shadow);
+   --p-inputtext-padding-x: var(--p-form-field-padding-x);
+   --p-inputtext-padding-y: var(--p-form-field-padding-y);
+   --p-inputtext-border-radius: var(--p-form-field-border-radius);
+   --p-inputtext-focus-ring-width: var(--p-form-field-focus-ring-width);
+   --p-inputtext-focus-ring-style: var(--p-form-field-focus-ring-style);
+   --p-inputtext-focus-ring-color: var(--p-form-field-focus-ring-color);
+   --p-inputtext-focus-ring-offset: var(--p-form-field-focus-ring-offset);
+   --p-inputtext-focus-ring-shadow: var(--p-form-field-focus-ring-shadow);
+   --p-inputtext-transition-duration: var(--p-form-field-transition-duration);
+   --p-inputtext-sm-font-size: 0.875rem;
+   --p-inputtext-sm-padding-x: 0.625rem;
+   --p-inputtext-sm-padding-y: 0.375rem;
+   --p-inputtext-lg-font-size: 1.125rem;
+   --p-inputtext-lg-padding-x: 0.875rem;
+   --p-inputtext-lg-padding-y: 0.625rem;
 }

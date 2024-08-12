@@ -14,4 +14,8 @@ export const MAX_SEED_NUM = 1125899906842624
 
 export const COMFYUI_NODE_BASIC_CATEGORY = ['loaders','latent','image','mask','sampling','_for_testing','advanced','utils','api']
 
-
+export const NODE_MODE ={
+    "ALWAYS": 0,
+    "NEVER": 2,
+    "BYPASS": 4,
+}

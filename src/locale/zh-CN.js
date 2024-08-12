@@ -34,8 +34,8 @@ export default {
     "No COMBO link": "沒有找到COMBO连接",
     "Reboot ComfyUI":"重启ComfyUI",
     "Are you sure you'd like to reboot the server?": "是否要重启ComfyUI？",
-    // GroupMap
-    "Groups Map": "管理组",
+    // Nodes Map
+    "Nodes Map": "管理节点组",
     "Cleanup Of GPU Usage": "清理GPU占用",
     "Please stop all running tasks before cleaning GPU": "请在清理GPU之前停止所有运行中的任务",
     "Always": "启用中",
