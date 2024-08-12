@@ -29,4 +29,5 @@ onMounted(_=>{
 
 <style lang="scss">
 @import "@/styles/sass/main.scss";
+@import "@/styles/css/index.css";
 </style>
