@@ -12,9 +12,19 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import NodesMap from "@/components/sidebar/map/nodes.vue";
 import {app} from "@/composable/comfyAPI.js";
-import {on, off, throttle} from "@/composable/util.js";
+import {on, off} from "@/composable/util.js";
 import { $t,locale } from '@/composable/i18n.js'
-import {ref, reactive, computed, watch, defineComponent, defineProps, defineEmits, onMounted, onUnmounted} from 'vue'
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  defineComponent,
+  defineProps,
+  defineEmits,
+  onMounted,
+  onBeforeUnmount,
+} from 'vue'
 import cloneDeep from "lodash/cloneDeep";
 
 const prefix = 'comfyui-easyuse-map'
@@ -30,17 +40,31 @@ const updateGroups = async () => {
   let nodes = app.canvas.graph._nodes
   await store.setGroups(groups)
   await store.setNodes(nodes)
-  console.log(groups_nodes.value)
+  // console.log(groups_nodes.value)
 }
 
+let timer = null
 onMounted(_=>{
-  let graphDiv = document.getElementById("graph-canvas")
   updateGroups()
-  on(graphDiv,'mousemove', throttle(500,false,_=>{updateGroups()}))
+  const graph_div = document.getElementById('graph-canvas')
+  on(graph_div, 'mouseleave', _=>{
+    if(timer) destroyTimer()
+  })
+  on(graph_div, 'mouseenter', _=>{
+    if(!timer) addTimer()
+  })
 })
-onUnmounted(_=>{
-  let graphDiv = document.getElementById("graph-canvas")
-  off(graphDiv,'mousemove')
-})
+
+const addTimer = _=> {
+  timer = setInterval(_=>{
+    const active_bar = app.extensionManager.activeSidebarTab
+    if(active_bar == 'easyuse_nodes_map') updateGroups()
+    else destroyTimer()
+  },500)
+}
+const destroyTimer = _=> {
+  clearInterval(timer)
+  timer = null
+}
 
 </script>

@@ -14,7 +14,7 @@ import Map from "@/components/sidebar/map/index.vue"
 onMounted(_=>{
   // SideBar
   app.extensionManager.registerSidebarTab({
-    id: 'easyuse_group_map',
+    id: 'easyuse_nodes_map',
     icon: 'pi pi-sitemap',
     title: $t("Nodes Map"),
     tooltip: $t("Nodes Map"),

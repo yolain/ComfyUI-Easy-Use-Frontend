@@ -158,15 +158,15 @@ export function on(
     handler
 ) {
     if (element && event && handler) {
-        element.addEventListener(event, handler, false);
+        return element.addEventListener(event, handler, false);
     }
 }
 export function off(
     element,
     event,
-    handler
+    handler = _=>{}
 ) {
-    if (element && event && handler) {
-        element.removeEventListener(event, handler, false);
+    if (element && event) {
+        return element.removeEventListener(event, handler, false);
     }
 }

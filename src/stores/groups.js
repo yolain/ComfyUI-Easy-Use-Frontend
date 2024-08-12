@@ -25,7 +25,7 @@ export const useGroupsStore = defineStore('groups', {
                     if(!has_group){
                         un_groups.push({info:node})
                     }
-                    // 补回没有节点的group
+                    // add groups without nodes
                     for(let i=0;i< this.groups.length;i++){
                         if(!groups_nodes[i]){
                             groups_nodes[i] = {info:this.groups[i],children:[]}

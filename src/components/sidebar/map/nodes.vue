@@ -2,6 +2,8 @@
 div(:class="prefix")
   div(:class="prefix+'__header'")
     .title {{ $t('Nodes Map') }}
+    .toolbar
+      Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click="expandAll" size="small" v-tooltip.right="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0" )
   div(:class="prefix+'__content'")
     template(v-if="groups_nodes?.length>0")
       ol
@@ -11,38 +13,46 @@ div(:class="prefix")
               i.icon(v-if="item.children" :class="item.info.show_child ? 'pi pi-folder-open' : 'pi pi-folder'" :style="{'color':item.info.color}")
               .edit(v-if="item.info.is_edit")
                 InputText(ref="editRef" v-model="title" variant="outlined" size="small" type="text" @blur="editGroupTitle(item)" @keydown.enter="editGroupTitle(item)" @keydown.esc="editGroupTitle(item)" style="width:100%")
-              .label(v-else-if="item.children?.length>0")
+              .node(v-else-if="item.info.id" :class="[{'never':item.info.mode!==undefined && item.info.mode==NODE_MODE.NEVER},{'bypass':item.info.mode!==undefined && item.info.mode==NODE_MODE.BYPASS}]")
+                span.node-label(@dblclick.stop="jumpToNodeId(item.info.id)" v-if="item.info.title!==undefined") {{item.info.title}}
+                span.node-label.error(v-else) {{item.info.type}}
+              .label(v-else)
                 span(@dblclick.stop="toEdit(item)") {{item.info.title}}
-              .node(v-else-if="item.info" :class="[{'never':item.info.mode!==undefined && item.info.mode==NODE_MODE.NEVER},{'bypass':item.info.mode!==undefined && item.info.mode==NODE_MODE.BYPASS}]")
-                span.node-label(@dblclick.stop="jumpToNodeId(item.info.id)") {{item.info.title}}
             .right.toolbar
               template(v-if="item.children?.length>0")
-                Button(:icon="item.children.find(cate=>cate.mode == NODE_MODE.ALWAYS) ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeGroupMode(item)" @mousedown.stop="mouseDown(item, 'group')" @mouseup.stop="mouseUp")
+                Button(size="small" :icon="item.children.find(cate=>cate.mode == NODE_MODE.ALWAYS) ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeGroupMode(item)" @mousedown.stop="mouseDown(item, 'group')" @mouseup.stop="mouseUp")
               template(v-else)
-                Button(:icon="item.info?.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(item.info)" @mousedown.stop="mouseDown(item.info, 'node')" @mouseup.stop="mouseUp")
+                Button(size="small" :icon="item.info?.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(item.info)" @mousedown.stop="mouseDown(item.info, 'node')" @mouseup.stop="mouseUp")
           dl.nodes(v-if="item.children?.length>0 && item.info.show_child")
             dt.node(v-for="(node,j) in item.children" :key="j" :class="[{'never':node?.mode!==undefined && node.mode==NODE_MODE.NEVER},{'bypass':node?.mode!==undefined && node.mode==NODE_MODE.BYPASS}]")
-              span.node-label(@dblclick.stop="jumpToNodeId(node.id)") {{node?.title}}
+              span.node-label(@dblclick.stop="jumpToNodeId(node.id)" v-if="node.title !== undefined") {{node.title}}
+              span.node-label.error(v-else) {{node.type}}
               .right.toolbar
-                Button(:icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(node)" @mousedown.stop="mouseDown(node, 'node')" @mouseup.stop="mouseUp")
+                Button(size="small" :icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(node)" @mousedown.stop="mouseDown(node, 'node')" @mouseup.stop="mouseUp")
+    .no_result(v-else style="height:100%")
+      NoResultsPlaceholder(icon="pi pi-map", title="No Nodes", message="No nodes found in the map")
 </template>
 
 <script setup>
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import vTooltip from 'primevue/tooltip';
+import NoResultsPlaceholder from "@/components/common/noResultsPlaceholder.vue";
 import {app} from "@/composable/comfyAPI";
 import { $t } from '@/composable/i18n'
 import {jumpToNode, jumpToNodeId} from "@/composable/node.js";
-import {ref, computed, defineComponent, watch, nextTick} from "vue";
+import {ref, computed, defineComponent, watch, nextTick, onBeforeUnmount, resolveDirective} from "vue";
 import {NODE_MODE} from "@/config/index.js";
+
 
 const prefix = 'comfyui-easyuse-map-nodes'
 defineComponent({name:prefix})
 
+
 import {storeToRefs} from "pinia";
 import {useGroupsStore} from "@/stores/groups.js";
 const store = useGroupsStore()
-const {groups_nodes} = storeToRefs(store)
+const {groups_nodes, groups} = storeToRefs(store)
 
 
 const clickItem = item =>{
@@ -54,6 +64,14 @@ const clickItem = item =>{
       store.setGroups(app.canvas.graph._groups)
     }
   }
+}
+const isExpand = ref(false)
+const expandAll = _=>{
+  isExpand.value = !isExpand.value
+  app.canvas.graph._groups.forEach(group=>{
+    group.show_child = isExpand.value
+  })
+  store.setGroups(app.canvas.graph._groups)
 }
 
 let pressTimer
