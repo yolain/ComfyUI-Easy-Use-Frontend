@@ -10,18 +10,20 @@ import {app} from "@/composable/comfyAPI";
 import {$t} from "@/composable/i18n";
 
 /* Register Extensions*/
+import Map from "@/components/sidebar/map/index.vue"
 onMounted(_=>{
   // SideBar
-  // app.extensionManager.registerSidebarTab({
-  //   id: 'easyuse_map',
-  //   icon: 'pi pi-map',
-  //   title: $t("EasyUse Map"),
-  //   tooltip: "EasyUse Map",
-  //   type: "custom",
-  //   render: el=>{
-  //     render(h('div', {class: 'p-4'}, 'EasyUse Map'), el)
-  //   }
-  // })
+  app.extensionManager.registerSidebarTab({
+    id: 'easyuse_nodes_map',
+    icon: 'pi pi-sitemap',
+    title: $t("Nodes Map"),
+    tooltip: $t("Nodes Map"),
+    type: "custom",
+    render: el=>{
+      el.style.height = '100%'
+      render(h(Map, {}), el)
+    }
+  })
 })
 </script>
 

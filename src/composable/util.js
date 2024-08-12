@@ -151,3 +151,22 @@ export function isLocalNetwork(ip) {
         }
     });
 }
+
+export function on(
+    element,
+    event,
+    handler
+) {
+    if (element && event && handler) {
+        return element.addEventListener(event, handler, false);
+    }
+}
+export function off(
+    element,
+    event,
+    handler = _=>{}
+) {
+    if (element && event) {
+        return element.removeEventListener(event, handler, false);
+    }
+}

@@ -146,6 +146,20 @@
 &r{@include br();&--{@include br--();}}
 }
 
+/* 字体 */
+@mixin font($size:14px,$color:var(--font-color),$weight:400,$line:1.5){
+  font-size:$size;
+  color:$color;
+  font-weight:$weight;
+  line-height:$line;
+}
+
+@mixin font-title($size:14px, $weight:500){
+  @include font($size,var(--input-text),$weight,1.5);
+}
+@mixin font-desc($size:12px){
+  @include font($size,var(--descrip-text),300,1.5);
+}
 /* 字体变形 */
 @mixin fontHeight($value:matrix(1, 0, 0, 1.2, 0, 0)){
   @include css3(transform,$value);

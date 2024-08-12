@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="prefix + ` ${prefix}-styles`", :data-id="id")
+div(:class="prefix + ` ${prefix}-styles`", :data-id="id" v-click-outside="hiddenImage")
   template(v-if="styles.length>0 && show")
     div(:class="prefix+'__header'")
       div(:class="prefix+'__header_button'" @click="reset()")
@@ -26,10 +26,11 @@ div(:class="prefix + ` ${prefix}-styles`", :data-id="id")
 </template>
 
 <script setup>
-import {api } from '@/composable/comfyAPI.js'
-import { $t,locale } from '@/composable/i18n.js'
-import {toast} from '@/components/toast.js'
+import {api } from '@/composable/comfyAPI'
+import { $t,locale } from '@/composable/i18n'
+import {toast} from '@/components/toast'
 import { ref, reactive, computed, watch, defineComponent, defineProps, defineEmits, onMounted } from 'vue'
+import vClickOutside from "@/directive/clickOutside";
 
 const prefix = 'comfyui-easyuse-selector'
 defineComponent({name:prefix+'-styles'})

@@ -13,7 +13,7 @@
     --content-fg:#fff;
     --content-hover-bg: #27272a;
     --comfy-menu-bg: rgba(24,24,27,.9);
-    --comfy-input-bg: #27272a;
+    --comfy-input-bg: #242427;
     --input-text: #ffffff;
     --descrip-text: #71717a;
     --drag-text: #ccc;
@@ -243,9 +243,12 @@
     }
   }
 
-  // new front side bar
+  // new front
+  .comfyui-menu{
+    border-bottom: 1px solid var(--bg-color);
+  }
   .side-tool-bar-container{
-    backdrop-filter: blur(8px) brightness(120%);
+    border-right: 1px solid var(--bg-color);
   }
 
   .comfy-modal-content{

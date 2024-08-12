@@ -22,15 +22,12 @@ export default (({mode})=> {
       },
       emptyOutDir: true,
       rollupOptions: {
-        // external: [],
         input: {
           input: "/src/main.js",
         },
         output: {
           dir: "../" + env.VITE_OUTPUT_DIR,
           entryFileNames: "easyuse.js",
-          // chunkFileNames: `[name]-[hash].js`,
-          // assetFileNames: `[name]-[hash].[ext]`,
         },
       },
     },

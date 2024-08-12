@@ -74,7 +74,13 @@ export const jumpToNode = (node, select=true) => {
 	jumpToPosition([x2 + width / 2, y2 + height / 2], lGraph);
 	if(select) lGraph.selectNode(node)
 }
-
+export const jumpToNodeId = (id) => {
+	const node = getNodeById(id);
+	if (!node) {
+		return;
+	}
+	jumpToNode(node);
+};
 
 /* chain */
 const getLinks = () => graph.links ?? [];
