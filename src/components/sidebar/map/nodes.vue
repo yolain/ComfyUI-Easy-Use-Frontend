@@ -11,7 +11,7 @@ div(:class="prefix")
               i.icon(v-if="item.children" :class="item.info.show_child ? 'pi pi-folder-open' : 'pi pi-folder'" :style="{'color':item.info.color}")
               .edit(v-if="item.info.is_edit")
                 InputText(ref="editRef" v-model="title" variant="outlined" size="small" type="text" @blur="editGroupTitle(item)" @keydown.enter="editGroupTitle(item)" @keydown.esc="editGroupTitle(item)" style="width:100%")
-              .label(v-if="item.children?.length>0")
+              .label(v-else-if="item.children?.length>0")
                 span(@dblclick.stop="toEdit(item)") {{item.info.title}}
               .node(v-else-if="item.info" :class="[{'never':item.info.mode!==undefined && item.info.mode==NODE_MODE.NEVER},{'bypass':item.info.mode!==undefined && item.info.mode==NODE_MODE.BYPASS}]")
                 span.node-label(@dblclick.stop="jumpToNodeId(item.info.id)") {{item.info.title}}

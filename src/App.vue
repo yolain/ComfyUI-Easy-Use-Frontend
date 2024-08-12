@@ -4,7 +4,7 @@ CanvasNodes
 
 <script setup>
 import CanvasNodes from "@/components/nodes/index.vue";
-import {ref, onMounted, watch, h, render, resolveComponent} from 'vue'
+import {ref, onMounted, watch, h, render} from 'vue'
 
 import {app} from "@/composable/comfyAPI";
 import {$t} from "@/composable/i18n";
