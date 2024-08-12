@@ -16,8 +16,8 @@ onMounted(_=>{
   app.extensionManager.registerSidebarTab({
     id: 'easyuse_nodes_map',
     icon: 'pi pi-sitemap',
-    title: $t("Nodes Map"),
-    tooltip: $t("Nodes Map"),
+    title: $t("Nodes Map", true),
+    tooltip: $t("Nodes Map", true),
     type: "custom",
     render: el=>{
       el.style.height = '100%'

@@ -36,6 +36,8 @@ export default {
     "Are you sure you'd like to reboot the server?": "是否要重启ComfyUI？",
     // Nodes Map
     "Nodes Map": "管理节点组",
+    "No Nodes": "未找到节点",
+    "No nodes found in the map": "在工作流程中没有找到节点",
     "Expand All": "展开所有组",
     "Collapse All": "折叠所有组",
     "Cleanup Of GPU Usage": "清理GPU占用",

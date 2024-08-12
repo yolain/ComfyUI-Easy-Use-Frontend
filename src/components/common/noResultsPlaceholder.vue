@@ -60,6 +60,7 @@ defineEmits(['action'])
 
 .no-results-placeholder :deep(.p-card) {
   background-color: transparent;
+  box-shadow: none;
   text-align: center;
 }
 

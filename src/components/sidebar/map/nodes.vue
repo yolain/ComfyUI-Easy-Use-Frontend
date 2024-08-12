@@ -1,7 +1,7 @@
 <template lang="pug">
 div(:class="prefix")
   div(:class="prefix+'__header'")
-    .title {{ $t('Nodes Map') }}
+    .title {{ $t('Nodes Map', true) }}
     .toolbar
       Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click="expandAll" size="small" v-tooltip.right="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0" )
   div(:class="prefix+'__content'")
@@ -30,7 +30,7 @@ div(:class="prefix")
               .right.toolbar
                 Button(size="small" :icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(node)" @mousedown.stop="mouseDown(node, 'node')" @mouseup.stop="mouseUp")
     .no_result(v-else style="height:100%")
-      NoResultsPlaceholder(icon="pi pi-map", title="No Nodes", message="No nodes found in the map")
+      NoResultsPlaceholder(icon="pi pi-sitemap", :title="$t('No Nodes',true)", :message="$t('No nodes found in the map',true)")
 </template>
 
 <script setup>
@@ -44,16 +44,13 @@ import {jumpToNode, jumpToNodeId} from "@/composable/node.js";
 import {ref, computed, defineComponent, watch, nextTick, onBeforeUnmount, resolveDirective} from "vue";
 import {NODE_MODE} from "@/config/index.js";
 
-
 const prefix = 'comfyui-easyuse-map-nodes'
 defineComponent({name:prefix})
-
 
 import {storeToRefs} from "pinia";
 import {useGroupsStore} from "@/stores/groups.js";
 const store = useGroupsStore()
 const {groups_nodes, groups} = storeToRefs(store)
-
 
 const clickItem = item =>{
   if(item.info?.is_edit) return

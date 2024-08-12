@@ -1,30 +1,12 @@
 <template lang="pug">
 div(:class="prefix" ref="mapRef")
-  //Splitter(layout="vertical" style="height:100%")
-    //SplitterPanel(:size="20")
-      div
-    //SplitterPanel(:size="80")
   NodesMap
 </template>
 
 <script setup>
-import Splitter from "primevue/splitter";
-import SplitterPanel from "primevue/splitterpanel";
 import NodesMap from "@/components/sidebar/map/nodes.vue";
 import {app} from "@/composable/comfyAPI.js";
-import {on, off} from "@/composable/util.js";
-import { $t,locale } from '@/composable/i18n.js'
-import {
-  ref,
-  reactive,
-  computed,
-  watch,
-  defineComponent,
-  defineProps,
-  defineEmits,
-  onMounted,
-  onUnmounted,
-} from 'vue'
+import {ref, defineComponent, onMounted, onUnmounted,} from 'vue'
 import cloneDeep from "lodash/cloneDeep";
 
 const prefix = 'comfyui-easyuse-map'

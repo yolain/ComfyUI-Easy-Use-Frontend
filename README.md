@@ -3,6 +3,11 @@
 New Front-end of [ComfyUI-Easy-Use](https://github.com/yolain/ComfyUI-Easy-Use) custom nodes. This repo will replace the original web_extension in future releases.
 <br>It cannot be used in older versions of Comfy because it uses a new API.
 
+## Some Explanation
+
+#### why not use typescript?
+- It requires a lot of extra work for me. I don’t think a strongly typed language will bring me any benefits. Easyuse is just a custom nodes package and does not need to maintain as many functions as the main repository.
+
 ## Road Map
 
 ### What has been done
