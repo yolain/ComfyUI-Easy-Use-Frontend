@@ -95,39 +95,37 @@
             }
           }
         }
-        dt{
-          &.node{
-            height: 2rem;
-            cursor: default;
-            @include flex-b();
-            position: relative;
-            overflow: hidden;
-            .label{
-              padding-left: 1rem;
-              @include font-title(13px,400);
-              @include clamp();
-              @include flex-1();
-              @include flex-y();
-              @include css3(user-select, none);
-              margin-right: .25rem;
-              min-width: 80px;
-              height: 100%;
-              width: 100%;
+        .node{
+          height: 2rem;
+          cursor: default;
+          @include flex-b();
+          position: relative;
+          overflow: hidden;
+          &-label{
+            padding-left: 1rem;
+            @include font-title(13px,400);
+            @include clamp();
+            @include flex-1();
+            @include flex-y();
+            @include css3(user-select, none);
+            margin-right: .25rem;
+            min-width: 0px;
+            height: 100%;
+            width: 100%;
+          }
+          &:hover{
+            background: var(--content-hover-bg)!important;
+          }
+          &.never{
+            .node-label{
+              color: var(--descrip-text);
+              opacity: .5;
             }
-            &:hover{
-              background: var(--content-hover-bg)!important;
-            }
-            &.never{
-              .label{
-                color: var(--descrip-text);
-                opacity: .5;
-              }
-            }
-            &.bypass{
-              .label{
-                color: #f0f;
-                opacity: .5;
-              }
+          }
+          &.bypass{
+            .node-label{
+              color: #f0f;
+              opacity: .5;
             }
           }
         }

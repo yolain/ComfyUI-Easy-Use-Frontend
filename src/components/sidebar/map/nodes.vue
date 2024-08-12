@@ -9,18 +9,20 @@ div(:class="prefix")
           .title-bar(@click="clickItem(item)" :class="[{'never':item.info?.mode!==undefined && item.info.mode==2},{'bypass':item.info?.mode!==undefined && item.info.mode==4}]")
             .left.flex-1
               i.icon(v-if="item.children" :class="item.info.show_child ? 'pi pi-folder-open' : 'pi pi-folder'" :style="{'color':item.info.color}")
-              .edit(v-if="item.info.is_edit" )
+              .edit(v-if="item.info.is_edit")
                 InputText(ref="editRef" v-model="title" variant="outlined" size="small" type="text" @blur="editGroupTitle(item)" @keydown.enter="editGroupTitle(item)" @keydown.esc="editGroupTitle(item)" style="width:100%")
-              .label(v-else)
-                span(@dblclick.stop="item.children?.length>0 ? toEdit(item) : jumpToNodeId(item.id)") {{item.info.title}}
+              .label(v-if="item.children?.length>0")
+                span(@dblclick.stop="toEdit(item)") {{item.info.title}}
+              .node(v-else-if="item.info" :class="[{'never':item.info.mode!==undefined && item.info.mode==NODE_MODE.NEVER},{'bypass':item.info.mode!==undefined && item.info.mode==NODE_MODE.BYPASS}]")
+                span.node-label(@dblclick.stop="jumpToNodeId(item.info.id)") {{item.info.title}}
             .right.toolbar
               template(v-if="item.children?.length>0")
                 Button(:icon="item.children.find(cate=>cate.mode == NODE_MODE.ALWAYS) ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeGroupMode(item)" @mousedown.stop="mouseDown(item, 'group')" @mouseup.stop="mouseUp")
               template(v-else)
-                Button(:icon="item.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary")
+                Button(:icon="item.info?.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(item.info)" @mousedown.stop="mouseDown(item.info, 'node')" @mouseup.stop="mouseUp")
           dl.nodes(v-if="item.children?.length>0 && item.info.show_child")
             dt.node(v-for="(node,j) in item.children" :key="j" :class="[{'never':node?.mode!==undefined && node.mode==NODE_MODE.NEVER},{'bypass':node?.mode!==undefined && node.mode==NODE_MODE.BYPASS}]")
-              span.label(@dblclick.stop="jumpToNodeId(node.id)") {{node?.title}}
+              span.node-label(@dblclick.stop="jumpToNodeId(node.id)") {{node?.title}}
               .right.toolbar
                 Button(:icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="changeNodeMode(node)" @mousedown.stop="mouseDown(node, 'node')" @mouseup.stop="mouseUp")
 </template>
