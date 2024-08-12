@@ -25,13 +25,13 @@ export const useGroupsStore = defineStore('groups', {
                     if(!has_group){
                         un_groups.push({info:node})
                     }
-                    // add groups without nodes
-                    for(let i=0;i< this.groups.length;i++){
-                        if(!groups_nodes[i]){
-                            groups_nodes[i] = {info:this.groups[i],children:[]}
-                        }
-                    }
                 })
+                // add groups without nodes
+                for(let i=0;i< this.groups.length;i++){
+                    if(!groups_nodes[i]){
+                        groups_nodes[i] = {info:this.groups[i],children:[]}
+                    }
+                }
             }
             return [...groups_nodes,...un_groups]
         }
