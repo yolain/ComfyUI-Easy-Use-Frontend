@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="prefix")
+div(:class="prefix" ref="mapRef")
   //Splitter(layout="vertical" style="height:100%")
     //SplitterPanel(:size="20")
       div
@@ -23,7 +23,7 @@ import {
   defineProps,
   defineEmits,
   onMounted,
-  onBeforeUnmount,
+  onUnmounted,
 } from 'vue'
 import cloneDeep from "lodash/cloneDeep";
 
@@ -44,28 +44,17 @@ const updateGroups = async () => {
 }
 
 let timer = null
+const mapRef = ref(null)
 onMounted(_=>{
   updateGroups()
-  const graph_div = document.getElementById('graph-canvas')
-  const workflows_panel_div = document.getElementsByClassName('comfyui-workflows-panel')?.[0]
-  on(graph_div, 'mouseleave', _=>{
-    if(timer) destroyTimer()
-  })
-  on(graph_div, 'mouseenter', _=>{
-    if(!timer) addTimer()
-  })
-
-  on(workflows_panel_div, 'mouseenter', _=>{
-    if(!timer) addTimer()
-  })
-  on(workflows_panel_div, 'mouseleave', _=>{
-    if(timer) destroyTimer()
-  })
+  if(!timer) addTimer()
+})
+onUnmounted(_=>{
+  destroyTimer()
 })
 
 const addTimer = _=> {
   timer = setInterval(_=>{
-    console.log(123)
     const active_bar = app.extensionManager.activeSidebarTab
     if(active_bar == 'easyuse_nodes_map') updateGroups()
     else destroyTimer()
