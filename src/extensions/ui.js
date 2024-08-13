@@ -1,7 +1,8 @@
 import { api, app, $el } from '@/composable/comfyAPI'
 import {addCss, addPreconnect} from "@/composable/head";
 import {getSetting, setSetting, addSetting} from "@/composable/settings";
-import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR} from "@/config";
+import {on} from "@/composable/util.js";
+import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR, DARK_THEME_CLASS} from "@/config";
 import obsidian from "@/config/theme/obsidian";
 import obsidian_dark from "@/config/theme/obsidianDark";
 import milk_white from "@/config/theme/milkWhite";
@@ -27,16 +28,16 @@ let monitor = null
 
 /* add settings */
 for(let i in settings) addSetting(settings[i])
-/* Comfy 官方缺少删除设置的接口 无法将v1版本的设置删除 */
-// const OldestMenuNestSub = getSetting('Comfy.EasyUse.MenuNestSub')
-// if(OldestMenuNestSub !== undefined){
-//     setSetting('EasyUse.ContextMenu.SubDirectories', OldestMenuNestSub)
-//     setSetting('EasyUse.ContextMenu.ModelsThumbnails', OldestMenuNestSub)
-// }
-// const OldestNodesTemplate = getSetting('Comfy.EasyUse.NodeTemplateShortcut')
-// if(OldestNodesTemplate !== undefined){
-//     setSetting('EasyUse.Hotkeys.NodesTemplate', OldestNodesTemplate)
-// }
+/* The official interface for deleting settings api is missing. Settings of the v1 version cannot be deleted. */
+const OldestMenuNestSub = getSetting('Comfy.EasyUse.MenuNestSub')
+if(OldestMenuNestSub !== undefined){
+    setSetting('EasyUse.ContextMenu.SubDirectories', OldestMenuNestSub)
+    setSetting('EasyUse.ContextMenu.ModelsThumbnails', OldestMenuNestSub)
+}
+const OldestNodesTemplate = getSetting('Comfy.EasyUse.NodeTemplateShortcut')
+if(OldestNodesTemplate !== undefined){
+    setSetting('EasyUse.Hotkeys.NodesTemplate', OldestNodesTemplate)
+}
 
 /* Register Extension */
 app.registerExtension({
@@ -84,11 +85,11 @@ app.registerExtension({
         }
     },
 
-    setup() {
-        const NewMenuPosition = getSetting('Comfy.UseNewMenu') || 'Disabled'
+    async setup() {
         Object.assign(app.canvas.default_connection_color_byType, CUSTOM_LINK_TYPES_COLOR);
         Object.assign(LGraphCanvas.link_type_colors, CUSTOM_LINK_TYPES_COLOR);
-        // New Front: ColorPalette Change Watcher
+        // ColorPalette Change Watcher
+        if(color_palette == 'custom_milk_white') document.body.classList.remove(DARK_THEME_CLASS)
         app.ui.settings.addEventListener('Comfy.ColorPalette.change', async ({detail})=>{
             // Change Theme
             if(detail?.value && detail?.oldValue){
@@ -96,9 +97,10 @@ app.registerExtension({
                 Object.assign(app.canvas.default_connection_color_byType, CUSTOM_LINK_TYPES_COLOR);
                 Object.assign(LGraphCanvas.link_type_colors, CUSTOM_LINK_TYPES_COLOR);
             }
+            if(detail.value == 'custom_milk_white') document.body.classList.remove(DARK_THEME_CLASS)
         })
-
-        setTimeout(_=> setCrystoolsUI(NewMenuPosition),1)
+        // crytools monitor
+        setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
     },
 
     async nodeCreated(node) {

@@ -1,4 +1,5 @@
 export const PREFIX_CLASS = 'comfyui-easyuse-'
+export const DARK_THEME_CLASS = 'dark-theme'
 export const THEME_COLOR = "#236692"
 export const THEME_COLOR_LIGHT = "#3485bb"
 export const CUSTOM_LINK_TYPES_COLOR = {
