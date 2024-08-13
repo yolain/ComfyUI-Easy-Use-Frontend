@@ -20,7 +20,7 @@ const {selectors, seg_selectors, slider_controls} = storeToRefs(store)
 import {getWidgetByName, toggleWidget} from "@/composable/node.js";
 
 // stylesSelector
-import stylesSelector from '@/components/nodes/stylesSelector.vue'
+import stylesSelector from '@/components/graph/stylesSelector.vue'
 const selectorsRef = ref({})
 const chooseStyle = (styles,index) => {
   let _selectors = cloneDeep(selectors.value)
@@ -91,7 +91,7 @@ const createStylesSelector = async(node) => {
 
 
 // human segmentation
-import segSelector from '@/components/nodes/segSelector.vue'
+import segSelector from '@/components/graph/segSelector.vue'
 const segsRef = ref({})
 const selectSegs = (segs,index) => {
   let _segs = cloneDeep(seg_selectors.value)
@@ -165,7 +165,7 @@ const createHumanSegmentation = async(node) => {
 }
 
 // sliderControl
-import sliderControl from '@/components/nodes/sliderControl.vue'
+import sliderControl from '@/components/graph/sliderControl.vue'
 const slidersRef = ref({})
 const changeSlider = (val,index) => {
   let _sliders = cloneDeep(slider_controls.value)
