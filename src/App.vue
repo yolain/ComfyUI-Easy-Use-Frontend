@@ -1,9 +1,9 @@
 <template lang="pug">
-CanvasNodes
+graphNodes
 </template>
 
 <script setup>
-import CanvasNodes from "@/components/nodes/index.vue";
+import graphNodes from "@/components/graph/index.vue";
 import {ref, onMounted, watch, h, render} from 'vue'
 
 import {app} from "@/composable/comfyAPI";
