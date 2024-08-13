@@ -40,7 +40,7 @@
       height:100%;
       overflow: auto;
       dl{
-        .node-label{
+        .label{
           padding-left: 1rem;
         }
       }
@@ -48,101 +48,6 @@
         list-style-type: none;
         padding:0;
         margin:0;
-        li{
-          //border-bottom: 1px solid var(--border-color);
-          &.item{
-            .title-bar{
-              position: relative;
-              @include flex-b();
-              overflow: hidden;
-              width:100%;
-              height:2rem;
-              cursor: default;
-              .left,.right{
-                height: 100%;
-                @include flex-y();
-              }
-              .left{
-                padding-left:0.5rem;
-                @include flex-1();
-                margin-right: .25rem;
-              }
-              .icon{
-                font-size: 0.85rem;
-                margin-right:0.25rem;
-              }
-
-              .label{
-                @include flex-y();
-                height:100%;
-                width: 100%;
-                min-width: 80px;
-                span{
-                  @include font-title(14px,400);
-                  @include clamp();
-                  @include css3(user-select, none);
-                }
-
-              }
-              &:hover{
-                background: var(--content-hover-bg)!important;
-              }
-              &.active{
-                background: var(--theme-color)!important;
-                .label{
-                  color: #fff;
-                  cursor: default;
-                }
-              }
-              &.never{
-                .label{
-                  color: var(--descrip-text);
-                  opacity: .4;
-                }
-              }
-              &.bypass{
-                .label{
-                  color: var(--descrip-text);
-                }
-              }
-            }
-          }
-        }
-        .node{
-          height: 2rem;
-          cursor: default;
-          @include flex-b();
-          position: relative;
-          overflow: hidden;
-          &-label{
-            @include font-title(13px,400);
-            @include flex-1();
-            @include css3(user-select, none);
-            margin-right: .25rem;
-            height: 2rem;
-            line-height: 2rem;
-            width: 100%;
-            @include clamp();
-            &.error{
-              color: var(--error-color);
-            }
-          }
-          &:hover{
-            background: var(--content-hover-bg)!important;
-          }
-          &.never{
-            .node-label{
-              color: var(--descrip-text);
-              opacity: .5;
-            }
-          }
-          &.bypass{
-            .node-label{
-              color: #f0f;
-              opacity: .5;
-            }
-          }
-        }
         // toolbar
         .toolbar{
           span{
@@ -162,6 +67,104 @@
       .no_result{
         @include flex-c();
         text-align: center;
+      }
+    }
+    // group
+    &-group{
+      position: relative;
+      overflow: hidden;
+      width:100%;
+      height:2rem;
+      cursor: default;
+      @include flex-b();
+      .left,.right{
+        height: 100%;
+        @include flex-y();
+      }
+      .left{
+        padding-left:0.5rem;
+        margin-right: .25rem;
+        @include flex-1();
+      }
+      .icon{
+        font-size: 0.85rem;
+        margin-right:0.25rem;
+      }
+      .label{
+        @include flex-y();
+        height:100%;
+        width: 100%;
+        min-width: 80px;
+        span{
+          @include font-title(14px,400);
+          @include clamp();
+          @include css3(user-select, none);
+        }
+      }
+      &:hover{
+        background: var(--content-hover-bg)!important;
+      }
+      &.active{
+        background: var(--theme-color)!important;
+        .label{
+          color: #fff;
+          cursor: default;
+        }
+      }
+      &.never{
+        .label{
+          color: var(--descrip-text);
+          opacity: .4;
+        }
+      }
+      &.bypass{
+        .label{
+          color: var(--descrip-text);
+        }
+      }
+
+    }
+    // node
+    &-node{
+      height: 2rem;
+      cursor: default;
+      @include flex-b();
+      position: relative;
+      overflow: hidden;
+      .label{
+        text-indent: 0.5rem;
+        @include font-title(13px,400);
+        @include flex-1();
+        @include css3(user-select, none);
+        margin-right: .25rem;
+        height: 2rem;
+        line-height: 2rem;
+        width: 100%;
+        @include clamp();
+        &.error{
+          color: var(--error-color);
+        }
+      }
+      &:hover{
+        background: var(--content-hover-bg)!important;
+      }
+      &.never{
+        .label{
+          color: var(--descrip-text);
+          opacity: .5;
+        }
+      }
+      &.bypass{
+        .label{
+          color: #f0f;
+          opacity: .5;
+        }
+      }
+    }
+
+    .nodes{
+      .label{
+        text-indent: 1rem;
       }
     }
   }

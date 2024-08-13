@@ -1,13 +1,12 @@
 <template lang="pug">
 div(:class="prefix" ref="mapRef")
-  NodesMap
+  nodesMap
 </template>
 
 <script setup>
-import NodesMap from "@/components/sidebar/map/nodes.vue";
+import nodesMap from "@/components/sidebar/map/nodesMap.vue";
 import {app} from "@/composable/comfyAPI.js";
 import {ref, defineComponent, onMounted, onUnmounted,} from 'vue'
-import cloneDeep from "lodash/cloneDeep";
 
 const prefix = 'comfyui-easyuse-map'
 defineComponent({name:prefix})
