@@ -1,11 +1,11 @@
 <template>
-<div class="no-results-placeholder">
+<div class="no-result-placeholder">
   <Card >
     <template #content>
-      <div class="flex flex-column align-items-center">
-        <i :class="icon" style="font-size: 3rem; margin-bottom: 1rem"></i>
+      <div class="no-result-placeholder-content">
+        <i :class="icon" :style="{'font-size': iconSize,'margin-bottom': '.5rem'}"></i>
         <h3>{{ title }}</h3>
-        <p>{{ message }}</p>
+        <p v-if="message">{{ message }}</p>
         <Button
           v-if="buttonLabel"
           :label="buttonLabel"
@@ -29,7 +29,11 @@ defineProps({
     type: String,
     default: '',
     required: false,
-
+  },
+  iconSize:{
+    type: String,
+    default: '3rem',
+    required: false,
   },
   title: {
     type: String,
@@ -37,7 +41,7 @@ defineProps({
   },
   message: {
     type: String,
-    required: true
+    required: false
   },
   buttonLabel: {
     type: String,
@@ -49,28 +53,3 @@ defineProps({
 
 defineEmits(['action'])
 </script>
-
-<style scoped>
-.no-results-placeholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-.no-results-placeholder :deep(.p-card) {
-  background-color: transparent;
-  box-shadow: none;
-  text-align: center;
-}
-
-.no-results-placeholder h3 {
-  color: var(--input-text);
-  margin-bottom: 0.5rem;
-}
-
-.no-results-placeholder p {
-  color: var(--descrip-text);
-  margin-bottom: 1rem;
-}
-</style>

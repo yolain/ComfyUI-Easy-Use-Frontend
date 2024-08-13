@@ -40,6 +40,8 @@ export default {
     "No nodes found in the map": "在工作流程中没有找到节点",
     "Expand All": "展开所有组",
     "Collapse All": "折叠所有组",
+    // Queue
+    "Queue":"队列",
     "Cleanup Of GPU Usage": "清理GPU占用",
     "Please stop all running tasks before cleaning GPU": "请在清理GPU之前停止所有运行中的任务",
     "Always": "启用中",

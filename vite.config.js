@@ -11,6 +11,7 @@ export default (({mode})=> {
       vue(), cssInjectedByJsPlugin()
     ],
     build: {
+      chunkSizeWarningLimit:1000,
       watch: {
         include: ["src/**"],
       },

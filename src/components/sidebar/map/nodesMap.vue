@@ -42,7 +42,7 @@ const isExpand = ref(false)
 const expandAll = _=>{
   isExpand.value = !isExpand.value
   app.canvas.graph._groups.forEach(group=>{
-    group.show_child = isExpand.value
+    group.show_nodes = isExpand.value
   })
   store.setGroups(app.canvas.graph._groups)
 }
