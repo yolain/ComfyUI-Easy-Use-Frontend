@@ -614,7 +614,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                     ctx.textAlign = "right";
                     let rightDistance = 6
                     if (w.type == "number") {
-                        ctx.font = "10px Inter,JetBrains Mono,monospace"
+                        ctx.font = "10px Inter"
                         ctx.fillText(
                             Number(w.value).toFixed(
                                 w.options.precision !== undefined
