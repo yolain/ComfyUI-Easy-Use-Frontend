@@ -34,8 +34,8 @@ const props = defineProps({
 })
 
 // store
-import {useGroupsStore} from "@/stores/nodes.js";
-const store = useGroupsStore()
+import {useNodesStore} from "@/stores/nodes.js";
+const store = useNodesStore()
 
 // edit group title
 const isModifying = ref(false)

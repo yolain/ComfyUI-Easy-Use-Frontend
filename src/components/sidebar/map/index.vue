@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="prefix" ref="mapRef")
+div(:class="prefix")
   nodesMap
 </template>
 
@@ -11,39 +11,14 @@ import {ref, defineComponent, onMounted, onUnmounted,} from 'vue'
 const prefix = 'comfyui-easyuse-map'
 defineComponent({name:prefix})
 
-import {storeToRefs} from "pinia";
-import {useGroupsStore} from "@/stores/nodes.js";
-const store = useGroupsStore()
-const {groups_nodes} = storeToRefs(store)
+import {useNodesStore} from "@/stores/nodes.js";
+const store = useNodesStore()
 
-const updateGroups = async () => {
-  let groups = app.canvas.graph._groups
-  let nodes = app.canvas.graph._nodes
-  await store.setGroups(groups)
-  await store.setNodes(nodes)
-  // console.log(groups_nodes.value)
-}
-
-let timer = null
-const mapRef = ref(null)
 onMounted(_=>{
-  updateGroups()
-  if(!timer) addTimer()
+  store.watchGraph()
 })
 onUnmounted(_=>{
-  destroyTimer()
+  // onUnmounted does not work when the render function renders it to the sidebar
 })
-
-const addTimer = _=> {
-  timer = setInterval(_=>{
-    const active_bar = app.extensionManager.activeSidebarTab
-    if(active_bar == 'easyuse_nodes_map') updateGroups()
-    else destroyTimer()
-  },500)
-}
-const destroyTimer = _=> {
-  clearInterval(timer)
-  timer = null
-}
 
 </script>

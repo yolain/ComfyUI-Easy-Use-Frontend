@@ -20,3 +20,5 @@ export const NODE_MODE ={
     "NEVER": 2,
     "BYPASS": 4,
 }
+
+export const NODES_MAP_ID = 'easyuse_nodes_map'

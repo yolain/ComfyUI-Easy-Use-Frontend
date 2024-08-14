@@ -1,6 +1,8 @@
+import {app} from "@/composable/comfyAPI.js";
+import {NODES_MAP_ID} from "@/config/index";
 import { defineStore } from 'pinia'
 import cloneDeep from "lodash/cloneDeep";
-export const useGroupsStore = defineStore('groups', {
+export const useNodesStore = defineStore('groups', {
     state: _ => ({
         groups:[],
         nodes:[],
@@ -38,10 +40,69 @@ export const useGroupsStore = defineStore('groups', {
     },
     actions:{
         setGroups(groups){
-            this.groups = cloneDeep(groups.sort((a,b)=> a['pos'][0] - b['pos'][0]).sort((a,b)=> a['pos'][1] - b['pos'][1]))
+            this.groups = cloneDeep(
+                groups
+                    .sort((a,b)=> a['pos'][0] - b['pos'][0])
+                    .sort((a,b)=> a['pos'][1] - b['pos'][1])
+            )
         },
         setNodes(nodes) {
             this.nodes = cloneDeep(nodes)
+        },
+        update(){
+            if(app.extensionManager.activeSidebarTab !== NODES_MAP_ID) return
+            setTimeout(_=>{
+                this.setGroups(app.canvas.graph._groups)
+                this.setNodes(app.canvas.graph._nodes)
+            },1)
+        },
+        watchGraph(){
+            let _this = this
+            this.update()
+            /* node */
+            // onNodeAdded
+            const onNodeAdded = app.graph.onNodeAdded
+            app.graph.onNodeAdded = function (node) {
+                _this.update()
+                // onRemoved
+                const onRemoved = node.onRemoved;
+                node.onRemoved = function() {
+                    _this.update()
+                    return onRemoved?.apply(this, arguments)
+                }
+                return onNodeAdded?.apply(this, arguments)
+            }
+            // onNodeMoved
+            app.canvas.onNodeMoved = function (node) {
+                _this.update()
+            }
+            // onNodeAlign
+            const onNodeAlign = LGraphCanvas.onNodeAlign
+            LGraphCanvas.onNodeAlign = function (group) {
+                _this.update()
+                return onNodeAlign?.apply(this, arguments)
+            }
+            /* group */
+            // onGroupAdd
+            const onGroupAdd = LGraphCanvas.onGroupAdd
+            LGraphCanvas.onGroupAdd = function () {
+                console.log(1)
+                _this.update()
+                return onGroupAdd?.apply(this, arguments)
+            }
+            // onGroupAdd
+            const onGroupAlign = LGraphCanvas.onGroupAlign
+            LGraphCanvas.onGroupAlign = function (group) {
+                _this.update()
+                return onGroupAlign?.apply(this, arguments)
+            }
+            /* common */
+            // onMenuNodeRemove
+            const onMenuNodeRemove = LGraphCanvas.onMenuNodeRemove
+            LGraphCanvas.onMenuNodeRemove = function (group){
+                _this.update()
+                return onMenuNodeRemove?.apply(this, arguments)
+            }
         }
     }
 })

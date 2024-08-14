@@ -8,6 +8,7 @@ import {ref, onMounted, onUnmounted, watch, h, render } from 'vue'
 
 import {api, app} from "@/composable/comfyAPI";
 import {$t} from "@/composable/i18n";
+import {NODES_MAP_ID} from "@/config/index";
 
 /* Register Extensions*/
 import Map from "@/components/sidebar/map/index.vue"
@@ -36,7 +37,7 @@ const init = _=>{
   //   }
   // })
   app.extensionManager.registerSidebarTab({
-    id: 'easyuse_nodes_map',
+    id: NODES_MAP_ID,
     icon: 'pi pi-sitemap',
     title: $t("Nodes Map", true),
     tooltip: $t("Nodes Map", true),

@@ -4,6 +4,8 @@ import {getSetting} from "@/composable/settings";
 import {toast} from "@/components/toast.js";
 import {$t} from "@/composable/i18n.js";
 import {getSelectedNodes, isGetNode, isSetNode, jumpToNode, addNodesToGroup} from "@/composable/node.js";
+import {useNodesStore} from "@/stores/nodes.js";
+let nodesStore = null
 /* Variables */
 
 /* Register Extension */
@@ -116,6 +118,9 @@ app.registerExtension({
                         LGraphCanvas.alignNodes(nodes, 'right', nodes[0])
                         break
                 }
+                // Update NodesStore
+                if(!nodesStore) nodesStore = useNodesStore()
+                if(nodesStore) nodesStore.update()
             })
 
 
@@ -126,6 +131,9 @@ app.registerExtension({
                 if(!enableAddGroup) return
                 // Get Selected Nodes Jump
                 addSelectedNodesToGroup()
+                // Update NodesStore
+                if(!nodesStore) nodesStore = useNodesStore()
+                if(nodesStore) nodesStore.update()
             })
 
             // Register hotkeys with ALT+1~9 to add node template to canvas qulickly
@@ -176,6 +184,18 @@ app.registerExtension({
                     toast.error(e)
                 }
             })
+
+            const keybindListener = async function (e) {
+                if ((e.key === 'b' || e.key == 'm') && (e.metaKey || e.ctrlKey)) {
+                    // Get Selected Nodes Jump
+                    const selectNodes = getSelectedNodes();
+                    if(selectNodes.length === 0) return;
+                    // Update NodesStore
+                    if(!nodesStore) nodesStore = useNodesStore()
+                    if(nodesStore) nodesStore.update()
+                }
+            }
+            window.addEventListener("keydown",keybindListener,true)
         }
     }
 });

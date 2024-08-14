@@ -8,6 +8,8 @@ import obsidian_dark from "@/config/theme/obsidianDark";
 import milk_white from "@/config/theme/milkWhite";
 import settings from "@/config/settings";
 import sleep from "@/composable/sleep";
+import {useNodesStore} from "@/stores/nodes.js";
+let nodesStore = null
 
 /* Define Variable */
 const custom_themes = ["custom_obsidian", "custom_obsidian_dark", "custom_milk_white"]
@@ -83,6 +85,9 @@ app.registerExtension({
         }else{
             document.body.classList.remove('comfyui-easyuse')
         }
+        LGraphCanvas.onMenuNodeMode = onMenuNodeMode
+        LGraphCanvas.onMenuNodeColors = onMenuNodeColors
+        LGraphCanvas.onShowPropertyEditor = onShowPropertyEditor
     },
 
     async setup() {
@@ -680,6 +685,217 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
     }
     ctx.restore();
     ctx.textAlign = "left";
+}
+
+function onMenuNodeMode(value, options, e, menu, node) {
+    new LiteGraph.ContextMenu(
+        LiteGraph.NODE_MODES,
+        { event: e, callback: inner_clicked, parentMenu: menu, node: node }
+    );
+
+    function inner_clicked(v) {
+        if (!node) {
+            return;
+        }
+        var kV = Object.values(LiteGraph.NODE_MODES).indexOf(v);
+        var fApplyMultiNode = function(node){
+            if (kV>=0 && LiteGraph.NODE_MODES[kV])
+                node.changeMode(kV);
+            else{
+                console.warn("unexpected mode: "+v);
+                node.changeMode(LiteGraph.ALWAYS);
+            }
+            // Update Nodes Store
+            if(!nodesStore) nodesStore = useNodesStore()
+            nodesStore.update()
+        }
+
+        var graphcanvas = LGraphCanvas.active_canvas;
+        if (!graphcanvas.selected_nodes || Object.keys(graphcanvas.selected_nodes).length <= 1){
+            fApplyMultiNode(node);
+        }else{
+            for (var i in graphcanvas.selected_nodes) {
+                fApplyMultiNode(graphcanvas.selected_nodes[i]);
+            }
+        }
+    }
+
+    return false;
+}
+function onMenuNodeColors(value, options, e, menu, node) {
+    if (!node) {
+        throw "no node for color";
+    }
+
+    var values = [];
+    values.push({
+        value: null,
+        content:
+            "<span style='display: block; padding-left: 4px;'>No color</span>"
+    });
+
+    for (var i in LGraphCanvas.node_colors) {
+        var color = LGraphCanvas.node_colors[i];
+        var value = {
+            value: i,
+            content:
+                "<span style='display: block; color: #999; padding-left: 4px; border-left: 8px solid " +
+                color.color +
+                "; background-color:" +
+                color.bgcolor +
+                "'>" +
+                i +
+                "</span>"
+        };
+        values.push(value);
+    }
+    new LiteGraph.ContextMenu(values, {
+        event: e,
+        callback: inner_clicked,
+        parentMenu: menu,
+        node: node
+    });
+
+    function inner_clicked(v) {
+        if (!node) {
+            return;
+        }
+
+        var color = v.value ? LGraphCanvas.node_colors[v.value] : null;
+
+        var fApplyColor = function(node){
+            if (color) {
+                if (node.constructor === LiteGraph.LGraphGroup) {
+                    node.color = color.groupcolor;
+                } else {
+                    node.color = color.color;
+                    node.bgcolor = color.bgcolor;
+                }
+            } else {
+                delete node.color;
+                delete node.bgcolor;
+            }
+            // Update Nodes Store
+            if(!nodesStore) nodesStore = useNodesStore()
+            nodesStore.update()
+        }
+
+        var graphcanvas = LGraphCanvas.active_canvas;
+        if (!graphcanvas.selected_nodes || Object.keys(graphcanvas.selected_nodes).length <= 1){
+            fApplyColor(node);
+        }else{
+            for (var i in graphcanvas.selected_nodes) {
+                fApplyColor(graphcanvas.selected_nodes[i]);
+            }
+        }
+        node.setDirtyCanvas(true, true);
+    }
+    return false;
+}
+function onShowPropertyEditor(item, options, e, menu, node) {
+    var input_html = "";
+    var property = item.property || "title";
+    var value = node[property];
+
+    // TODO refactor :: use createDialog ?
+    var dialog = document.createElement("div");
+    dialog.is_modified = false;
+    dialog.className = "graphdialog";
+    dialog.innerHTML =
+        "<span class='name'></span><input autofocus type='text' class='value'/><button>OK</button>";
+    dialog.close = function () {
+        if (dialog.parentNode) {
+            dialog.parentNode.removeChild(dialog);
+        }
+    };
+    var title = dialog.querySelector(".name");
+    title.innerText = property;
+    var input = dialog.querySelector(".value");
+    if (input) {
+        input.value = value;
+        input.addEventListener("blur", function (e) {
+            this.focus();
+        });
+        input.addEventListener("keydown", function (e) {
+            dialog.is_modified = true;
+            if (e.keyCode == 27) {
+                //ESC
+                dialog.close();
+            } else if (e.keyCode == 13) {
+                inner(); // save
+            } else if (e.keyCode != 13 && e.target.localName != "textarea") {
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    }
+
+    var graphcanvas = LGraphCanvas.active_canvas;
+    var canvas = graphcanvas.canvas;
+
+    var rect = canvas.getBoundingClientRect();
+    var offsetx = -20;
+    var offsety = -20;
+    if (rect) {
+        offsetx -= rect.left;
+        offsety -= rect.top;
+    }
+
+    if (event) {
+        dialog.style.left = event.clientX + offsetx + "px";
+        dialog.style.top = event.clientY + offsety + "px";
+    } else {
+        dialog.style.left = canvas.width * 0.5 + offsetx + "px";
+        dialog.style.top = canvas.height * 0.5 + offsety + "px";
+    }
+
+    var button = dialog.querySelector("button");
+    button.addEventListener("click", inner);
+    canvas.parentNode.appendChild(dialog);
+
+    if (input) input.focus();
+
+    var dialogCloseTimer = null;
+    dialog.addEventListener("mouseleave", function (e) {
+        if (LiteGraph.dialog_close_on_mouse_leave)
+            if (!dialog.is_modified && LiteGraph.dialog_close_on_mouse_leave)
+                dialogCloseTimer = setTimeout(dialog.close, LiteGraph.dialog_close_on_mouse_leave_delay); //dialog.close();
+    });
+    dialog.addEventListener("mouseenter", function (e) {
+        if (LiteGraph.dialog_close_on_mouse_leave)
+            if (dialogCloseTimer) clearTimeout(dialogCloseTimer);
+    });
+
+    function inner() {
+        if (input) setValue(input.value);
+    }
+
+    function setValue(value) {
+        if (item.type == "Number") {
+            value = Number(value);
+        } else if (item.type == "Boolean") {
+            value = Boolean(value);
+        }
+        node[property] = value;
+        if (dialog.parentNode) {
+            dialog.parentNode.removeChild(dialog);
+        }
+        node.setDirtyCanvas(true, true);
+        // Update Nodes Store
+        if(!nodesStore) nodesStore = useNodesStore()
+        nodesStore.update()
+    }
+}
+
+function processKey(e) {
+    if (e.type == 'keydown' && !e.repeat) {
+        if ((e.key === 'm' || e.key === 'b') && e.ctrlKey) {
+            // Update Nodes Store
+            if(!nodesStore) nodesStore = useNodesStore()
+            nodesStore.update()
+        }
+    }
 }
 
 

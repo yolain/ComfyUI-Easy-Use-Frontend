@@ -33,8 +33,8 @@ const prefix = 'comfyui-easyuse-map-nodes'
 defineComponent({name:prefix})
 
 import {storeToRefs} from "pinia";
-import {useGroupsStore} from "@/stores/nodes.js";
-const store = useGroupsStore()
+import {useNodesStore} from "@/stores/nodes.js";
+const store = useNodesStore()
 const {groups_nodes, groups} = storeToRefs(store)
 
 // Expand / Collapse
