@@ -611,12 +611,12 @@ function toggleLogic(node, widget) {
                     ['cfg', 'cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name)))
                     break
                 case 'CFG':
-                    toggleWidget(node, getWidgetByName(node, 'cfg'), true)
+                    toggleWidget(node, getWidgetByName(node, 'cfg'), true);
                     toggleWidget(node, getWidgetByName(node, 'cfg_negative'))
                     break
                 case 'IP2P+DualCFG':
                 case 'DualCFG':
-                    ['cfg', 'cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name)), true)
+                    ['cfg', 'cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name),true))
                     break
             }
             updateNodeHeight(node)
