@@ -252,6 +252,13 @@
   .comfy-modal-content{
     width: 100%;
   }
+
+  &-poseEditor{
+    @include flex-c();
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.5;
+  }
 }
 
 #comfyui-menu-monitor{

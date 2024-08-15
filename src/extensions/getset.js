@@ -4,7 +4,6 @@ import { app } from "@/composable/comfyAPI";
 const setIcon = '➡️'
 const getIcon = '⬅️'
 
-
 app.registerExtension({
     name: "easy setNode",
     registerCustomNodes() {

@@ -260,6 +260,17 @@ onMounted(_=>{
           return onNodeCreated;
         }
       }
+      // Pose Editor
+      if(nodeData.name == 'easy poseEditor'){
+        nodeType.prototype.onNodeCreated = async function() {
+          onNodeCreated ? onNodeCreated?.apply(this, arguments) : undefined;
+          const editor = document.createElement('div')
+          editor.className = 'comfyui-easyuse-poseEditor'
+          editor.innerHTML = `<div>This node is about to be removed, you can use <a href="https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet" target="_blank">ComfyUI_Custom_Nodes_AlekPet</a> to replace it.</div>`
+          this.addDOMWidget('editor','btn', editor)
+          return onNodeCreated;
+        }
+      }
     }
   })
 })
