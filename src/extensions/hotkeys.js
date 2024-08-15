@@ -5,8 +5,8 @@ import {toast} from "@/components/toast.js";
 import {$t} from "@/composable/i18n.js";
 import {getSelectedNodes, isGetNode, isSetNode, jumpToNode, addNodesToGroup} from "@/composable/node.js";
 import {useNodesStore} from "@/stores/nodes.js";
-let nodesStore = null
 /* Variables */
+let nodesStore = null
 
 /* Register Extension */
 app.registerExtension({

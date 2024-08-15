@@ -86,7 +86,6 @@ export const useNodesStore = defineStore('groups', {
             // onGroupAdd
             const onGroupAdd = LGraphCanvas.onGroupAdd
             LGraphCanvas.onGroupAdd = function () {
-                console.log(1)
                 _this.update()
                 return onGroupAdd?.apply(this, arguments)
             }

@@ -9,9 +9,9 @@ import milk_white from "@/config/theme/milkWhite";
 import settings from "@/config/settings";
 import sleep from "@/composable/sleep";
 import {useNodesStore} from "@/stores/nodes.js";
-let nodesStore = null
 
 /* Define Variable */
+let nodesStore = null
 const custom_themes = ["custom_obsidian", "custom_obsidian_dark", "custom_milk_white"]
 const NODE_CUSTOM_COLORS = {
     "easy positive": "green",
