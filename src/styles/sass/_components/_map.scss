@@ -24,6 +24,7 @@
       @include bg-blur();
       .title{
         @include font-title(13px,400);
+        user-select: none;
       }
       .toolbar{
         @include flex-y();
