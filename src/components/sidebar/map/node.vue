@@ -1,5 +1,5 @@
 <template lang="pug">
-div(:class="[prefix,{'never':node.mode!==undefined && node.mode==NODE_MODE.NEVER},{'bypass':node.mode!==undefined && node.mode==NODE_MODE.BYPASS}]")
+div(:draggable="false" :class="[prefix,{'never':node.mode!==undefined && node.mode==NODE_MODE.NEVER},{'bypass':node.mode!==undefined && node.mode==NODE_MODE.BYPASS}]")
   span.label(@dblclick.stop="jumpToNodeId(node.id)" v-if="node.title !== undefined") {{node.title}}
   span.label.error(v-else) {{node.type}}
   .right.toolbar

@@ -36,11 +36,14 @@ export default {
     "Are you sure you'd like to reboot the server?": "是否要重启ComfyUI？",
     // Nodes Map
     "Nodes Map": "管理节点组",
+    "Nodes map sorting mode": "管理节点组排序模式",
     "No Nodes": "未找到节点",
     "No nodes found in the map": "在工作流程中没有找到节点",
     "Expand All": "展开所有组",
     "Collapse All": "折叠所有组",
     "Close":"关闭",
+    "Default automatic sorting, if set to manual, groups can be dragged and dropped and the sorting results saved.": "默认自动排序，如果设置为手动，组可以拖放并保存排序结果。",
+    "For drag and drop sorting, please find Nodes map sorting mode in Settings->EasyUse and change it to manual": "如需拖拽排序请在设置->EasyUse节点中找到管理节点组排序模式并修改成 manual",
     // Queue
     "Queue":"队列",
     "Cleanup Of GPU Usage": "清理GPU占用",
