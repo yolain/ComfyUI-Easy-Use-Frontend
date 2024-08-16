@@ -21,7 +21,7 @@
 <script setup>
 import Card from 'primevue/card'
 import Button from 'primevue/button'
-import {defineProps, defineEmits, defineComponent} from 'vue'
+import {defineEmits, defineComponent} from 'vue'
 
 defineComponent({name: 'NoResultsPlaceholder'})
 defineProps({
@@ -47,9 +47,7 @@ defineProps({
     type: String,
     default: '',
     required: false,
-
   }
 })
-
 defineEmits(['action'])
 </script>
