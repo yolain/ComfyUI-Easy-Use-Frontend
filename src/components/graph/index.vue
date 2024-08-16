@@ -5,12 +5,11 @@ sliderControl(:ref="e=>{if(e) slidersRef[item.id] = e}" :type="item.type"  v-for
 </template>
 
 <script setup>
-import {ref, onMounted, watch, h, render, defineComponent} from 'vue'
+import {ref, onMounted} from 'vue'
 import {app} from "@/composable/comfyAPI";
 import sleep from "@/composable/sleep";
 import cloneDeep from 'lodash/cloneDeep'
 
-defineComponent({name:'CanvasNodes'})
 // store
 import {storeToRefs} from "pinia";
 import {useGraphStore} from "@/stores/graph";
@@ -18,7 +17,6 @@ const store = useGraphStore()
 const {selectors, seg_selectors, slider_controls} = storeToRefs(store)
 
 import {getWidgetByName, toggleWidget} from "@/composable/node.js";
-
 // stylesSelector
 import stylesSelector from '@/components/graph/stylesSelector.vue'
 const selectorsRef = ref({})

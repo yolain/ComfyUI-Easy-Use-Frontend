@@ -1,0 +1,90 @@
+.#{$prefix}toolbar{
+  border-radius:0 12px 12px 0;
+  min-width:50px;
+  height:24px;
+  position: fixed;
+  bottom:85px;
+  left:0px;
+  display: flex;
+  align-items: center;
+  z-index:1000;
+  background-color: var(--comfy-menu-bg);
+  border: 1px solid var(--bg-color);
+  @include bg-blur();
+  &-icon{
+    height:100%;
+    padding:0 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color:white;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    svg{
+      width: 14px;
+      height: 14px;
+    }
+    &:hover{
+      &.group{
+        color:var(--warning-color);
+      }
+      &.rocket{
+        color:var(--theme-color);
+      }
+    }
+  }
+  &-nodes-map{
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    width: 200px;
+    border-radius:12px;
+    min-height:100px;
+    max-height:600px;
+    color: var(--descrip-text);
+    background-color: var(--comfy-menu-bg);
+    border: 1px solid var(--bg-color);
+    @include bg-blur();
+    z-index: 399;
+    padding-top: 0;
+    overflow: hidden;
+    .no-result-placeholder-content{
+      @include css3(transform,scale(0.8));
+    }
+    .comfyui-easyuse-map-nodes{
+      min-height:100px;
+      max-height:600px;
+      &__header{
+        &:before{
+          content:"…";
+          position: absolute;
+          left: .25rem;
+          top: 2.75rem;
+          transform: translateY(-2rem) rotate(90deg);
+          width: .5rem;
+          height: .5rem;
+          display: inline-block;
+          overflow: hidden;
+          line-height: 5px;
+          padding: 3px 4px;
+          cursor: move;
+          vertical-align: middle;
+          font-size: 12px;
+          font-family: sans-serif;
+          letter-spacing: 2px;
+          color: var(--drag-text);
+          z-index:3;
+          text-shadow: 1px 0 1px black;
+        }
+        .title{
+          cursor: move;
+          padding-left:.25rem;
+        }
+      }
+      &__content{
+        max-height:calc(600px - 2.7rem);
+      }
+    }
+  }
+}

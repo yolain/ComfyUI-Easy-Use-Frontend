@@ -1,9 +1,10 @@
 <template lang="pug">
 div(:class="prefix")
-  div(:class="prefix+'__header'")
+  div(:class="prefix+'__header'" @mousedown="e=>$emit('handleHeader',e)")
     .title {{ $t('Nodes Map', true) }}
     .toolbar
-      Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click="expandAll" size="small" v-tooltip.right="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0" )
+      Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click.stop="expandAll" size="small" v-tooltip.top="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0")
+      slot(name="icon")
   div(:class="prefix+'__content'")
     template(v-if="groups_nodes?.length>0")
       ol
@@ -26,11 +27,10 @@ import Group from "@/components/sidebar/map/group.vue";
 import Node from "@/components/sidebar/map/node.vue";
 import {app} from "@/composable/comfyAPI";
 import { $t } from '@/composable/i18n'
-import {ref, computed, defineComponent, watch, nextTick, onBeforeUnmount, resolveDirective} from "vue";
+import {ref, defineEmits} from "vue";
 import {NODE_MODE} from "@/config/index.js";
 
 const prefix = 'comfyui-easyuse-map-nodes'
-defineComponent({name:prefix})
 
 import {storeToRefs} from "pinia";
 import {useNodesStore} from "@/stores/nodes.js";
@@ -91,4 +91,6 @@ const mouseUp = _=>{
   if(lastTime - firstTime > 500) isHolding = true
   clearTimeout(pressTimer);
 }
+
+defineEmits(['handleHeader'])
 </script>

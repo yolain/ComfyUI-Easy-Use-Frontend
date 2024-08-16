@@ -8,15 +8,13 @@ div(:class="[prefix,{'never':node.mode!==undefined && node.mode==NODE_MODE.NEVER
 
 <script setup>
 import Button from "primevue/button";
-import {app} from "@/composable/comfyAPI.js";
 import {jumpToNodeId} from "@/composable/node.js";
 import {NODE_MODE} from "@/config/index.js";
 
-import {ref, defineComponent, defineProps, defineEmits} from 'vue'
+import {defineComponent, defineProps, defineEmits} from 'vue'
 defineEmits(['mousedown', 'mouseup','changeMode'])
 
 const prefix = 'comfyui-easyuse-map-nodes-node'
-defineComponent({name:prefix})
 
 // props
 defineProps({

@@ -23,8 +23,6 @@ import {ref, defineComponent, defineProps, defineEmits} from 'vue'
 defineEmits(['mousedown', 'mouseup','changeMode'])
 
 const prefix = 'comfyui-easyuse-map-nodes-group'
-defineComponent({name:prefix})
-
 // props
 const props = defineProps({
   item: {
