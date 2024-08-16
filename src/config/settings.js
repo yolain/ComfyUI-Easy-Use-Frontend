@@ -65,5 +65,14 @@ export default {
         tooltip: $t(''),
         type: 'boolean',
         defaultValue: true,
-    }
+    },
+    // NodesMap
+    nodesMap:{
+        id: 'EasyUse.NodesMap.Sorting',
+        name: $t('Nodes map sorting mode'),
+        tooltip: $t('Default automatic sorting, if set to manual, groups can be dragged and dropped and the sorting results saved.'),
+        type: 'combo',
+        options: ['Auto sorting', 'Manual drag&drop sorting'],
+        defaultValue: 'Auto sorting',
+    },
 }

@@ -2,11 +2,12 @@ import {app} from "@/composable/comfyAPI.js";
 import {NODES_MAP_ID} from "@/config/index";
 import { defineStore } from 'pinia'
 import cloneDeep from "lodash/cloneDeep";
+import {getSetting} from "@/composable/settings.js";
 export const useNodesStore = defineStore('groups', {
     state: _ => ({
         groups:[],
         nodes:[],
-        isWatching:false
+        isWatching:false,
     }),
     getters:{
         groups_nodes(){
@@ -41,11 +42,12 @@ export const useNodesStore = defineStore('groups', {
     },
     actions:{
         setGroups(groups){
-            this.groups = cloneDeep(
-                groups
-                    .sort((a,b)=> a['pos'][0] - b['pos'][0])
-                    .sort((a,b)=> a['pos'][1] - b['pos'][1])
-            )
+            this.groups = getSetting('EasyUse.NodesMap.Sorting') == 'Manual drag&drop sorting' ? cloneDeep(groups) :
+                cloneDeep(
+                    groups
+                        .sort((a,b)=> a['pos'][0] - b['pos'][0])
+                        .sort((a,b)=> a['pos'][1] - b['pos'][1])
+                )
         },
         setNodes(nodes) {
             this.nodes = cloneDeep(nodes)

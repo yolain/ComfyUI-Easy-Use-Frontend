@@ -78,6 +78,7 @@
       height:2rem;
       cursor: default;
       @include flex-b();
+      pointer-events: auto;
       .left,.right{
         height: 100%;
         @include flex-y();
@@ -132,6 +133,7 @@
       @include flex-b();
       position: relative;
       overflow: hidden;
+      pointer-events: auto;
       .label{
         text-indent: 0.5rem;
         @include font-title(13px,400);
