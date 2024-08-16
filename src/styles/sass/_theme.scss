@@ -33,4 +33,72 @@
    --p-inputtext-lg-font-size: 1.125rem;
    --p-inputtext-lg-padding-x: 0.875rem;
    --p-inputtext-lg-padding-y: 0.625rem;
+   // tag
+   --p-tag-font-size: 0.875rem;
+   --p-tag-font-weight: 700;
+   --p-tag-padding: 0.25rem 0.5rem;
+   --p-tag-gap: 0.25rem;
+   --p-tag-border-radius: var(--p-content-border-radius);
+   --p-tag-rounded-border-radius: var(--p-border-radius-xl);
+   --p-tag-icon-size: 0.75rem;
+   --p-tag-primary-background: var(--p-primary-100);
+   --p-tag-primary-color: var(--p-primary-700);
+   --p-tag-secondary-background: var(--p-surface-100);
+   --p-tag-secondary-color: var(--p-surface-600);
+   --p-tag-success-background: var(--p-green-100);
+   --p-tag-success-color: var(--p-green-700);
+   --p-tag-info-background: var(--p-sky-100);
+   --p-tag-info-color: var(--p-sky-700);
+   --p-tag-warn-background: var(--p-orange-100);
+   --p-tag-warn-color: var(--p-orange-700);
+   --p-tag-danger-background: var(--p-red-100);
+   --p-tag-danger-color: var(--p-red-700);
+   --p-tag-contrast-background: var(--p-surface-950);
+   --p-tag-contrast-color: var(--p-surface-0);
+   // tooltip
+   --p-tooltip-max-width: 12.5rem;
+   --p-tooltip-gutter: 0.25rem;
+   --p-tooltip-shadow: var(--p-overlay-popover-shadow);
+   --p-tooltip-padding: 0.5rem 0.75rem;
+   --p-tooltip-border-radius: var(--p-overlay-popover-border-radius);
+   --p-tooltip-background: var(--p-surface-700);
+   --p-tooltip-color: var(--p-surface-0);
+   .dark-theme{
+      // tag
+      --p-tag-font-size: 0.875rem;
+      --p-tag-font-weight: 700;
+      --p-tag-padding: 0.25rem 0.5rem;
+      --p-tag-gap: 0.25rem;
+      --p-tag-border-radius: var(--p-content-border-radius);
+      --p-tag-rounded-border-radius: var(--p-border-radius-xl);
+      --p-tag-icon-size: 0.75rem;
+      --p-tag-primary-background: color-mix(in srgb, var(--p-primary-500), transparent 84%);
+      --p-tag-primary-color: var(--p-primary-300);
+      --p-tag-secondary-background: var(--p-surface-800);
+      --p-tag-secondary-color: var(--p-surface-300);
+      --p-tag-success-background: color-mix(in srgb, var(--p-green-500), transparent 84%);
+      --p-tag-success-color: var(--p-green-300);
+      --p-tag-info-background: color-mix(in srgb, var(--p-sky-500), transparent 84%);
+      --p-tag-info-color: var(--p-sky-300);
+      --p-tag-warn-background: color-mix(in srgb, var(--p-orange-500), transparent 84%);
+      --p-tag-warn-color: var(--p-orange-300);
+      --p-tag-danger-background: color-mix(in srgb, var(--p-red-500), transparent 84%);
+      --p-tag-danger-color: var(--p-red-300);
+      --p-tag-contrast-background: var(--p-surface-0);
+      --p-tag-contrast-color: var(--p-surface-950);
+      --p-tag-primary-background: color-mix(in srgb, var(--p-primary-500), transparent 84%);
+      --p-tag-primary-color: var(--p-primary-300);
+      --p-tag-secondary-background: var(--p-surface-800);
+      --p-tag-secondary-color: var(--p-surface-300);
+      --p-tag-success-background: color-mix(in srgb, var(--p-green-500), transparent 84%);
+      --p-tag-success-color: var(--p-green-300);
+      --p-tag-info-background: color-mix(in srgb, var(--p-sky-500), transparent 84%);
+      --p-tag-info-color: var(--p-sky-300);
+      --p-tag-warn-background: color-mix(in srgb, var(--p-orange-500), transparent 84%);
+      --p-tag-warn-color: var(--p-orange-300);
+      --p-tag-danger-background: color-mix(in srgb, var(--p-red-500), transparent 84%);
+      --p-tag-danger-color: var(--p-red-300);
+      --p-tag-contrast-background: var(--p-surface-0);
+      --p-tag-contrast-color: var(--p-surface-950);
+   }
 }

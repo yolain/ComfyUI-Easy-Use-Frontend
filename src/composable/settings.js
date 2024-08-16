@@ -27,6 +27,15 @@ export function getSetting(id, storge_key=null, defaultValue=undefined){
 }
 
 /**
+ * getSettingsLookup
+ * @param {string} id - setting id
+ * @param {function} callback - callback function
+ */
+export function getSettingsLookup(id, callback = _ => {}){
+    const lookup = app.ui.settings.settingsLookup?.[id]
+    if(lookup) lookup.onChange = v => callback(v)
+}
+/**
  * Set setting value by id
  * @param id
  * @param value

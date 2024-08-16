@@ -6,6 +6,7 @@ export const useNodesStore = defineStore('groups', {
     state: _ => ({
         groups:[],
         nodes:[],
+        isWatching:false
     }),
     getters:{
         groups_nodes(){
@@ -50,13 +51,14 @@ export const useNodesStore = defineStore('groups', {
             this.nodes = cloneDeep(nodes)
         },
         update(){
-            if(app.extensionManager.activeSidebarTab !== NODES_MAP_ID) return
+            if(app.extensionManager.activeSidebarTab !== NODES_MAP_ID && !this.isWatching) return
             setTimeout(_=>{
                 this.setGroups(app.canvas.graph._groups)
                 this.setNodes(app.canvas.graph._nodes)
             },1)
         },
-        watchGraph(){
+        watchGraph(addWatching = false){
+            if(addWatching) this.isWatching = true
             let _this = this
             this.update()
             /* node */
@@ -102,6 +104,9 @@ export const useNodesStore = defineStore('groups', {
                 _this.update()
                 return onMenuNodeRemove?.apply(this, arguments)
             }
+        },
+        unwatchGraph() {
+            this.isWatching = false
         }
     }
 })
