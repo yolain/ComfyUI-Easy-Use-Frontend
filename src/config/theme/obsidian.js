@@ -1,5 +1,5 @@
 import { THEME_COLOR } from '../index.js'
-const VERSION = 104
+const VERSION = 105
 const bgcolor = LGraphCanvas.node_colors.bgcolor
 export default {
     ColorPalette: {
@@ -30,7 +30,7 @@ export default {
           },
           "litegraph_base": {
               "BACKGROUND_IMAGE": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQBJREFUeNrs1rEKwjAUhlETUkj3vP9rdmr1Ysammk2w5wdxuLgcMHyptfawuZX4pJSWZTnfnu/lnIe/jNNxHHGNn//HNbbv+4dr6V+11uF527arU7+u63qfa/bnmh8sWLBgwYJlqRf8MEptXPBXJXa37BSl3ixYsGDBMliwFLyCV/DeLIMFCxYsWLBMwSt4Be/NggXLYMGCBUvBK3iNruC9WbBgwYJlsGApeAWv4L1ZBgsWLFiwYJmCV/AK3psFC5bBggULloJX8BpdwXuzYMGCBctgwVLwCl7Be7MMFixYsGDBsu8FH1FaSmExVfAxBa/gvVmwYMGCZbBg/W4vAQYA5tRF9QYlv/QAAAAASUVORK5CYII=",
-              "CLEAR_BACKGROUND_COLOR": "#09090b",
+              "CLEAR_BACKGROUND_COLOR": "#222222",
               "NODE_TITLE_COLOR": "#d4d4d8",
               "NODE_SELECTED_TITLE_COLOR": "#ffffff",
               "NODE_TEXT_SIZE": 14,
