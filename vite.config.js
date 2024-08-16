@@ -11,7 +11,7 @@ export default (({mode})=> {
       vue(), cssInjectedByJsPlugin()
     ],
     build: {
-      chunkSizeWarningLimit:1000,
+      chunkSizeWarningLimit:500,
       watch: {
         include: ["src/**"],
       },
@@ -29,6 +29,12 @@ export default (({mode})=> {
         output: {
           dir: "../" + env.VITE_OUTPUT_DIR,
           entryFileNames: "easyuse.js",
+          chunkFileNames: "[name]-[hash].js",
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return id.split('node_modules/')[1].split('/')[0].split('@')[1] || 'vendor';
+            }
+          }
         },
       },
     },
