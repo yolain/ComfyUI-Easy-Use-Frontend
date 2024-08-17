@@ -15,7 +15,8 @@ app.registerExtension({
     async setup() {
         LGraphCanvas.onMenuAdd = onMenuAdd;
 
-        const imgRes = await api.fetchApi(`/easyuse/models/thumbnail`)
+        const limit = getSetting('EasyUse.ContextMenu.ModelsThumbnailsLimit',null, 500);
+        const imgRes = await api.fetchApi(`/easyuse/models/thumbnail?limit=${limit}`)
         if (imgRes.status === 200) {
             let data = await imgRes.json();
             thumbnails = data

@@ -63,6 +63,8 @@ export default {
     "Enable model thumbnails display": "启动模型预览图显示",
     "Enable nodes runtime display": "启动节点运行时间显示",
     "Enable chain get node and set node with parent nodes": "启用将获取点和设置点与父节点链在一起",
+    "Maximum number of model thumbnails displayed": "显示的模型缩略图的最大数量",
+    "Too many thumbnails will affect the first loading time, set the maximum value to not load the thumbnail function when there are too many models's thumbnail": "太多的缩略图会影响首次加载时间，当模型缩略图太多时，设置最大值以不加载缩略图功能",
     "Too many thumbnails, have closed the display": "模型缩略图太多啦，为您关闭了显示",
     // selector
     "Get styles list Failed": "获取样式列表失败",
