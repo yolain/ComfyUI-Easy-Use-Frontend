@@ -5,6 +5,7 @@ import {toast} from "@/components/toast.js";
 import {$t} from "@/composable/i18n.js";
 import {getSelectedNodes, isGetNode, isSetNode, jumpToNode, addNodesToGroup} from "@/composable/node.js";
 import {useNodesStore} from "@/stores/nodes.js";
+import {cleanVRAM} from "@/composable/easyuseAPI.js";
 /* Variables */
 let nodesStore = null
 
@@ -134,6 +135,15 @@ app.registerExtension({
                 // Update NodesStore
                 if(!nodesStore) nodesStore = useNodesStore()
                 if(nodesStore) nodesStore.update()
+            })
+
+            // Clean VRAM Used with Shift + r to unload models and node cache
+            hotkeys('shift+r', function (event, handler) {
+                event.preventDefault();
+                const enableClean = getSetting('EasyUse.Hotkeys.cleanVRAMused',null, true);
+                if(!enableClean) return
+                // clean VRAM Used
+                cleanVRAM()
             })
 
             // Register hotkeys with ALT+1~9 to add node template to canvas qulickly

@@ -1,4 +1,5 @@
 import {app,api,$el} from "@/composable/comfyAPI";
+import {reboot, cleanVRAM} from "@/composable/easyuseAPI.js";
 import {$t} from "@/composable/i18n.js";
 import {isLocalNetwork} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
@@ -50,8 +51,8 @@ app.registerExtension({
                             })
                         }
                         values.unshift({
-                            content: `<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of GPU Usage')}`,
-                            callback: _ => cleanup()
+                            content: `<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of VRAM Usage')}`,
+                            callback: _ => cleanVRAM()
                         })
                     }
 
@@ -280,34 +281,6 @@ function contextMenuAddItem(name, value, options){
     }
     return element;
 }
-
-// cleanup
-async function cleanup(){
-    try {
-        const {Running, Pending} = await api.getQueue()
-        if(Running.length>0 || Pending.length>0){
-            toast.error($t("Clean Failed")+ ":"+ $t("Please stop all running tasks before cleaning GPU"))
-            return
-        }
-        const res = await api.fetchApi("/easyuse/cleangpu",{method:"POST"})
-        if(res.status == 200){
-            toast.success($t("Clean SuccessFully"))
-        }else{
-            toast.error($t("Clean Failed"))
-        }
-
-    } catch (exception) {}
-}
-
-// reboot
-async function reboot(){
-    if (confirm($t("Are you sure you'd like to reboot the server?"))){
-        try {
-            api.fetchApi("/easyuse/reboot");
-        } catch (exception) {}
-    }
-}
-
 
 function spliceExtensions(fileName){
     return fileName?.substring(0,fileName.lastIndexOf('.'))
