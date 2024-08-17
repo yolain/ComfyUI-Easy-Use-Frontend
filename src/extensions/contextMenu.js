@@ -25,45 +25,47 @@ app.registerExtension({
 
         const contextMenu = LiteGraph.ContextMenu;
         LiteGraph.ContextMenu = function(values,options){
-            if(options.parentMenu){
-                // 1. contextmenu on submenu
-            }
-            // 2. contextmenu on a node
-            else if(options.extra){
-                const constructor_name = options.extra.constructor?.name
-                if(constructor_name == 'ComfyNode'){
+            const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, true);
+            if(!enabled || !(options?.callback) || values.some(i => typeof i !== 'string')) {
+                if (options.parentMenu) {
+                    // 1. contextmenu on submenu
+                }
+                // 2. contextmenu on a node
+                else if (options.extra) {
 
                 }
-            }
-            // 3. contextmenu on combo widget
-            else if(options.scale){
-                const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, true);
-                if(enabled){
-                    const newValues = displayThumbnails(values,options)
-                    if(newValues)  {
-                        return contextMenu.call(this, newValues, options);
-                    }
+                // 3. contextmenu on combo widget
+                else if (options.scale) {
+
                 }
-            }
-            // 4. contextmenu on canvas
-            else{
-                if(options.hasOwnProperty('extra')){
-                    // add reboot and cleanup
-                    values.unshift(null)
-                    if(isLocalNetwork(window.location.host)) {
+                // 4. contextmenu on canvas
+                else {
+                    if (options.hasOwnProperty('extra')) {
+                        // add reboot and cleanup
+                        values.unshift(null)
+                        if (isLocalNetwork(window.location.host)) {
+                            values.unshift({
+                                content: `<i class="mdi mdi-refresh-circle comfyui-easyuse-error" style="margin-right:2px;font-size:16px"></i>${$t('Reboot ComfyUI')}`,
+                                callback: _ => reboot()
+                            })
+                        }
                         values.unshift({
-                            content:`<i class="mdi mdi-refresh-circle comfyui-easyuse-error" style="margin-right:2px;font-size:16px"></i>${$t('Reboot ComfyUI')}`,
-                            callback: _=> reboot()
+                            content: `<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of GPU Usage')}`,
+                            callback: _ => cleanup()
                         })
                     }
-                    values.unshift({
-                        content:`<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of GPU Usage')}`,
-                        callback: _=> cleanup()
-                    })
-                }
 
+                }
+                return contextMenu.apply(this, [...arguments]);
             }
-            return contextMenu.apply(this,[...arguments]);
+            else{
+                const newValues = displayThumbnails(values,options)
+                if(newValues)  {
+                    return contextMenu.call(this, newValues, options);
+                }else{
+                    return contextMenu.apply(this, [...arguments]);
+                }
+            }
         }
         LiteGraph.ContextMenu.prototype = contextMenu.prototype;
         LiteGraph.ContextMenu.prototype.addItem = contextMenuAddItem;
@@ -307,11 +309,11 @@ async function reboot(){
 }
 
 
-function spliceExtension(fileName){
-    return fileName.substring(0,fileName.lastIndexOf('.'))
+function spliceExtensions(fileName){
+    return fileName?.substring(0,fileName.lastIndexOf('.'))
 }
-function getExtension(fileName){
-    return fileName.substring(fileName.lastIndexOf('.') + 1)
+function getExtensions(fileName){
+    return fileName?.substring(fileName.lastIndexOf('.') + 1)
 }
 // display model thumbnails preview
 function displayThumbnails(values, options){
@@ -322,7 +324,7 @@ function displayThumbnails(values, options){
     const folderless = [];
     const allow_extensions = ['ckpt', 'pt', 'bin', 'pth', 'safetensors']
     if(values?.length>0){
-        const firstExt = getExtension(values[values.length-1]);
+        const firstExt = getExtensions(values[values.length-1]);
         if(!allow_extensions.includes(firstExt)) return null;
     }
     for(const value of compatValues){
@@ -347,8 +349,8 @@ function displayThumbnails(values, options){
             else oldcallback(originalValues.find(i => i.endsWith(item.content),options));
         };
         const addContent = (content, folderName='') => {
-            const name = folderName ? folderName + '\\' + spliceExtension(content) : spliceExtension(content);
-            const ext = getExtension(content)
+            const name = folderName ? folderName + '\\' + spliceExtensions(content) : spliceExtensions(content);
+            const ext = getExtensions(content)
             const time = new Date().getTime()
             let thumbnail = ''
             if(allow_extensions.includes(ext)){
