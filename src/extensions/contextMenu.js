@@ -64,9 +64,8 @@ app.registerExtension({
                 const newValues = displayThumbnails(values,options)
                 if(newValues)  {
                     return contextMenu.call(this, newValues, options);
-                }else{
-                    return contextMenu.apply(this, [...arguments]);
                 }
+                return contextMenu.apply(this, [...arguments]);
             }
         }
         LiteGraph.ContextMenu.prototype = contextMenu.prototype;
@@ -78,7 +77,6 @@ app.registerExtension({
 /* Functions */
 function serializeParentNodeMenu(context_menus){
     let basic_menus = []
-    let easyuse_menus = []
     let others_menus = []
     context_menus.forEach(menu=>{
         if(menu?.value && COMFYUI_NODE_BASIC_CATEGORY.includes(menu.value.split('/')[0])) basic_menus.push(menu)
@@ -153,6 +151,13 @@ function onMenuAdd(node, options, e, prev_menu, callback) {
 
 
 // ContextMenu AddItem
+function encodeRFC3986URIComponent(str) {
+    return encodeURIComponent(str).replace(
+        /[!'()*]/g,
+        (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+    );
+}
+const isCustomItem = (value) => value && typeof value === "object" && "image" in value && value.content;
 function contextMenuAddItem(name, value, options){
     var that = this;
     options = options || {};
@@ -170,6 +175,18 @@ function contextMenuAddItem(name, value, options){
         element.classList.remove("submenu");
         element.classList.add("litemenu-title");
         element.innerHTML = value.title;
+    }
+    else if (element && isCustomItem(value) && value?.image && !value.submenu) {
+        let texts = value.content.split('/')
+        if(texts?.length>0){
+            element.textContent += texts[texts.length-1] + " *";
+            $el("div.pysssss-combo-image", {
+                parent: element,
+                style: {
+                    backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
+                },
+            });
+        }
     }
     else {
         element.innerHTML = value && value.title ? value.title : name;
