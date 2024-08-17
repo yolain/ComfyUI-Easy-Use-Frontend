@@ -2,8 +2,8 @@
 div(:class="prefix + ` ${prefix}-seg`" :data-id="id")
   template(v-if="mask_components?.length>0 && show")
     div(:class="prefix+'-item'" v-for="(item,index) in mask_components" :key="index")
-      span(:class="prefix+'-item__tag'" @click="chooseCom(item)")
-        input(type="checkbox" :name="item" :checked="selected.includes(item)")
+      span(:class="prefix+'-item__tag'" @click="chooseCom(index)")
+        input(type="checkbox" :name="item" :checked="selected.includes(index)")
         span {{$t(item)}}
 </template>
 
@@ -50,12 +50,12 @@ watch(_ => props.type, async(name) => {
 })
 
 const emit = defineEmits(['select'])
-const chooseCom = (item) => {
+const chooseCom = (index) => {
   let selected = cloneDeep(props.selected)
-  if(selected.includes(item)){
-    selected = selected.filter(i => i !== item)
+  if(selected.includes(index)){
+    selected = selected.filter(i => i !== index)
   }else{
-    selected.push(item)
+    selected.push(index)
   }
   emit('select', selected)
 }
