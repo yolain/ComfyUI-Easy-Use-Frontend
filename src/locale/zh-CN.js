@@ -56,6 +56,7 @@ export default {
     // Settings
     "Enable Shift+Up/Down/Left/Right key to align selected nodes": "启用 `Shift+上/下/左/右` 键对齐选中的节点",
     "Enable Shift+g to add selected nodes to a group": "启用 `Shift+g` 键将选中的节点添加一个组",
+    "Enable Shift+r to unload models and node cache": "启用 `Shift+r` 键卸载模型和节点缓存",
     "Enable Up/Down/Left/Right key to jump nearest nodes": "启用 `上/下/左/右` 键跳转到最近的前后节点",
     "Enable ALT+1~9 to paste nodes from nodes template": "启用 `ALT+1~9` 从节点模板粘贴到工作流中",
     "Enable contextMenu auto nest subdirectories": "启用上下文菜单自动嵌套子目录",
