@@ -27,7 +27,7 @@ app.registerExtension({
 
         const contextMenu = LiteGraph.ContextMenu;
         LiteGraph.ContextMenu = function(values,options){
-            const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, true);
+            const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, false);
             if(!enabled || !(options?.callback) || values.some(i => typeof i !== 'string')) {
                 if (options.parentMenu) {
                     // 1. contextmenu on submenu
@@ -69,7 +69,9 @@ app.registerExtension({
             }
         }
         LiteGraph.ContextMenu.prototype = contextMenu.prototype;
-        LiteGraph.ContextMenu.prototype.addItem = contextMenuAddItem;
+        if(getSetting('EasyUse.ContextMenu.NodesSort',null, true)){
+            LiteGraph.ContextMenu.prototype.addItem = contextMenuAddItem;
+        }
     }
 })
 
@@ -176,18 +178,6 @@ function contextMenuAddItem(name, value, options){
         element.classList.add("litemenu-title");
         element.innerHTML = value.title;
     }
-    else if (element && isCustomItem(value) && value?.image && !value.submenu) {
-        let texts = value.content.split('/')
-        if(texts?.length>0){
-            element.textContent += texts[texts.length-1] + " *";
-            $el("div.pysssss-combo-image", {
-                parent: element,
-                style: {
-                    backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
-                },
-            });
-        }
-    }
     else {
         element.innerHTML = value && value.title ? value.title : name;
         element.value = value;
@@ -212,6 +202,16 @@ function contextMenuAddItem(name, value, options){
         if (value.className) {
             element.className += " " + value.className;
         }
+    }
+
+    if (element && isCustomItem(value) && value?.image && !value.submenu) {
+        element.textContent += " *";
+        $el("div.pysssss-combo-image", {
+            parent: element,
+            style: {
+                backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
+            },
+        });
     }
 
     this.root.appendChild(element);
@@ -355,7 +355,7 @@ function displayThumbnails(values, options){
             }
 
             let newContent
-            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, true);
+            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, false);
             if(thumbnail && enabled){
                 const protocol = window.location.protocol
                 const host = window.location.host
