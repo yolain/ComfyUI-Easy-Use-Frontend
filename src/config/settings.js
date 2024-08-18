@@ -36,13 +36,13 @@ export default {
         id: 'EasyUse.ContextMenu.SubDirectories',
         name: $t('Enable contextMenu auto nest subdirectories'),
         type: 'boolean',
-        defaultValue: true,
+        defaultValue: false,
     },
     modelsThumbnails:{
         id: 'EasyUse.ContextMenu.ModelsThumbnails',
         name: $t('Enable model thumbnails display'),
         type: 'boolean',
-        defaultValue: true,
+        defaultValue: false,
     },
     modelsThumbnailsLimit:{
         id: 'EasyUse.ContextMenu.ModelsThumbnailsLimit',

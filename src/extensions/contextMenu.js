@@ -27,7 +27,7 @@ app.registerExtension({
 
         const contextMenu = LiteGraph.ContextMenu;
         LiteGraph.ContextMenu = function(values,options){
-            const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, true);
+            const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, false);
             if(!enabled || !(options?.callback) || values.some(i => typeof i !== 'string')) {
                 if (options.parentMenu) {
                     // 1. contextmenu on submenu
@@ -355,7 +355,7 @@ function displayThumbnails(values, options){
             }
 
             let newContent
-            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, true);
+            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, false);
             if(thumbnail && enabled){
                 const protocol = window.location.protocol
                 const host = window.location.host
