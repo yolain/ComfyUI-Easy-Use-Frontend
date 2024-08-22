@@ -29,12 +29,17 @@ export default (({mode})=> {
         output: {
           dir: "../" + env.VITE_OUTPUT_DIR,
           entryFileNames: "easyuse.js",
-          chunkFileNames: "assets/[name]-[hash].js",
+          chunkFileNames: "[name]-[hash].js",
+          assetFileNames: "assets/[name]-[hash].[ext]",
           manualChunks(id) {
-            if (id.includes('node_modules')) {
-              return id.split('node_modules/')[1].split('/')[0].split('@')[1] || 'vendor';
+            if (id.includes('/src/extensions/')) {
+              return 'assets/extensions';
             }
-          }
+            else if(id.includes('lodash')) return 'assets/lodash'
+            else if (id.includes('node_modules')) {
+              return 'assets/'+ (id.split('node_modules/')[1].split('/')[0].split('@')[1] || 'vendor');
+            }
+          },
         },
       },
     },

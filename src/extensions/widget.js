@@ -38,6 +38,8 @@ const ipa_faceid_presets = [
 const has_seed_nodes = ["easy seed", "easy latentNoisy", "easy wildcards", "easy preSampling", "easy preSamplingAdvanced", "easy preSamplingNoiseIn", "easy preSamplingSdTurbo", "easy preSamplingCascade", "easy preSamplingDynamicCFG", "easy preSamplingLayerDiffusion", "easy fullkSampler", "easy fullCascadeKSampler"]
 const loader_nodes = ["easy fullLoader", "easy a1111Loader", "easy comfyLoader", "easy hyditLoader", "easy pixArtLoader"]
 const image_dynamic_nodes = ["easy imageSize","easy imageSizeBySide","easy imageSizeByLongerSide","easy imageSizeShow", "easy imageRatio", "easy imagePixelPerfect"]
+const loop_nodes = ['easy forLoopStart','easy forLoopEnd']
+const change_slots_nodes = [...loop_nodes]
 /* Register Extension */
 app.registerExtension({
     name: 'Comfy.EasyUse.Widget',
@@ -48,6 +50,7 @@ app.registerExtension({
         const onNodeCreated = nodeType.prototype.onNodeCreated;
         const onConfigure = nodeType.prototype.onConfigure;
         const onExecuted = nodeType.prototype.onExecuted;
+        const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 
         // show the text of the widget
         if (['easy showAnything', 'easy showTensorShape', "easy showSpentTime", 'easy imageInterrogator', 'easy showLoaderSettingsNames'].includes(node_name)) {
@@ -329,6 +332,70 @@ app.registerExtension({
             }
         }
 
+        // onConnectionChange - add or remove the slots
+        if(change_slots_nodes.includes(node_name)) {
+            const getAddInputIndex = input_length => {
+                switch (node_name) {
+                    case 'easy forLoopStart':
+                        return input_length + 1
+                    case 'easy forLoopEnd':
+                        return input_length
+                }
+            }
+
+            const getRemoveIutputIndex = index => {
+                switch (node_name) {
+                    case 'easy forLoopStart':
+                        return index + 3
+                    case 'easy forLoopEnd':
+                        return index
+                }
+            }
+            const getStartInputIndex = _ => {
+                switch (node_name) {
+                    case 'easy forLoopStart':
+                        return 0
+                    case 'easy forLoopEnd':
+                        return 1
+                }
+            }
+            nodeType.prototype.onNodeCreated = function () {
+                // change shape of flow
+                const flow_intput_index = this.inputs.findIndex(cate => cate.name === 'flow')
+                const flow_output_index = this.outputs.findIndex(cate => cate.name === 'flow')
+                if(flow_intput_index!== -1) this.inputs[flow_intput_index]['shape'] = 5
+                if(flow_output_index!== -1) this.outputs[flow_output_index]['shape'] = 5
+
+                return onNodeCreated?.apply(this, arguments)
+            }
+            nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
+                if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
+                if (!link_info) return
+                // input
+                if (type == 1) {
+                    let is_all_connected = this.inputs.every(cate => cate.link !== null)
+                    if (is_all_connected) {
+                        if (this.inputs.length >= 10) {
+                            toast.warn($t('The maximum number of inputs is 10'))
+                            return
+                        }
+                        let add_index = getAddInputIndex(this.inputs.length)
+                        let input_label = 'initial_value' + (add_index)
+                        let output_label = 'value' + (add_index)
+                        this.addInput(input_label, '*')
+                        this.addOutput(output_label, '*')
+                    } else if (!connected) {
+                        const start_index = getStartInputIndex()
+                        const remove_index = getRemoveIutputIndex(index)
+                        if (index >= start_index && index == this.inputs.length - 2) {
+                            this.removeInput(index + 1)
+                            this.removeOutput(remove_index)
+                        }
+                    }
+                }
+                return onConnectionsChange?.apply(this, arguments)
+            }
+        }
     },
 
 

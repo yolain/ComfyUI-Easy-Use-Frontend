@@ -10,6 +10,7 @@ export const CUSTOM_LINK_TYPES_COLOR = {
     "XYPLOT": "#74DA5D",
     "LORA_STACK": "#94dccd",
     "CONTROL_NET_STACK": "#94dccd",
+    "FLOW_CONTROL": "#373780",
 }
 export const MAX_SEED_NUM = 1125899906842624
 

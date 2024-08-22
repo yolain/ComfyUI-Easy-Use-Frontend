@@ -20,26 +20,20 @@ const NODE_CUSTOM_COLORS = {
     "easy promptLine": "cyan",
     "easy promptConcat": "cyan",
     "easy promptReplace": "cyan",
-    'easy textSwitch': "pale_blue"
+    'easy textSwitch': "pale_blue",
+    "easy forLoopStart": "blue",
+    "easy forLoopEnd": "blue",
 }
 let NODE_COLOR_THEMES = LGraphCanvas.node_colors
 let control_mode = null
 let color_palettes = null
 let color_palette = null
 let monitor = null
-
+let prefix = '👽 '
 /* add settings */
-for(let i in settings) addSetting(settings[i])
-/* The official interface for deleting settings api is missing. Settings of the v1 version cannot be deleted. */
-// const OldestMenuNestSub = getSetting('Comfy.EasyUse.MenuNestSub')
-// if(OldestMenuNestSub !== undefined){
-//     setSetting('EasyUse.ContextMenu.SubDirectories', OldestMenuNestSub)
-//     setSetting('EasyUse.ContextMenu.ModelsThumbnails', OldestMenuNestSub)
-// }
-// const OldestNodesTemplate = getSetting('Comfy.EasyUse.NodeTemplateShortcut')
-// if(OldestNodesTemplate !== undefined){
-//     setSetting('EasyUse.Hotkeys.NodesTemplate', OldestNodesTemplate)
-// }
+for(let i in settings) {
+    getSetting('Comfy.UseNewMenu') == 'Disabled' ? addSetting({...settings[i],...{name:prefix+settings[i].name}}) : addSetting(settings[i])
+}
 
 /* Register Extension */
 app.registerExtension({

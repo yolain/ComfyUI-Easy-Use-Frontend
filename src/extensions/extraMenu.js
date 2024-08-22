@@ -488,50 +488,52 @@ const reloadNode = function (node) {
         handleLinks();
         return;
     }
-    let pass = false
-    const isIterateForwards = values?.length <= newNode.widgets?.length;
-    let vi = isIterateForwards ? 0 : values.length - 1;
-    function evalWidgetValues(testValue, newWidg) {
-        if (testValue === true || testValue === false) {
-            if (newWidg.options?.on && newWidg.options?.off) {
-                return { value: testValue, pass: true };
-            }
-        } else if (typeof testValue === "number") {
-            if (newWidg.options?.min <= testValue && testValue <= newWidg.options?.max) {
-                return { value: testValue, pass: true };
-            }
-        } else if (newWidg.options?.values?.includes(testValue)) {
-            return { value: testValue, pass: true };
-        } else if (newWidg.inputEl && typeof testValue === "string") {
-            return { value: testValue, pass: true };
-        }
-        return { value: newWidg.value, pass: false };
-    }
-    const updateValue = (wi) => {
-        const oldWidget = oldNode.widgets[wi];
-        let newWidget = newNode.widgets[wi];
-        if (newWidget.name === oldWidget.name && newWidget.type === oldWidget.type) {
-            while ((isIterateForwards ? vi < values.length : vi >= 0) && !pass) {
-                let { value, pass } = evalWidgetValues(values[vi], newWidget);
-                if (pass && value !== null) {
-                    newWidget.value = value;
-                    break;
+    if(values){
+        let pass = false
+        const isIterateForwards = values?.length <= newNode.widgets?.length;
+        let vi = isIterateForwards ? 0 : values.length - 1 ;
+        function evalWidgetValues(testValue, newWidg) {
+            if (testValue === true || testValue === false) {
+                if (newWidg.options?.on && newWidg.options?.off) {
+                    return { value: testValue, pass: true };
                 }
-                vi += isIterateForwards ? 1 : -1;
+            } else if (typeof testValue === "number") {
+                if (newWidg.options?.min <= testValue && testValue <= newWidg.options?.max) {
+                    return { value: testValue, pass: true };
+                }
+            } else if (newWidg.options?.values?.includes(testValue)) {
+                return { value: testValue, pass: true };
+            } else if (newWidg.inputEl && typeof testValue === "string") {
+                return { value: testValue, pass: true };
             }
-            vi++
-            if (!isIterateForwards) {
-                vi = values.length - (newNode.widgets?.length - 1 - wi);
+            return { value: newWidg.value, pass: false };
+        }
+        const updateValue = (wi) => {
+            const oldWidget = oldNode.widgets[wi];
+            let newWidget = newNode.widgets[wi];
+            if (newWidget.name === oldWidget.name && newWidget.type === oldWidget.type) {
+                while ((isIterateForwards ? vi < values.length : vi >= 0) && !pass) {
+                    let { value, pass } = evalWidgetValues(values[vi], newWidget);
+                    if (pass && value !== null) {
+                        newWidget.value = value;
+                        break;
+                    }
+                    vi += isIterateForwards ? 1 : -1;
+                }
+                vi++
+                if (!isIterateForwards) {
+                    vi = values.length - (newNode.widgets?.length - 1 - wi);
+                }
             }
-        }
-    };
-    if (isIterateForwards && newNode.widgets?.length>0) {
-        for (let wi = 0; wi < newNode.widgets.length; wi++) {
-            updateValue(wi);
-        }
-    } else if(newNode.widgets?.length>0){
-        for (let wi = newNode.widgets.length - 1; wi >= 0; wi--) {
-            updateValue(wi);
+        };
+        if (isIterateForwards && newNode.widgets?.length>0) {
+            for (let wi = 0; wi < newNode.widgets.length; wi++) {
+                updateValue(wi);
+            }
+        } else if(newNode.widgets?.length>0){
+            for (let wi = newNode.widgets.length - 1; wi >= 0; wi--) {
+                updateValue(wi);
+            }
         }
     }
     handleLinks();
