@@ -20,7 +20,6 @@ const NODE_CUSTOM_COLORS = {
     "easy promptLine": "cyan",
     "easy promptConcat": "cyan",
     "easy promptReplace": "cyan",
-    'easy textSwitch': "pale_blue",
     "easy forLoopStart": "blue",
     "easy forLoopEnd": "blue",
 }
