@@ -38,7 +38,7 @@ const ipa_faceid_presets = [
 const has_seed_nodes = ["easy seed", "easy latentNoisy", "easy wildcards", "easy preSampling", "easy preSamplingAdvanced", "easy preSamplingNoiseIn", "easy preSamplingSdTurbo", "easy preSamplingCascade", "easy preSamplingDynamicCFG", "easy preSamplingLayerDiffusion", "easy fullkSampler", "easy fullCascadeKSampler"]
 const loader_nodes = ["easy fullLoader", "easy a1111Loader", "easy comfyLoader", "easy hyditLoader", "easy pixArtLoader"]
 const image_dynamic_nodes = ["easy imageSize","easy imageSizeBySide","easy imageSizeByLongerSide","easy imageSizeShow", "easy imageRatio", "easy imagePixelPerfect"]
-const loop_nodes = ['easy forLoopStart','easy forLoopEnd']
+const loop_nodes = ['easy forLoopStart','easy forLoopEnd', 'easy whileLoopStart', 'easy whileLoopEnd']
 const change_slots_nodes = [...loop_nodes]
 /* Register Extension */
 app.registerExtension({
@@ -365,7 +365,6 @@ app.registerExtension({
                 const flow_output_index = this.outputs.findIndex(cate => cate.name === 'flow')
                 if(flow_intput_index!== -1) this.inputs[flow_intput_index]['shape'] = 5
                 if(flow_output_index!== -1) this.outputs[flow_output_index]['shape'] = 5
-
                 return onNodeCreated?.apply(this, arguments)
             }
             nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
