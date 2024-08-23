@@ -29,8 +29,6 @@ const createStylesSelector = async(node) => {
   await sleep(1)
   const styles_type_widget = getWidgetByName(node, 'styles')
   const old_values = node.properties['values']?.length > 0 ? node.properties['values'] : []
-  console.log(`ID:${node.id} old_values:`,old_values)
-
   // add selector
   let _selectors = cloneDeep(selectors.value)
   _selectors.push({id:node.id, type:styles_type_widget.value, value:old_values, show:false})
@@ -38,6 +36,7 @@ const createStylesSelector = async(node) => {
   await store.setSelectors(_selectors)
 
   // bind selector to canvas node
+  if(node.flags?.collapsed) node.collapse()
   let selector_divs = selectorsRef.value
   let selector_div = selector_divs[node.id]?.['_']?.vnode?.el
   if(!selector_div) return
@@ -45,6 +44,7 @@ const createStylesSelector = async(node) => {
   if(!node.properties['values']) node.setProperty('values', [])
   _selectors[selector_index]['show'] = true
   await store.setSelectors(_selectors)
+
 
   // switch styles type
   let styles_value = styles_type_widget.value
@@ -109,6 +109,7 @@ const createHumanSegmentation = async(node) => {
   await store.setSegSelectors(_seg_selectors)
 
   // bind selector to canvas node
+  if(node.flags?.collapsed) node.collapse()
   let selector_divs = segsRef.value
   let selector_div = selector_divs[node.id]?.['_']?.vnode?.el
   if(!selector_div) return
@@ -183,6 +184,7 @@ const createSliderControl = async(node)=>{
   console.log(`ID:${node.id} old_values:`,old_values)
 
   // add slider
+  if(node.flags?.collapsed) node.collapse()
   let _slider_controls = cloneDeep(slider_controls.value)
   _slider_controls.push({id:node.id, type:type_widget.value ,mode:mode_widget.value, value:old_values, show:false})
   const slider_index = _slider_controls.length - 1
