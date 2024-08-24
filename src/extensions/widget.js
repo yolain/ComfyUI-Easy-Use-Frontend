@@ -340,9 +340,12 @@ app.registerExtension({
             const getAddInputIndex = input_length => {
                 switch (node_name) {
                     case 'easy forLoopStart':
+                    case 'easy whileLoopStart':
                         return input_length + 1
                     case 'easy forLoopEnd':
                         return input_length
+                    case 'easy whileLoopEnd':
+                        return input_length + 2
                 }
             }
 
@@ -352,14 +355,21 @@ app.registerExtension({
                         return index + 3
                     case 'easy forLoopEnd':
                         return index
+                    case 'easy whileLoopStart':
+                        return index + 2
+                    case 'easy whileLoopEnd':
+                        return index + 1
                 }
             }
             const getStartInputIndex = _ => {
                 switch (node_name) {
                     case 'easy forLoopStart':
+                    case 'easy whileLoopStart':
                         return 0
                     case 'easy forLoopEnd':
                         return 1
+                    case 'easy whileLoopEnd':
+                        return 2
                 }
             }
             nodeType.prototype.onNodeCreated = async function () {
@@ -370,8 +380,9 @@ app.registerExtension({
                     if (flow_intput_index !== -1) this.inputs[flow_intput_index]['shape'] = 5
                     if (flow_output_index !== -1) this.outputs[flow_output_index]['shape'] = 5
                     // await sleep(1)
+                    if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
                     let lastIndex = this.inputs.findLastIndex(cate=> cate.link)
-                    this.inputs = this.inputs.filter((cate,index) => index <= lastIndex+1)
+                    this.inputs = this.inputs.filter((cate,index) => index <= getAddInputIndex(lastIndex))
                     this.outputs = this.outputs.filter((cate,index) => index <= getRemoveIutputIndex(lastIndex))
                     updateNodeHeight(this)
                 }
@@ -383,14 +394,15 @@ app.registerExtension({
                 // input
                 if (type == 1) {
                     let is_all_connected = this.inputs.every(cate => cate.link !== null)
+                    let inputs = this.inputs.filter(cate=> !['condition','index'].includes(cate.name))
                     // loop nodes
                     if(loop_nodes.includes(node_name)){
                         if (is_all_connected) {
-                            if (this.inputs.length >= 10) {
+                            if (inputs.length >= 10) {
                                 toast.warn($t('The maximum number of inputs is 10'))
                                 return
                             }
-                            let add_index = getAddInputIndex(this.inputs.length)
+                            let add_index = getAddInputIndex(inputs.length)
                             let input_label = 'initial_value' + (add_index)
                             let output_label = 'value' + (add_index)
                             this.addInput(input_label, '*')
@@ -407,11 +419,11 @@ app.registerExtension({
                     // index switch nodes
                     else if(index_switch_nodes.includes(node_name)){
                         if (is_all_connected) {
-                            if (this.inputs.length >= 10) {
+                            if (inputs.length >= 10) {
                                 toast.warn($t('The maximum number of inputs is 10'))
                                 return
                             }
-                            let input_label = value_names[node_name] + (this.inputs.length)
+                            let input_label = value_names[node_name] + (inputs.length)
                             this.addInput(input_label, '*')
                         } else if (!connected) {
                             if (index == this.inputs.length - 2) {
@@ -421,7 +433,6 @@ app.registerExtension({
                     }
 
                 }
-                // return onConnectionsChange?.apply(this, arguments)
             }
         }
     },
