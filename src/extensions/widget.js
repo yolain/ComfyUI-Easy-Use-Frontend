@@ -3,6 +3,7 @@ import {app, ComfyWidgets} from "@/composable/comfyAPI";
 import {$t} from "@/composable/i18n";
 import {toggleWidget, getWidgetByName, updateNodeHeight} from "@/composable/node";
 import {toast} from "@/components/toast";
+import sleep from "@/composable/sleep.js";
 import {MAX_SEED_NUM} from "@/config";
 
 /* Variables */
@@ -337,41 +338,25 @@ app.registerExtension({
 
         // add or remove the slots
         if(change_slots_nodes.includes(node_name)) {
-            const getAddInputIndex = input_length => {
-                switch (node_name) {
-                    case 'easy forLoopStart':
-                    case 'easy whileLoopStart':
-                        return input_length + 1
-                    case 'easy forLoopEnd':
-                        return input_length
-                    case 'easy whileLoopEnd':
-                        return input_length + 2
-                }
-            }
 
-            const getRemoveIutputIndex = index => {
-                switch (node_name) {
+            const getStartInputIndex = _=>{
+                switch (node_name){
                     case 'easy forLoopStart':
-                        return index + 3
-                    case 'easy forLoopEnd':
-                        return index
-                    case 'easy whileLoopStart':
-                        return index + 2
-                    case 'easy whileLoopEnd':
-                        return index + 1
-                }
-            }
-            const getStartInputIndex = _ => {
-                switch (node_name) {
-                    case 'easy forLoopStart':
-                    case 'easy whileLoopStart':
                         return 0
                     case 'easy forLoopEnd':
                         return 1
-                    case 'easy whileLoopEnd':
-                        return 2
                 }
             }
+
+            const getStartOutputIndex = _=>{
+                switch (node_name){
+                    case 'easy forLoopStart':
+                        return 2
+                    case 'easy forLoopEnd':
+                        return 0
+                    }
+            }
+
             nodeType.prototype.onNodeCreated = async function () {
                 // change shape of flow
                 if(loop_nodes.includes(node_name)) {
@@ -381,9 +366,8 @@ app.registerExtension({
                     if (flow_output_index !== -1) this.outputs[flow_output_index]['shape'] = 5
                     // await sleep(1)
                     if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
-                    let lastIndex = this.inputs.findLastIndex(cate=> cate.link)
-                    this.inputs = this.inputs.filter((cate,index) => index <= getAddInputIndex(lastIndex))
-                    this.outputs = this.outputs.filter((cate,index) => index <= getRemoveIutputIndex(lastIndex))
+                    this.inputs = this.inputs.filter((cate,index) => index <= getStartInputIndex())
+                    this.outputs = this.outputs.filter((cate,index) => index <= getStartOutputIndex())
                     updateNodeHeight(this)
                 }
                 return onNodeCreated?.apply(this, arguments)
@@ -393,32 +377,39 @@ app.registerExtension({
                 if (!link_info) return
                 // input
                 if (type == 1) {
-                    let is_all_connected = this.inputs.every(cate => cate.link !== null)
-                    let inputs = this.inputs.filter(cate=> !['condition','index'].includes(cate.name))
+                    let is_input_all_connected = this.inputs.every(cate => cate.link !== null)
+                    let inputs = this.inputs.filter(cate=> !['condition','index','total'].includes(cate.name))
                     // loop nodes
                     if(loop_nodes.includes(node_name)){
-                        if (is_all_connected) {
+                        if (is_input_all_connected) {
                             if (inputs.length >= 10) {
                                 toast.warn($t('The maximum number of inputs is 10'))
                                 return
                             }
-                            let add_index = getAddInputIndex(inputs.length)
-                            let input_label = 'initial_value' + (add_index)
-                            let output_label = 'value' + (add_index)
+                            let input = inputs[inputs.length - 1]
+                            let add_key = parseInt(input.name.split('initial_value')[1])+1
+                            if(this.inputs.find(cate => cate.name === 'initial_value' + add_key)) return
+                            let input_label = 'initial_value' + (add_key)
+                            let output_label = 'value' + (add_key)
                             this.addInput(input_label, '*')
                             this.addOutput(output_label, '*')
                         } else if (!connected) {
                             const start_index = getStartInputIndex()
-                            const remove_index = getRemoveIutputIndex(index)
-                            if (index >= start_index && index == this.inputs.length - 2) {
-                                this.removeInput(index + 1)
-                                this.removeOutput(remove_index)
+                            let lastInputIndex = this.inputs.findLastIndex(cate => cate.link)
+                            if (index >= start_index && (lastInputIndex===-1 || index >= lastInputIndex)){
+                                let input = this.inputs[index]
+                                if(!input.name || ['condition','total'].includes(input.name)) return
+                                let remove_key = parseInt(input.name.split('initial_value')[1])+1
+                                let inputIndex = this.inputs.findIndex(cate => cate.name === 'initial_value' + remove_key)
+                                let outputIndex = this.outputs.findIndex(cate => cate.name === 'value' + remove_key)
+                                if(inputIndex !== -1) this.removeInput(inputIndex)
+                                if(outputIndex !== -1) this.removeOutput(outputIndex)
                             }
                         }
                     }
                     // index switch nodes
                     else if(index_switch_nodes.includes(node_name)){
-                        if (is_all_connected) {
+                        if (is_input_all_connected) {
                             if (inputs.length >= 10) {
                                 toast.warn($t('The maximum number of inputs is 10'))
                                 return
@@ -431,7 +422,42 @@ app.registerExtension({
                             }
                         }
                     }
-
+                }
+                // output
+                else if(type == 2){
+                    let outputs = this.outputs.filter(cate=> !['flow','index'].includes(cate.name))
+                    let is_output_all_connected = outputs.every(cate => cate.links?.length > 0)
+                    // loop nodes
+                    if(loop_nodes.includes(node_name)) {
+                        if (is_output_all_connected) {
+                            if (outputs.length >= 10) {
+                                toast.warn($t('The maximum number of inputs is 10'))
+                                return
+                            }
+                            let output = outputs[outputs.length - 1]
+                            let add_key = parseInt(output.name.split('value')[1])+1
+                            if(this.inputs.find(cate => cate.name === 'initial_value' + add_key)) return
+                            if(this.outputs.find(cate => cate.name === 'value' + add_key)) return
+                            let input_label = 'initial_value' + (add_key)
+                            let output_label = 'value' + (add_key)
+                            this.addInput(input_label, '*')
+                            this.addOutput(output_label, '*')
+                        }else if (!connected) {
+                            const start_index = getStartOutputIndex()
+                            let index = link_info.origin_slot
+                            let lastOutputIndex = this.outputs.findLastIndex(cate => cate.links?.length > 0)
+                            if (index >= start_index && (lastOutputIndex===-1 || index >= lastOutputIndex)){
+                                let output = this.outputs[index]
+                                if(!output.name || ['flow','index'].includes(output.name)) return
+                                let remove_key = parseInt(output.name.split('value')[1])+1
+                                let inputIndex = this.inputs.findIndex(cate => cate.name === 'initial_value' + remove_key)
+                                let outputIndex = this.outputs.findIndex(cate => cate.name === 'value' + remove_key)
+                                if(inputIndex !== -1 && this.inputs[inputIndex]?.['link']) return
+                                if(inputIndex !== -1 ) this.removeInput(inputIndex)
+                                if(outputIndex !== -1 ) this.removeOutput(outputIndex)
+                            }
+                        }
+                    }
                 }
             }
         }
