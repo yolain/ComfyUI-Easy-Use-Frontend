@@ -1,5 +1,6 @@
 import { app } from "@/composable/comfyAPI";
 
+const LGraphNode = LiteGraph.LGraphNode;
 // Node that allows you to tunnel connections for cleaner graphs
 const setIcon = '➡️'
 const getIcon = '⬅️'
@@ -7,10 +8,11 @@ const getIcon = '⬅️'
 app.registerExtension({
     name: "easy setNode",
     registerCustomNodes() {
-        class SetNode {
+        class SetNode extends LGraphNode{
             defaultVisibility = true;
             serialize_widgets = true;
-            constructor() {
+            constructor(title) {
+                super('Set');
                 if (!this.properties) {
                     this.properties = {
                         "previousName": ""
@@ -184,12 +186,13 @@ app.registerExtension({
 app.registerExtension({
     name: "easy getNode",
     registerCustomNodes() {
-        class GetNode {
+        class GetNode extends LGraphNode{
 
             defaultVisibility = true;
             serialize_widgets = true;
 
-            constructor() {
+            constructor(title) {
+                super('Get');
                 if (!this.properties) {
                     this.properties = {};
                 }
