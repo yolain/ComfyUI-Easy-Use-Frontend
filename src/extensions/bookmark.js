@@ -1,9 +1,11 @@
 import {app } from "@/composable/comfyAPI"
 
+const LGraphNode = LiteGraph.LGraphNode;
+
 app.registerExtension({
     name: "easy bookmark",
     registerCustomNodes() {
-        class Bookmark {
+        class Bookmark extends LGraphNode{
             type = 'easy bookmark'
             title = "🔖";
 
@@ -31,7 +33,7 @@ app.registerExtension({
             keypressBound = null;
 
             constructor() {
-
+                super('🔖');
                 this.addWidget('text', 'shortcut_key', '1', (value) => {
                     value = value.trim()[0] || '1';
                     if(value !== ''){
