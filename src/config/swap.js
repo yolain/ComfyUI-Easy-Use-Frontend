@@ -15,9 +15,10 @@ export default {
     },
     loaders: {
         category: 'Easy Loaders',
-        nodes: ['easy fullLoader', 'easy a1111Loader', 'easy comfyLoader', 'easy kolorsLoader', 'easy hunyuanDiTLoader', 'easy pixArtLoader'],
+        nodes: ['easy fullLoader', 'easy a1111Loader', 'easy comfyLoader', 'easy kolorsLoader', 'easy hunyuanDiTLoader', 'easy pixArtLoader', 'easy fluxLoader'],
         input: {
             "optional_lora_stack": "optional_lora_stack",
+            "optional_controlnet_stack": "optional_controlnet_stack",
             "positive": "positive",
             "negative": "negative"
         },
