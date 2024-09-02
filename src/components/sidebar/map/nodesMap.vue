@@ -35,7 +35,6 @@ const prefix = 'comfyui-easyuse-map-nodes'
 
 import {storeToRefs} from "pinia";
 import {useNodesStore} from "@/stores/nodes.js";
-import cloneDeep from "lodash/cloneDeep";
 import {getSetting} from "@/composable/settings.js";
 const store = useNodesStore()
 const {groups_nodes, groups} = storeToRefs(store)

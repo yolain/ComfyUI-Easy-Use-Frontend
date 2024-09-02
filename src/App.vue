@@ -30,7 +30,6 @@ const init = _=>{
       render(h(Map,{}),el)
     }
   })
-  console.log(newMenuPosition.value)
   getSettingsLookup(newMenuPositionID, v=> {
     console.log(v)
     newMenuPosition.value = v

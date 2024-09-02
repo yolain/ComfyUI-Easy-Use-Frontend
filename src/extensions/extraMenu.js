@@ -1,175 +1,7 @@
 import {app} from "@/composable/comfyAPI";
 import {LoraInfoDialog, CheckpointInfoDialog} from "@/composable/model"
 import {$t} from '@/composable/i18n.js'
-
-const loaders = ['easy fullLoader', 'easy a1111Loader', 'easy comfyLoader', 'easy kolorsLoader', 'easy hunyuanDiTLoader', 'easy pixArtLoader']
-const preSampling = ['easy preSampling', 'easy preSamplingAdvanced', 'easy preSamplingDynamicCFG', 'easy preSamplingNoiseIn', 'easy preSamplingCustom', 'easy preSamplingLayerDiffusion', 'easy fullkSampler']
-const sampler = ['KSamplerSelect','SamplerEulerAncestral','SamplerEulerAncestralCFG++','SamplerLMS','SamplerDPMPP_3M_SDE','SamplerDPMPP_2M_SDE','SamplerDPMPP_SDE','SamplerDPMAdaptative','SamplerLCMUpscale','SamplerTCD','SamplerTCD EulerA']
-const sigmas = ['BasicScheduler','KarrasScheduler','ExponentialScheduler','PolyexponentialScheduler','VPScheduler','BetaSamplingScheduler','SDTurboScheduler','SplitSigmas','SplitSigmasDenoise','FlipSigmas','AlignYourStepsScheduler','GITSScheduler']
-const kSampler = ['easy kSampler', 'easy kSamplerTiled', 'easy kSamplerInpainting', 'easy kSamplerDownscaleUnet', 'easy kSamplerLayerDiffusion']
-const controlnet = ['easy controlnetLoader', 'easy controlnetLoaderADV', 'easy controlnetLoader++', 'easy instantIDApply', 'easy instantIDApplyADV']
-const ipadapter = ['easy ipadapterApply', 'easy ipadapterApplyADV', 'easy ipadapterApplyFaceIDKolors', 'easy ipadapterStyleComposition', 'easy ipadapterApplyFromParams', 'easy pulIDApply', 'easy pulIDApplyADV']
-const positive_prompt = ['easy positive', 'easy wildcards']
-const imageNode = ['easy loadImageBase64', 'LoadImage', 'LoadImageMask']
-const inpaint = ['easy applyBrushNet', 'easy applyPowerPaint', 'easy applyInpaint']
-const widgetMapping = {
-    "positive_prompt":{
-        "text": "positive",
-        "positive": "text"
-    },
-    "loaders":{
-        "ckpt_name": "ckpt_name",
-        "vae_name": "vae_name",
-        "clip_skip": "clip_skip",
-        "lora_name": "lora_name",
-        "resolution": "resolution",
-        "empty_latent_width": "empty_latent_width",
-        "empty_latent_height": "empty_latent_height",
-        "positive": "positive",
-        "negative": "negative",
-        "batch_size": "batch_size",
-        "a1111_prompt_style": "a1111_prompt_style"
-    },
-    "preSampling":{
-        "steps": "steps",
-        "cfg": "cfg",
-        "cfg_scale_min": "cfg",
-        "sampler_name": "sampler_name",
-        "scheduler": "scheduler",
-        "denoise": "denoise",
-        "seed_num": "seed_num",
-        "seed": "seed"
-    },
-    "kSampler":{
-        "image_output": "image_output",
-        "save_prefix": "save_prefix",
-        "link_id": "link_id"
-    },
-    "controlnet":{
-        "control_net_name":"control_net_name",
-        "strength": ["strength", "cn_strength"],
-        "scale_soft_weights": ["scale_soft_weights","cn_soft_weights"],
-        "cn_strength": ["strength", "cn_strength"],
-        "cn_soft_weights": ["scale_soft_weights","cn_soft_weights"],
-    },
-    "ipadapter":{
-        "preset":"preset",
-        "lora_strength": "lora_strength",
-        "provider": "provider",
-        "weight":"weight",
-        "weight_faceidv2": "weight_faceidv2",
-        "start_at": "start_at",
-        "end_at": "end_at",
-        "cache_mode": "cache_mode",
-        "use_tiled": "use_tiled",
-        "insightface": "insightface",
-        "pulid_file": "pulid_file"
-    },
-    "load_image":{
-        "image":"image",
-        "base64_data":"base64_data",
-        "channel": "channel"
-    },
-    "inpaint":{
-        "dtype": "dtype",
-        "fitting": "fitting",
-        "function": "function",
-        "scale": "scale",
-        "start_at": "start_at",
-        "end_at": "end_at"
-    },
-    "sampler":{},
-    "sigmas":{}
-}
-const inputMapping = {
-    "loaders":{
-        "optional_lora_stack": "optional_lora_stack",
-        "positive": "positive",
-        "negative": "negative"
-    },
-    "preSampling":{
-        "pipe": "pipe",
-        "image_to_latent": "image_to_latent",
-        "latent": "latent"
-    },
-    "kSampler":{
-        "pipe": "pipe",
-        "model": "model"
-    },
-    "controlnet":{
-        "pipe": "pipe",
-        "image": "image",
-        "image_kps": "image_kps",
-        "control_net": "control_net",
-        "positive": "positive",
-        "negative": "negative",
-        "mask": "mask"
-    },
-    "positive_prompt":{
-
-    },
-    "ipadapter":{
-        "model":"model",
-        "image":"image",
-        "image_style": "image",
-        "attn_mask":"attn_mask",
-        "optional_ipadapter":"optional_ipadapter"
-    },
-    "inpaint":{
-        "pipe": "pipe",
-        "image": "image",
-        "mask": "mask"
-    },
-    "sampler":{},
-    "sigmas":{}
-};
-
-const outputMapping = {
-    "loaders":{
-        "pipe": "pipe",
-        "model": "model",
-        "vae": "vae",
-        "clip": null,
-        "positive": null,
-        "negative": null,
-        "latent": null,
-    },
-    "preSampling":{
-        "pipe":"pipe"
-    },
-    "kSampler":{
-        "pipe": "pipe",
-        "image": "image"
-    },
-    "controlnet":{
-        "pipe": "pipe",
-        "positive": "positive",
-        "negative": "negative"
-    },
-    "positive_prompt":{
-        "text": "positive",
-        "positive": "text"
-    },
-    "load_image":{
-        "IMAGE":"IMAGE",
-        "MASK": "MASK"
-    },
-    "ipadapter":{
-        "model":"model",
-        "tiles":"tiles",
-        "masks":"masks",
-        "ipadapter":"ipadapter"
-    },
-    "inpaint":{
-        "pipe": "pipe",
-    },
-    "sampler":{
-        "SAMPLER":"SAMPLER"
-    },
-    "sigmas":{
-        "SIGMAS":"SIGMAS"
-    }
-};
+import swap from "@/config/swap.js";
 
 // Replace node
 function replaceNode(oldNode, newNodeName, type) {
@@ -182,29 +14,31 @@ function replaceNode(oldNode, newNodeName, type) {
     newNode.pos = oldNode.pos.slice();
     newNode.size = oldNode.size.slice();
 
-    oldNode.widgets.forEach(widget => {
-        if(widgetMapping[type][widget.name]){
-            const newName = widgetMapping[type][widget.name];
-            if (newName) {
-                const newWidget = findWidgetByName(newNode, newName);
-                if (newWidget) {
-                    newWidget.value = widget.value;
-                    if(widget.name == 'seed_num'){
-                        newWidget.linkedWidgets[0].value = widget.linkedWidgets[0].value
-                    }
-                    if(widget.type == 'converted-widget'){
-                        convertToInput(newNode, newWidget, widget);
+    if(oldNode.widgets?.length>0){
+        oldNode.widgets.forEach(widget => {
+            if(swap[type]?.['widget']?.[widget.name]){
+                const newName = swap[type]['widget'][widget.name];
+                if (newName && newNode.widgets) {
+                    const newWidget = findWidgetByName(newNode, newName);
+                    if (newWidget) {
+                        newWidget.value = widget.value;
+                        if(widget.name == 'seed_num'){
+                            newWidget.linkedWidgets[0].value = widget.linkedWidgets[0].value
+                        }
+                        if(widget.type == 'converted-widget'){
+                            convertToInput(newNode, newWidget, widget);
+                        }
                     }
                 }
             }
-        }
 
-    });
+        });
+    }
 
     if(oldNode.inputs){
         oldNode.inputs.forEach((input, index) => {
-            if (input && input.link && inputMapping[type][input.name]) {
-                const newInputName = inputMapping[type][input.name];
+            if (input && input.link && swap[type]?.['input']?.[input.name]) {
+                const newInputName = swap[type]?.['input'][input.name];
                 // If the new node does not have this output, skip
                 if (newInputName === null) {
                     return;
@@ -225,8 +59,8 @@ function replaceNode(oldNode, newNodeName, type) {
 
     if(oldNode.outputs){
         oldNode.outputs.forEach((output, index) => {
-            if (output && output.links && outputMapping[type] && outputMapping[type][output.name]) {
-                const newOutputName = outputMapping[type][output.name];
+            if (output && output.links && swap[type]?.['output']?.[output.name]) {
+                const newOutputName = swap[type]['output'][output.name];
                 // If the new node does not have this output, skip
                 if (newOutputName === null) {
                     return;
@@ -261,7 +95,7 @@ function replaceNode(oldNode, newNodeName, type) {
                 app.graph.remove(node);
             }
         }
-    }else if(preSampling.includes(newNode.type)){
+    }else if(swap.preSampling.nodes.includes(newNode.type)){
         const link_output_id = newNode.outputs[0].links
         if(!link_output_id || !link_output_id[0]){
             const ksampler = LiteGraph.createNode('easy kSampler');
@@ -565,51 +399,15 @@ app.registerExtension({
                     callback: (value, options, e, menu, node) => {
                         let name = node.widgets[0].value;
                         if (!name || name == 'None') return
-                        // new CheckpointInfoDialog(name).show('checkpoints', name);
                     }
                 })
             }
         })
 
-        // Swap提示词
-        if (positive_prompt.includes(nodeData.name)) {
-            addMenu("↪️ Swap EasyPrompt", 'positive_prompt', positive_prompt, nodeType)
-        }
-        // Swap加载器
-        if (loaders.includes(nodeData.name)) {
-            addMenu("↪️ Swap EasyLoader", 'loaders', loaders, nodeType)
-        }
-        // Swap预采样器
-        if (preSampling.includes(nodeData.name)) {
-            addMenu("↪️ Swap EasyPreSampling", 'preSampling', preSampling, nodeType)
-        }
-        // Swap kSampler
-        if (kSampler.includes(nodeData.name)) {
-            addMenu("↪️ Swap EasyKSampler", 'preSampling', kSampler, nodeType)
-        }
-        // Swap Custom sampler
-        if (sampler.includes(nodeData.name)) {
-            addMenu("↪️ Swap Custom Sampler", 'sampler', sampler, nodeType)
-        }
-        // Swap Custom sigmas
-        if (sigmas.includes(nodeData.name)) {
-            addMenu("↪️ Swap Custom Sigmas", 'sigmas', sigmas, nodeType)
-        }
-        // Swap ControlNet
-        if (controlnet.includes(nodeData.name)) {
-            addMenu("↪️ Swap EasyControlnet", 'controlnet', controlnet, nodeType)
-        }
-        // Swap IPAdapater
-        if (ipadapter.includes(nodeData.name)) {
-            addMenu("↪️ Swap EasyAdapater", 'ipadapter', ipadapter, nodeType)
-        }
-        // Swap Image
-        if (imageNode.includes(nodeData.name)) {
-            addMenu("↪️ Swap LoadImage", 'load_image', imageNode, nodeType)
-        }
-        // Swap inpaint
-        if (inpaint.includes(nodeData.name)) {
-            addMenu("↪️ Swap InpaintNode", 'inpaint', inpaint, nodeType)
+        for (const key in swap) {
+            if (swap[key].nodes.includes(nodeData.name)) {
+                addMenu(`↪️ Swap ${swap[key].category}`, key, swap[key].nodes, nodeType)
+            }
         }
     }
 });
