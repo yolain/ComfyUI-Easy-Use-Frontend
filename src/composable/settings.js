@@ -14,10 +14,10 @@ export const getUserSettingsValue = (id, defaultValue = undefined) => id ? app?.
  * @param {string} storge_key - key to get value from local storage
  * @returns {string|object|null} - setting value
  */
-export function getSetting(id, storge_key=null, defaultValue=undefined){
+export function getSetting(id, storage_key=null, defaultValue=undefined){
     try{
         let setting = id ? getUserSettingsValue(id, defaultValue) : null
-        if(setting === undefined && storge_key) setting = localStorage[storge_key]
+        if(!setting) setting = storage_key ? localStorage[storage_key] : (localStorage[id] || null)
         return setting
     }
     catch(e){
