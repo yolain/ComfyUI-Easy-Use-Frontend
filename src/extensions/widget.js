@@ -740,7 +740,7 @@ function toggleLogic(node, widget) {
         case 'guider':
             switch (v) {
                 case 'Basic':
-                    ['cfg', 'cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name)))
+                    ['cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name)))
                     break
                 case 'CFG':
                     toggleWidget(node, getWidgetByName(node, 'cfg'), true);
