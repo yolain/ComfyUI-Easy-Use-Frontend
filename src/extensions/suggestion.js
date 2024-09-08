@@ -350,8 +350,7 @@ app.registerExtension({
                     for(var typeX in slotTypesDefault[fromSlotType]){
                         if (opts.nodeType == slotTypesDefault[fromSlotType][typeX] || opts.nodeType == "AUTO"){
                             nodeNewType = slotTypesDefault[fromSlotType][typeX];
-                            // console.log("opts.nodeType == slotTypesDefault[fromSlotType][typeX] :: "+opts.nodeType);
-                            break; // --------
+                            break;
                         }
                     }
                 }else{
@@ -407,18 +406,11 @@ app.registerExtension({
                         newNode.pos = [	opts.position[0]+opts.posAdd[0]+(opts.posSizeFix[0]?opts.posSizeFix[0]*newNode.size[0]:0)
                             ,opts.position[1]+opts.posAdd[1]+(opts.posSizeFix[1]?opts.posSizeFix[1]*newNode.size[1]:0)]; //that.last_click_position; //[e.canvasX+30, e.canvasX+5];*/
 
-                        //that.graph.afterChange();
-
                         // connect the two!
                         if (isFrom){
                             opts.nodeFrom.connectByType( iSlotConn, newNode, fromSlotType );
                         }else{
                             opts.nodeTo.connectByTypeOutput( iSlotConn, newNode, fromSlotType );
-                        }
-
-                        // if connecting in between
-                        if (isFrom && isTo){
-                            // TODO
                         }
 
                         return true;
@@ -438,6 +430,8 @@ app.registerExtension({
                     ,nodeTo: null   // output
                     ,slotTo: null   // output
                     ,e: null
+                    ,allow_searchbox: this.allow_searchbox
+                    ,showSearchBox: this.showSearchBox
                 }
                 ,optPass
             );
@@ -476,8 +470,7 @@ app.registerExtension({
             }
 
             var options = ["Add Node",null];
-
-            if (that.allow_searchbox){
+            if (opts.allow_searchbox){
                 options.push("Search");
                 options.push(null);
             }
@@ -524,9 +517,9 @@ app.registerExtension({
                         break;
                     case "Search":
                         if(isFrom){
-                            that.showSearchBox(e,{node_from: opts.nodeFrom, slot_from: slotX, type_filter_in: fromSlotType});
+                            opts.showSearchBox(e,{node_from: opts.nodeFrom, slot_from: slotX, type_filter_in: fromSlotType});
                         }else{
-                            that.showSearchBox(e,{node_to: opts.nodeTo, slot_from: slotX, type_filter_out: fromSlotType});
+                            opts.showSearchBox(e,{node_to: opts.nodeTo, slot_from: slotX, type_filter_out: fromSlotType});
                         }
                         break;
                     default:
