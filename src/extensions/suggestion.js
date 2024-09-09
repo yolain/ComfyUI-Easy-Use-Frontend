@@ -7,7 +7,7 @@ const kSampler = ["easy kSampler", "easy kSamplerTiled","easy kSamplerInpainting
 const controlNetNodes = ["easy controlnetLoader", "easy controlnetLoaderADV"]
 const instantIDNodes = ["easy instantIDApply", "easy instantIDApplyADV"]
 const ipadapterNodes = ["easy ipadapterApply", "easy ipadapterApplyADV" , "easy ipadapterApplyFaceIDKolors", "easy ipadapterStyleComposition"]
-const pipeNodes = ['easy pipeIn','easy pipeOut', 'easy pipeEdit']
+const pipeNodes = ['easy pipeIn','easy pipeOut', 'easy pipeEdit', 'easy pipeEditPrompt']
 const xyNodes = ['easy XYPlot', 'easy XYPlotAdvanced']
 const extraNodes = ['easy setNode']
 const modelNormalNodes = [...["Reroute"],...['RescaleCFG','LoraLoaderModelOnly','LoraLoader','FreeU','FreeU_v2'],...ipadapterNodes,...extraNodes]
@@ -95,6 +95,15 @@ const suggestions = {
         }
     },
     "easy pixArtLoader": {
+        "from": {
+            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "MODEL": modelNormalNodes
+        },
+        "to":{
+            "STRING": [...["Reroute"],...propmts]
+        }
+    },
+    "easy fluxLoader": {
         "from": {
             "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
@@ -261,6 +270,23 @@ const suggestions = {
     "easy cascadeKSampler": {
         "from": {
             "PIPE_LINE": [...["Reroute"], ...["easy preSampling", "easy preSamplingAdvanced"], ...pipeNodes, ...extraNodes]
+        }
+    },
+    // pipe
+    "easy pipeEdit": {
+        "from": {
+            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...extraNodes],
+        },
+        "to":{
+            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
+        }
+    },
+    "easy pipeEditPrompt": {
+        "from": {
+            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...extraNodes],
+        },
+        "to":{
+            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
         }
     },
 }
