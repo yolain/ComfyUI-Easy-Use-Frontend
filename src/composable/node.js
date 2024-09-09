@@ -91,17 +91,24 @@ export const isGetNode = (node) => node.type === "easy getNode";
 export const isSetNode = (node) => node.type === "easy setNode";
 export const isGetSetNode = (node) => isGetNode(node) || isSetNode(node);
 export const getGetSetNodes = (nodes = getAllNodes()) => nodes.filter((node) => isGetSetNode(node));
-export const chainNode = (selectedNodes, focus=false, offset = {}) => {
+
+let lastTargetGetPos = {}
+let lastTargetSetPos = {}
+export const chainNode = (focus=false, offset = {}) => {
+	const allGetSetNodes = getGetSetNodes();
+	if(!allGetSetNodes || allGetSetNodes.length < 1) return;
+	const selectedNodes = getSelectedNodes();
 	if(selectedNodes.length === 0) return;
-	const offsetInputX = offset.inputX || 160;
-	const offsetOutputX = offset.ouputX || 60;
+	let offsetInputX = offset.inputX || 160;
+	let offsetOutputX = offset.ouputX || 60;
 	if(selectedNodes.filter(node=> isGetSetNode(node)).length > 1) return;
 	for (const node of selectedNodes){
 		let inputIndex = 0;
 		let outputIndex = 0;
-		const offsetInputY = offset.inputY || 10;
-		const offsetOutputY = offset.outputY || 30;
+		let offsetInputY = offset.inputY || 10;
+		let offsetOutputY = offset.outputY || 30;
 		const nodesFixed = [];
+		const nodeId = node.id;
 		if (!node.graph) continue;
 		// inputs
 		for (const input of node.inputs ?? []) {
@@ -111,11 +118,16 @@ export const chainNode = (selectedNodes, focus=false, offset = {}) => {
 			const originNode = getNodeById(origin_id);
 			if (!originNode) continue;
 			if (!isGetSetNode(originNode)) continue;
-			const targetSetPos = node.getConnectionPos(true, target_slot);
-			originNode.pos = [targetSetPos[0] - offsetInputX, targetSetPos[1] + 15 + inputIndex * offsetInputY];
+			const targetGetPos = node.getConnectionPos(true, target_slot);
+			if(lastTargetGetPos[nodeId] && (lastTargetGetPos[nodeId][1] !== targetGetPos[1] || lastTargetGetPos[nodeId][0] !== targetGetPos[0])){
+				offsetInputX = targetGetPos[0] - lastTargetGetPos[nodeId][0];
+				offsetInputY = targetGetPos[1] - lastTargetGetPos[nodeId][1];
+				originNode.pos = [originNode.pos[0] + offsetInputX, originNode.pos[1] + offsetInputY];
+			}
+			lastTargetGetPos[nodeId] = targetGetPos;
 			inputIndex += 1;
 			nodesFixed.push(originNode);
-			originNode.flags.collapsed = true;
+			// originNode.flags.collapsed = true;
 		}
 		// outputs
 		for (const output of node.outputs ?? []) {
@@ -132,10 +144,14 @@ export const chainNode = (selectedNodes, focus=false, offset = {}) => {
 				const links = originNode.outputs?.links;
 				if (links?.length > 1) return;
 				const targetSetPos = node.getConnectionPos(false, 0);
-				originNode.pos = [targetSetPos[0] + offsetOutputX, targetSetPos[1] + 15 + outputIndex * offsetOutputY];
+				if(lastTargetSetPos[nodeId] && (lastTargetSetPos[nodeId][1] !== targetSetPos[1] || lastTargetSetPos[nodeId][0] !== targetSetPos[0])){
+					offsetOutputX = targetSetPos[0] - lastTargetSetPos[nodeId][0];
+					offsetOutputY = targetSetPos[1] - lastTargetSetPos[nodeId][1];
+					originNode.pos = [originNode.pos[0] + offsetOutputX, originNode.pos[1] + offsetOutputY];
+				}
+				lastTargetSetPos[nodeId] = targetSetPos;
 				outputIndex += 1;
 				nodesFixed.push(originNode);
-				originNode.flags.collapsed = true;
 			}
 		}
 		if (focus && selectedNodes.length === 1) {
@@ -342,4 +358,28 @@ export const addNodesToGroup = (group, nodes=[], padding=20) => {
 
     group.pos = [x1 - padding, y1 - padding];
     group.size = [x2 - x1 + padding * 2, y2 - y1 + padding * 2];
+}
+export const setNodesSameSize = (nodes, type='width') => {
+	const firstNode = nodes[0];
+	const index = type == 'width' ? 0 : 1
+	const size = firstNode.size?.[index];
+	if(!size) return
+	nodes.forEach(node => {node.size[index] = size;});
+	LGraphCanvas.active_canvas.setDirty(true, true);
+}
+
+export const distributeNodes = (nodes, type='horizontal') => {
+	if(nodes.length < 3) return;
+	const index = type === 'horizontal' ? 0 : 1;
+	nodes.sort((a, b) => a.pos[index] - b.pos[index]);
+	const min = Math.min(...nodes.map(node => node.pos[index]));
+	const max = Math.max(...nodes.map(node => node.pos[index] + node.size[index]));
+	const total = nodes.reduce((sum, node) => sum + node.size[index], 0);
+	const spacing = (max - min - total) / (nodes.length - 1);
+	let current = min;
+	nodes.forEach(node => {
+		node.pos[index] = current;
+		current += node.size[index] + spacing;
+	});
+	LGraphCanvas.active_canvas.setDirty(true, true);
 }

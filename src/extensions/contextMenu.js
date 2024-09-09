@@ -1,11 +1,10 @@
 import {app,api,$el} from "@/composable/comfyAPI";
 import {reboot, cleanVRAM} from "@/composable/easyuseAPI.js";
 import {$t} from "@/composable/i18n.js";
-import {isLocalNetwork} from "@/composable/util.js";
+import {isLocalNetwork, normalize} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
-import {COMFYUI_NODE_BASIC_CATEGORY} from "@/config";
+import {COMFYUI_NODE_BASIC_CATEGORY, NODES_MAP_ID} from "@/config";
 import {getSetting} from "@/composable/settings.js";
-
 /* Variables */
 let thumbnails = []
 
@@ -51,9 +50,19 @@ app.registerExtension({
                                 callback: _ => reboot()
                             })
                         }
+                        const vram_extra = getSetting('EasyUse.Hotkeys.cleanVRAMUsed',null, true) ? normalize('Shift+r') : ''
                         values.unshift({
-                            content: `<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of VRAM Usage')}`,
+                            content: `<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of VRAM Usage')} (${vram_extra})`,
                             callback: _ => cleanVRAM()
+                        })
+                        const sitemap_extra = getSetting('EasyUse.Hotkeys.toggleNodesMap',null, true) ? normalize('Shift+m') : ''
+                        values.unshift({
+                            content: `<i class="mdi mdi-sitemap comfyui-easyuse-warning" style="margin-right:2px;font-size:14px"></i>${$t('Nodes Map')} (${sitemap_extra})`,
+                            callback: _ => {
+                                const active_tab = app.extensionManager.activeSidebarTab
+                                if(active_tab == NODES_MAP_ID) app.extensionManager.updateActiveSidebarTab(null)
+                                else app.extensionManager.updateActiveSidebarTab(NODES_MAP_ID)
+                            }
                         })
                     }
 
