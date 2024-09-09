@@ -14,6 +14,7 @@ import {
 } from "@/composable/node.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {cleanVRAM} from "@/composable/easyuseAPI.js";
+import {NODES_MAP_ID} from "@/config/index.js";
 /* Variables */
 let nodesStore = null
 
@@ -183,6 +184,15 @@ app.registerExtension({
                 if(!enableClean) return
                 // clean VRAM Used
                 cleanVRAM()
+            })
+
+            // Toggle Nodes Map with Shift + m
+            hotkeys('shift+m', function (event, handler) {
+                const enableToggleMap = getSetting('EasyUse.Hotkeys.toggleNodesMap',null, true);
+                if(!enableToggleMap) return
+                const active_tab = app.extensionManager.activeSidebarTab
+                if(active_tab == NODES_MAP_ID) app.extensionManager.updateActiveSidebarTab(null)
+                else app.extensionManager.updateActiveSidebarTab(NODES_MAP_ID)
             })
 
             // Register hotkeys with ALT+1~9 to add node template to canvas qulickly

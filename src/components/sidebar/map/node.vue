@@ -11,7 +11,7 @@ import Button from "primevue/button";
 import {jumpToNodeId} from "@/composable/node.js";
 import {NODE_MODE} from "@/config/index.js";
 
-import {defineComponent, defineProps, defineEmits} from 'vue'
+import {defineProps, defineEmits} from 'vue'
 defineEmits(['mousedown', 'mouseup','changeMode'])
 
 const prefix = 'comfyui-easyuse-map-nodes-node'

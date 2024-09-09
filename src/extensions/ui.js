@@ -1,13 +1,13 @@
 import { api, app, $el } from '@/composable/comfyAPI'
 import {addCss, addPreconnect} from "@/composable/head";
 import {getSetting, setSetting, addSetting} from "@/composable/settings";
-import {on} from "@/composable/util.js";
 import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR, DARK_THEME_CLASS} from "@/config";
 import obsidian from "@/config/theme/obsidian";
 import obsidian_dark from "@/config/theme/obsidianDark";
 import milk_white from "@/config/theme/milkWhite";
 import settings from "@/config/settings";
 import sleep from "@/composable/sleep";
+import {normalize} from "@/composable/util.js";
 import {useNodesStore} from "@/stores/nodes.js";
 
 /* Define Variable */
@@ -30,8 +30,6 @@ let color_palette = null
 let monitor = null
 let prefix = '👽 '
 /* add settings */
-const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
-const normalize = str => isMac ? str.replace(/Ctrl/g, '⌘').replace(/Alt/g, '⌥').replace(/Shift/g, '⇧') : str
 for(let i in settings) {
     const name =  getSetting('Comfy.UseNewMenu') == 'Disabled' ? prefix+normalize(settings[i].name) : normalize(settings[i].name)
     const tooltip = settings[i].tooltip ? normalize(settings[i].tooltip) : ''

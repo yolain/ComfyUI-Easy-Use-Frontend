@@ -14,6 +14,12 @@ export default {
         type: 'boolean',
         defaultValue: true,
     },
+    toggleSiteMap:{
+        id: 'EasyUse.Hotkeys.toggleNodesMap',
+        name: $t('Enable Shift+m to toggle nodes map'),
+        type: 'boolean',
+        defaultValue: true,
+    },
     alignSelectedNodes:{
         id: 'EasyUse.Hotkeys.AlignSelectedNodes',
         name:$t('Enable Shift+Up/Down/Left/Right key and Shift+Ctrl+Alt+Left/Right to align selected nodes'),

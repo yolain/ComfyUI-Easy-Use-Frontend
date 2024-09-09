@@ -58,6 +58,7 @@ export default {
     "Enable Shift+Ctrl+Left/Right key to normalize selected nodes": "启用 Shift+Ctrl+左/右 键规范化选中的节点",
     "Enable Shift+g to add selected nodes to a group": "启用 Shift+g 键将选中的节点添加一个组",
     "Enable Shift+r to unload models and node cache": "启用 Shift+r 键卸载模型和节点缓存",
+    "Enable Shift+m to toggle nodes map": "启用 Shift+m 键显隐管理节点组",
     "Enable Up/Down/Left/Right key to jump nearest nodes": "启用 上/下/左/右 键跳转到最近的前后节点",
     "Enable Alt+1~9 to paste nodes from nodes template": "启用 Alt+1~9 从节点模板粘贴到工作流中",
     "Enable contextMenu auto nest subdirectories": "启用上下文菜单自动嵌套子目录",

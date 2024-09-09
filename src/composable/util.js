@@ -170,3 +170,6 @@ export function off(
         return element.removeEventListener(event, handler, false);
     }
 }
+
+export const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+export const normalize = str => isMac ? str.replace(/Ctrl/g, '⌘').replace(/Alt/g, '⌥').replace(/Shift/g, '⇧') : str
