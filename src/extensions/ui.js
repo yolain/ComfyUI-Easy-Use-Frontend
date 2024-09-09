@@ -30,8 +30,12 @@ let color_palette = null
 let monitor = null
 let prefix = '👽 '
 /* add settings */
+const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+const normalize = str => isMac ? str.replace(/Ctrl/g, '⌘').replace(/Alt/g, '⌥').replace(/Shift/g, '⇧') : str
 for(let i in settings) {
-    getSetting('Comfy.UseNewMenu') == 'Disabled' ? addSetting({...settings[i],...{name:prefix+settings[i].name}}) : addSetting(settings[i])
+    const name =  getSetting('Comfy.UseNewMenu') == 'Disabled' ? prefix+normalize(settings[i].name) : normalize(settings[i].name)
+    const tooltip = settings[i].tooltip ? normalize(settings[i].tooltip) : ''
+    addSetting({...settings[i],...{name,tooltip}})
 }
 
 /* Register Extension */

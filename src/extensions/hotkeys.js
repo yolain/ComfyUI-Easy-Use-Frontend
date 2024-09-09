@@ -3,7 +3,15 @@ import {app, api, GroupNodeConfig} from "@/composable/comfyAPI";
 import {getSetting} from "@/composable/settings";
 import {toast} from "@/components/toast.js";
 import {$t} from "@/composable/i18n.js";
-import {getSelectedNodes, isGetNode, isSetNode, jumpToNode, addNodesToGroup} from "@/composable/node.js";
+import {
+    getSelectedNodes,
+    isGetNode,
+    isSetNode,
+    jumpToNode,
+    addNodesToGroup,
+    setNodesSameSize,
+    distributeNodes
+} from "@/composable/node.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {cleanVRAM} from "@/composable/easyuseAPI.js";
 /* Variables */
@@ -97,7 +105,7 @@ app.registerExtension({
 
 
             // Register hotkeys with Shift + Up, Down, Left, Right to align Selected Node
-            hotkeys('shift+up,shift+down,shift+left,shift+right', function(event, handler){
+            hotkeys('shift+up,shift+down,shift+left,shift+right,shift+alt+⌘+left,shift+alt+⌘+right,shift+alt+ctrl+left,shift+alt+ctrl+right', function(event, handler){
                 event.preventDefault();
                 const enableAlighSelectedNodes = getSetting('EasyUse.Hotkeys.AlignSelectedNodes',null, true);
                 if(!enableAlighSelectedNodes) return
@@ -118,12 +126,43 @@ app.registerExtension({
                     case 'shift+right':
                         LGraphCanvas.alignNodes(nodes, 'right', nodes[0])
                         break
+                    case 'shift+alt+ctrl+left':
+                    case 'shift+alt+⌘+left':
+                        distributeNodes(nodes, 'horizontal')
+                        break
+                    case 'shift+alt+ctrl+right':
+                    case 'shift+alt+⌘+right':
+                        distributeNodes(nodes, 'vertical')
+                        break
                 }
                 // Update NodesStore
                 if(!nodesStore) nodesStore = useNodesStore()
                 if(nodesStore) nodesStore.update()
             })
 
+            // Register hotkeys with Shift + Ctrl + Left, Right to normalize Selected Node
+            hotkeys('shift+⌘+left,shift+⌘+right,shift+ctrl+left,shift+ctrl+right', function(event, handler) {
+                event.preventDefault();
+                const enableAlighSelectedNodes = getSetting('EasyUse.Hotkeys.NormalizeSelectedNodes', null, true);
+                if (!enableAlighSelectedNodes) return
+                // Get Selected Nodes Jump
+                const selectNodes = getSelectedNodes();
+                if (selectNodes.length <= 1) return;
+                const nodes = selectNodes;
+                switch (handler.key) {
+                    case 'shift+ctrl+left':
+                    case 'shift+⌘+left':
+                        setNodesSameSize(nodes, 'width')
+                        break
+                    case 'shift+ctrl+right':
+                    case 'shift+⌘+right':
+                        setNodesSameSize(nodes, 'height')
+                        break
+                }
+                // Update NodesStore
+                if(!nodesStore) nodesStore = useNodesStore()
+                if(nodesStore) nodesStore.update()
+            })
 
             // Register hotkeys with Shift + g to add selected nodes to a group
             hotkeys('shift+g', function (event, handler) {
