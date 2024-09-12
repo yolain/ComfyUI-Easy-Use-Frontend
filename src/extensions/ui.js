@@ -44,7 +44,7 @@ app.registerExtension({
         const storge_key = 'Comfy.Settings.Comfy.CustomColorPalettes'
         const current_id = 'Comfy.ColorPalette'
         const current_storge_key = 'Comfy.Settings.Comfy.ColorPalette'
-        if (!color_palettes) color_palettes = getSetting(id, storge_key)
+        if (!color_palettes) color_palettes = getSetting(id, storge_key, {})
         if (!color_palette) color_palette = getSetting(current_id, current_storge_key) || 'dark'
         // Compare custom theme version & Set to settings
         if (!color_palettes?.obsidian?.version || color_palettes.obsidian.version < obsidian.ColorPalette.version) {
@@ -52,7 +52,7 @@ app.registerExtension({
             color_palettes.obsidian_dark = obsidian_dark.ColorPalette
             setSetting(id, color_palettes, storge_key)
         }
-        if (!color_palettes?.milk_white?.version || color_palettes.milk_white.version < milk_white.ColorPalette.version) {
+        if (!color_palettes || !color_palettes?.milk_white?.version || color_palettes.milk_white.version < milk_white.ColorPalette.version) {
             color_palettes.milk_white = milk_white.ColorPalette
             setSetting(id, color_palettes, storge_key)
         }
