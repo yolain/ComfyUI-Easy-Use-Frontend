@@ -41,8 +41,9 @@ const loader_nodes = ["easy fullLoader", "easy a1111Loader", "easy comfyLoader",
 const image_dynamic_nodes = ["easy imageSize","easy imageSizeBySide","easy imageSizeByLongerSide","easy imageSizeShow", "easy imageRatio", "easy imagePixelPerfect"]
 const loop_nodes = ['easy forLoopStart','easy forLoopEnd', 'easy whileLoopStart', 'easy whileLoopEnd']
 const index_switch_nodes = ['easy anythingIndexSwitch', 'easy imageIndexSwitch', 'easy textIndexSwitch', 'easy conditioningIndexSwitch']
-const change_slots_nodes = [...loop_nodes,...index_switch_nodes]
-const value_names = {'easy anythingIndexSwitch':'value', 'easy imageIndexSwitch':'image', 'easy textIndexSwitch':'text', 'easy conditioningIndexSwitch':'cond'}
+const inverse_switch_nodes = ['easy anythingInversedSwitch']
+const change_slots_nodes = [...loop_nodes,...index_switch_nodes,...inverse_switch_nodes]
+const value_names = {'easy anythingInversedSwitch':'out', 'easy anythingIndexSwitch':'value', 'easy imageIndexSwitch':'image', 'easy textIndexSwitch':'text', 'easy conditioningIndexSwitch':'cond'}
 
 /* Register Extension */
 app.registerExtension({
@@ -455,6 +456,22 @@ app.registerExtension({
                                 if(inputIndex !== -1 && this.inputs[inputIndex]?.['link']) return
                                 if(inputIndex !== -1 ) this.removeInput(inputIndex)
                                 if(outputIndex !== -1 ) this.removeOutput(outputIndex)
+                            }
+                        }
+                    }
+                    // inverse switch nodes
+                    else if(inverse_switch_nodes.includes(node_name)){
+                        if(is_output_all_connected) {
+                            if (outputs.length >= 10) {
+                                toast.warn($t('The maximum number of inputs is 10'))
+                                return
+                            }
+                            let output_label = value_names[node_name] + (outputs.length)
+                            this.addOutput(output_label, '*')
+                        } else if (!connected) {
+                            let index = link_info.origin_slot
+                            if (index == this.outputs.length - 2 && outputs[index].links?.length == 0) {
+                                this.removeOutput(index + 1)
                             }
                         }
                     }
