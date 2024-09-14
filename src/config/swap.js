@@ -83,7 +83,7 @@ export default {
     },
     kSampler: {
         category: 'Easy kSampler',
-        nodes: ['easy kSampler', 'easy kSamplerTiled', 'easy kSamplerInpainting', 'easy kSamplerDownscaleUnet', 'easy kSamplerLayerDiffusion'],
+        nodes: ['easy kSampler', 'easy kSamplerTiled', 'easy kSamplerCustom', 'easy kSamplerInpainting', 'easy kSamplerDownscaleUnet', 'easy kSamplerLayerDiffusion'],
         input: {
             "pipe": "pipe",
             "model": "model"
