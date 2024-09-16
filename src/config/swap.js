@@ -168,7 +168,7 @@ export default {
     },
     loadImage: {
         category: 'Easy LoadImage',
-        nodes: ['easy loadImageBase64', 'easy loadImage', 'easy loadImageMask'],
+        nodes: ['easy loadImageBase64', 'LoadImage', 'LoadImageMask'],
         input: {
             "pipe": "pipe",
             "image": "image",
