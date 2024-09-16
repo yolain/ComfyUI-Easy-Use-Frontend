@@ -371,6 +371,14 @@ app.registerExtension({
                     this.outputs = this.outputs.filter((cate,index) => index <= getStartOutputIndex())
                     updateNodeHeight(this)
                 }
+                // change index of index switch nodes
+                if(index_switch_nodes.includes(node_name)){
+                   if(node_name == 'easy textIndexSwitch'){
+                       this.widgets = this.widgets.filter((cate,index) => index <= 2)
+                   }
+                    this.inputs = this.inputs.filter((cate,index) => index <= 1)
+                    updateNodeHeight(this)
+                }
                 return onNodeCreated?.apply(this, arguments)
             }
             nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
