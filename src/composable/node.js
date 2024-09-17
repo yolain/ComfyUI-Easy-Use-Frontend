@@ -111,30 +111,34 @@ export const chainNode = (focus=false, offset = {}) => {
 		const nodeId = node.id;
 		if (!node.graph) continue;
 		// inputs
+		if(!lastTargetGetPos[nodeId]) lastTargetGetPos[nodeId] = []
 		for (const input of node.inputs ?? []) {
 			const linkId = input.link;
 			if (!linkId) continue;
 			const {origin_id, target_slot} = getLinkById(linkId);
 			const originNode = getNodeById(origin_id);
+
 			if (!originNode) continue;
 			if (!isGetSetNode(originNode)) continue;
-			const targetGetPos = node.getConnectionPos(true, target_slot);
-			if(lastTargetGetPos[nodeId] && (lastTargetGetPos[nodeId][1] !== targetGetPos[1] || lastTargetGetPos[nodeId][0] !== targetGetPos[0])){
-				offsetInputX = targetGetPos[0] - lastTargetGetPos[nodeId][0];
-				offsetInputY = targetGetPos[1] - lastTargetGetPos[nodeId][1];
+			let targetGetPos = node.getConnectionPos(true, target_slot);
+			if(!lastTargetGetPos[nodeId][target_slot]) lastTargetGetPos[nodeId][target_slot] = targetGetPos;
+			if(lastTargetGetPos[nodeId] && (lastTargetGetPos[nodeId][target_slot][1] !== targetGetPos[1] || lastTargetGetPos[nodeId][target_slot][0] !== targetGetPos[0])){
+				offsetInputX = targetGetPos[0] - lastTargetGetPos[nodeId][target_slot][0];
+				offsetInputY = targetGetPos[1] - lastTargetGetPos[nodeId][target_slot][1];
 				originNode.pos = [originNode.pos[0] + offsetInputX, originNode.pos[1] + offsetInputY];
 			}
-			lastTargetGetPos[nodeId] = targetGetPos;
+			lastTargetGetPos[nodeId][target_slot] = targetGetPos;
 			inputIndex += 1;
 			nodesFixed.push(originNode);
 			// originNode.flags.collapsed = true;
 		}
 		// outputs
+		if(!lastTargetSetPos[nodeId]) lastTargetSetPos[nodeId] = []
 		for (const output of node.outputs ?? []) {
 			if (!output.links) continue;
 			if (!node.graph) continue;
 			for (const linkId of output.links) {
-				const {target_id} = getLinkById(linkId);
+				const {target_id, target_slot, origin_slot} = getLinkById(linkId);
 				const originNode = getNodeById(target_id);
 				if (!originNode) {
 					console.error(`Failed`, node.id, `>`, target_id);
@@ -143,13 +147,14 @@ export const chainNode = (focus=false, offset = {}) => {
 				if (!isGetSetNode(originNode)) continue;
 				const links = originNode.outputs?.links;
 				if (links?.length > 1) return;
-				const targetSetPos = node.getConnectionPos(false, 0);
-				if(lastTargetSetPos[nodeId] && (lastTargetSetPos[nodeId][1] !== targetSetPos[1] || lastTargetSetPos[nodeId][0] !== targetSetPos[0])){
-					offsetOutputX = targetSetPos[0] - lastTargetSetPos[nodeId][0];
-					offsetOutputY = targetSetPos[1] - lastTargetSetPos[nodeId][1];
+				const targetSetPos = node.getConnectionPos(false, origin_slot);
+				if(!lastTargetSetPos[nodeId][origin_slot]) lastTargetSetPos[nodeId][origin_slot] = targetSetPos;
+				if(lastTargetSetPos[nodeId] && (lastTargetSetPos[nodeId][origin_slot][0] !== targetSetPos[0] || lastTargetSetPos[nodeId][origin_slot][1] !== targetSetPos[1])){
+					offsetOutputX = targetSetPos[0] - lastTargetSetPos[nodeId][origin_slot][0];
+					offsetOutputY = targetSetPos[1] - lastTargetSetPos[nodeId][origin_slot][1];
 					originNode.pos = [originNode.pos[0] + offsetOutputX, originNode.pos[1] + offsetOutputY];
 				}
-				lastTargetSetPos[nodeId] = targetSetPos;
+				lastTargetSetPos[nodeId][origin_slot] = targetSetPos;
 				outputIndex += 1;
 				nodesFixed.push(originNode);
 			}
