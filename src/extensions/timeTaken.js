@@ -29,7 +29,6 @@ app.registerExtension({
                 const lastNode = getNodeById(lastId);
                 if (lastNode) {
                     if(!lastNode.executionDuration) lastNode.executionDuration = 0.00;
-                    console.log(lastId, id)
                     lastNode.executionDuration = lastNode.executionDuration + (delta / 1e3)
                 }
             }
@@ -56,8 +55,9 @@ app.registerExtension({
  * @param text
  */
 function drawTime(ctx, text) {
-    if(!text) return
-    text = text.toFixed(3) +$t('s')
+    if(!text || typeof text !== 'string') return
+    console.log(text)
+    text = parseFloat(text).toFixed(3) +$t('s')
     ctx.save();
     ctx.fillStyle = LiteGraph.NODE_DEFAULT_BGCOLOR
     drawRoundedRect(ctx, 0, - LiteGraph.NODE_TITLE_HEIGHT - 20, ctx.measureText(text).width + 10, LiteGraph.NODE_TITLE_HEIGHT - 10, 4);
