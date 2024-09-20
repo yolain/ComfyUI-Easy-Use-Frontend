@@ -55,8 +55,7 @@ app.registerExtension({
  * @param text
  */
 function drawTime(ctx, text) {
-    if(!text || typeof text !== 'string') return
-    console.log(text)
+    if(!text) return
     text = parseFloat(text).toFixed(3) +$t('s')
     ctx.save();
     ctx.fillStyle = LiteGraph.NODE_DEFAULT_BGCOLOR
