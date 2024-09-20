@@ -458,6 +458,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
 function drawNodeWidgets(node, posY, ctx, active_widget) {
     if (!node.widgets || !node.widgets.length) return 0;
     let width = node.size[0];
+    let height = node.size[1];
     let widgets = node.widgets;
     posY += 2;
     let H = LiteGraph.NODE_WIDGET_HEIGHT;
@@ -484,11 +485,13 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
         if (w.disabled)
             ctx.globalAlpha *= 0.5;
         let widget_width = w.width || width;
+        let widget_height = w.height || height;
 
         switch (w.type) {
             case "button":
-                ctx.font = "10px Inter"
-                ctx.fillStyle = background_color;
+                var size = w.options.size || 10
+                ctx.font = size + "px Inter"
+                ctx.fillStyle = w.options?.transparent ? 'transparent' : background_color;
                 if (w.clicked) {
                     ctx.fillStyle = "#AAA";
                     w.clicked = false;
@@ -497,7 +500,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                 ctx.beginPath();
                 ctx.roundRect(margin, y, widget_width - margin * 2, H, [H * 0.25]);
                 ctx.fill();
-                if (show_text && !w.disabled)
+                if (show_text && !w.disabled && !w.options?.transparent)
                     ctx.stroke();
                 if (show_text) {
                     ctx.textAlign = "center";
@@ -566,7 +569,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                 if (show_text) {
                     ctx.textAlign = "center";
                     ctx.fillStyle = text_color;
-                    let text = (w.label || w.name) + ": " + (Number(w.value).toFixed(w.options.precision != null ? w.options.precision : 3)).toString()
+                    let text = (w.label || w.name)
                     ctx.fillText(
                         text,
                         widget_width * 0.5,
