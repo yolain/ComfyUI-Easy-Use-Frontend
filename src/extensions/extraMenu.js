@@ -283,7 +283,14 @@ const reloadNode = function (node) {
     }
 
     app.graph.remove(node)
-    const newNode = app.graph.add(LiteGraph.createNode(nodeType, nodeTitle, options));
+    let newNode = app.graph.add(LiteGraph.createNode(nodeType, nodeTitle, options));
+
+    newNode.inputs.map((cate,index) => {
+        newNode.inputs[index]['label'] = node.inputs[index]['label']
+    })
+    newNode.outputs.map((cate,index) => {
+        newNode.outputs[index]['label'] = node.outputs[index]['label']
+    })
 
     function handleLinks() {
         // re-convert inputs
