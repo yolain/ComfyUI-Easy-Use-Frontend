@@ -127,7 +127,7 @@ const createHumanSegmentation = async(node) => {
       node.properties['values'] = []
       _seg_selectors[selector_index]['value'] = []
       toggleWidget(node, getWidgetByName(node, 'confidence'), method_value === 'selfie_multiclass_256x256' ? true : false)
-      node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 500]);
+      node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 400]);
       store.setSegSelectors(_seg_selectors)
     },
     get:_=>method_value

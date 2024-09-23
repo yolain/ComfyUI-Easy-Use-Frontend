@@ -44,6 +44,9 @@ watch(_ => props.type, async(name) => {
     case 'human_parsing_lip':
       mask_components.value = ["Background","Hat","Hair","Glove","Sunglasses","Upper-clothes","Dress","Coat","Socks","Pants","Jumpsuits","Scarf","Skirt","Face","Left-arm","Right-arm","Left-leg","Right-leg","Left-shoe","Right-shoe"]
       break
+    case 'human_parts (deeplabv3p)':
+      mask_components.value = ["Background","Face", "Hair", "Glasses", "Top-clothes", "Bottom-clothes", "Torso-skin", "Left-arm", "Right-arm", "Left-leg", "Right-leg", "Left-foot", "Right-foot"]
+      break
   }
 },{
   immediate:true
