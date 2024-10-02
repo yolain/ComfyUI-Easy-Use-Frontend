@@ -16,7 +16,7 @@ import {NODES_MAP_ID} from "@/config/index";
 import Map from "@/components/sidebar/map/index.vue"
 import {getSetting, getSettingsLookup} from "@/composable/settings.js";
 const newMenuPositionID = 'Comfy.UseNewMenu'
-const newMenuPosition = ref(getSetting(newMenuPositionID))
+const newMenuPosition = ref(null)
 const init = _=>{
   // SideBar
   app.extensionManager.registerSidebarTab({
@@ -30,8 +30,8 @@ const init = _=>{
       render(h(Map,{}),el)
     }
   })
+  newMenuPosition.value = getSetting(newMenuPositionID)
   getSettingsLookup(newMenuPositionID, v=> {
-    console.log(v)
     newMenuPosition.value = v
   })
 }

@@ -100,7 +100,7 @@ app.registerExtension({
             if(detail.value == 'custom_milk_white') document.body.classList.remove(DARK_THEME_CLASS)
         })
         // crytools monitor
-        setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
+        // setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
     },
 
     async nodeCreated(node) {
@@ -942,8 +942,8 @@ const loadColorPalette = async (colorPalette) => {
 };
 
 
-const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
-if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
+// const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
+// if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
 // crystools monitor
 const setCrystoolsUI = (position) =>{
     const crystools = document.getElementById('crystools-root')?.children || null
