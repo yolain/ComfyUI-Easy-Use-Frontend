@@ -101,6 +101,8 @@ app.registerExtension({
         })
         // crytools monitor
         setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
+        const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
+        if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
     },
 
     async nodeCreated(node) {
@@ -940,26 +942,24 @@ const loadColorPalette = async (colorPalette) => {
         app.canvas.draw(true, true);
     }
 };
-
-
-const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
-if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
 // crystools monitor
 const setCrystoolsUI = (position) =>{
+    console.log(position)
     const crystools = document.getElementById('crystools-root')?.children || null
     const workflowTabsPosition = getSetting('Comfy.Workflow.WorkflowTabsPosition', null , '')
     if(crystools?.length>0 && workflowTabsPosition){
         if(!monitor) monitor = document.getElementById('MonitorUI')
-        if(monitor){
-            if(position == 'Disabled'){}
-            else {
-                let monitor_div = document.getElementById('crystools-root-easyuse')
-                if(!monitor_div) {
-                    const menu_right = document.getElementsByClassName('comfyui-menu-right')
-                    if(menu_right.length>0) menu_right[0].before($el('div',{id:'crystools-root-easyuse'},monitor))
-                }
-                else monitor_div.appendChild(monitor)
+        if(position == 'Disabled'){
+            let root_div = document.getElementById('crystools-root')
+            root_div.appendChild(monitor)
+        }
+        else {
+            let root_div = document.getElementById('crystools-root-easyuse')
+            if(!root_div) {
+                const menu_right = document.getElementsByClassName('comfyui-menu-right')
+                if(menu_right.length>0) menu_right[0].before($el('div',{id:'crystools-root-easyuse'},monitor))
             }
+            else root_div.appendChild(monitor)
         }
     }
 }
