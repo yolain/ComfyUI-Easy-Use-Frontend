@@ -100,7 +100,7 @@ app.registerExtension({
             if(detail.value == 'custom_milk_white') document.body.classList.remove(DARK_THEME_CLASS)
         })
         // crytools monitor
-        // setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
+        setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
     },
 
     async nodeCreated(node) {
@@ -942,34 +942,22 @@ const loadColorPalette = async (colorPalette) => {
 };
 
 
-// const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
-// if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
+const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
+if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
 // crystools monitor
 const setCrystoolsUI = (position) =>{
     const crystools = document.getElementById('crystools-root')?.children || null
-    if(crystools?.length>0){
-        if(!monitor){
-            for (let i = 0; i < crystools.length; i++) {
-                if (crystools[i].id === 'crystools-monitor-container') {
-                    monitor = crystools[i];
-                    break;
-                }
-            }
-        }
+    const workflowTabsPosition = getSetting('Comfy.Workflow.WorkflowTabsPosition', null , '')
+    if(crystools?.length>0 && workflowTabsPosition){
+        if(!monitor) monitor = document.getElementById('MonitorUI')
         if(monitor){
-            if(position == 'Disabled'){
-                let replace = true
-                for (let i = 0; i < crystools.length; i++) {
-                    if (crystools[i].id === 'crystools-monitor-container') {
-                        replace = false
-                        break;
-                    }
-                }
-                document.getElementById('crystools-root').appendChild(monitor)
-            }
+            if(position == 'Disabled'){}
             else {
-                let monitor_div = document.getElementById('comfyui-menu-monitor')
-                if(!monitor_div) app.menu.settingsGroup.element.before($el('div',{id:'comfyui-menu-monitor'},monitor))
+                let monitor_div = document.getElementById('crystools-root-easyuse')
+                if(!monitor_div) {
+                    const menu_right = document.getElementsByClassName('comfyui-menu-right')
+                    if(menu_right.length>0) menu_right[0].before($el('div',{id:'crystools-root-easyuse'},monitor))
+                }
                 else monitor_div.appendChild(monitor)
             }
         }
