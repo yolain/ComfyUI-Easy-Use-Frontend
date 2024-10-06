@@ -22,6 +22,7 @@ const NODE_CUSTOM_COLORS = {
     "easy promptReplace": "cyan",
     "easy forLoopStart": "blue",
     "easy forLoopEnd": "blue",
+    "easy loadImagesForLoop": "blue",
 }
 let NODE_COLOR_THEMES = LGraphCanvas.node_colors
 let control_mode = null
@@ -944,7 +945,6 @@ const loadColorPalette = async (colorPalette) => {
 };
 // crystools monitor
 const setCrystoolsUI = (position) =>{
-    console.log(position)
     const crystools = document.getElementById('crystools-root')?.children || null
     const workflowTabsPosition = getSetting('Comfy.Workflow.WorkflowTabsPosition', null , '')
     if(crystools?.length>0 && workflowTabsPosition){

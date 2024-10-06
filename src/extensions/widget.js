@@ -42,7 +42,7 @@ const image_dynamic_nodes = ["easy imageSize","easy imageSizeBySide","easy image
 const loop_nodes = ['easy forLoopStart','easy forLoopEnd', 'easy whileLoopStart', 'easy whileLoopEnd']
 const index_switch_nodes = ['easy anythingIndexSwitch', 'easy imageIndexSwitch', 'easy textIndexSwitch', 'easy conditioningIndexSwitch']
 const inverse_switch_nodes = ['easy anythingInversedSwitch']
-const change_slots_nodes = [...loop_nodes,...index_switch_nodes,...inverse_switch_nodes]
+const change_slots_nodes = [...['easy loadImagesForLoop'],...loop_nodes,...index_switch_nodes,...inverse_switch_nodes]
 const value_names = {'easy anythingInversedSwitch':'out', 'easy anythingIndexSwitch':'value', 'easy imageIndexSwitch':'image', 'easy textIndexSwitch':'text', 'easy conditioningIndexSwitch':'cond'}
 
 /* Register Extension */
@@ -360,6 +360,7 @@ app.registerExtension({
 
             nodeType.prototype.onNodeCreated = async function () {
                 // change shape of flow
+                if(node_name == 'easy loadImagesForLoop') this.outputs[0]['shape'] = 5
                 if(loop_nodes.includes(node_name)) {
                     const flow_intput_index = this.inputs.findIndex(cate => cate.name === 'flow')
                     const flow_output_index = this.outputs.findIndex(cate => cate.name === 'flow')
