@@ -53,7 +53,8 @@ export const useNodesStore = defineStore('groups', {
             this.nodes = cloneDeep(nodes)
         },
         update(){
-            if(app.extensionManager.activeSidebarTab !== NODES_MAP_ID && !this.isWatching) return
+            let activeSidebarTab = app.extensionManager?.activeSidebarTab || app.extensionManager.sidebarTab?.activeSidebarTab?.id
+            if(activeSidebarTab !== NODES_MAP_ID && !this.isWatching) return
             setTimeout(_=>{
                 this.setGroups(app.canvas.graph._groups)
                 this.setNodes(app.canvas.graph._nodes)
