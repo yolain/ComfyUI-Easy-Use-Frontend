@@ -215,6 +215,30 @@ export default {
             "output":"output",
         },
     },
+    saveText:{
+        category: 'Save Text',
+        nodes:['easy saveText', 'easy saveTextLazy'],
+        input:{
+            "image":"image",
+            "text": "text",
+            "output_file_path": "output_file_path",
+            "file_name": "file_name",
+            "file_extension": "file_extension",
+            "overwrite": "overwrite"
+        },
+        output:{
+            "text":"text",
+            "image":"image"
+        },
+        widget: {
+            "image":"image",
+            "text": "text",
+            "output_file_path": "output_file_path",
+            "file_name": "file_name",
+            "file_extension": "file_extension",
+            "overwrite": "overwrite"
+        }
+    },
     // LLM
     persona:{
         category: 'LLM Party Persona',
