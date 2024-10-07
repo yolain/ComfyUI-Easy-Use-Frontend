@@ -204,6 +204,17 @@ export default {
             "end_at": "end_at"
         },
     },
+    // showAnything
+    showAny:{
+        category: 'Show Anything',
+        nodes:['easy showAnything', 'easy showAnythingLazy'],
+        input:{
+            "anything":"anything",
+        },
+        output:{
+            "output":"output",
+        },
+    },
     // LLM
     persona:{
         category: 'LLM Party Persona',
@@ -279,5 +290,5 @@ export default {
         output:{
             "MASKS":"MASKS",
         },
-    }
+    },
 }

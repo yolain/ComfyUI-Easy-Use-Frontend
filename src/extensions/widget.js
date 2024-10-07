@@ -58,7 +58,7 @@ app.registerExtension({
         const onConnectionsChange = nodeType.prototype.onConnectionsChange;
 
         // show the text of the widget
-        if (['easy showAnything', 'easy showTensorShape', "easy showSpentTime", 'easy imageInterrogator', 'easy showLoaderSettingsNames'].includes(node_name)) {
+        if (['easy showAnything', 'easy showAnythingLazy', 'easy showTensorShape', "easy showSpentTime", 'easy imageInterrogator', 'easy showLoaderSettingsNames'].includes(node_name)) {
             function populate(text, name = 'text') {
                 if (this.widgets) {
                     const pos = this.widgets.findIndex((w) => w.name === name);
