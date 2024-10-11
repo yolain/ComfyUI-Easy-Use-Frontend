@@ -32,8 +32,8 @@ app.registerExtension({
                         if(this.widgets[0].value !== ''){
                             this.title = setIcon + this.widgets[0].value;
                         }
-                        this.update();
                         this.properties.previousName = this.widgets[0].value;
+                        this.update();
                     },
                     {}
                 )
@@ -78,6 +78,7 @@ app.registerExtension({
 
                         setTimeout(_=>{
                             this.title = setIcon + this.widgets[0].value;
+                            this.properties.previousName = this.widgets[0].value;
                         },1)
 
                     }
