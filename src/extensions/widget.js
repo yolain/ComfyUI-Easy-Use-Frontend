@@ -858,8 +858,8 @@ function toggleLogic(node, widget) {
             var number_to_show = v + 1
             var has_weight = getWidgetByName(node, 'input_mode').value.indexOf("Weights") == -1
             for (let i = 0; i < number_to_show; i++) {
-                toggleWidget(node, getWidgetByName(node, 'lora_name_' + i), true)
-                    ['model_str_' + i, 'clip_str_' + i].map(name => toggleWidget(node, getWidgetByName(node, name), has_weight ? false : true))
+                toggleWidget(node, getWidgetByName(node, 'lora_name_' + i), true);
+                ['model_str_' + i, 'clip_str_' + i].map(name => toggleWidget(node, getWidgetByName(node, name), has_weight ? false : true))
             }
             for (let i = number_to_show; i < 11; i++) {
                 ['lora_name_' + i, 'model_str_' + i, 'clip_str_' + i].map(name => toggleWidget(node, getWidgetByName(node, name), false))
@@ -900,7 +900,7 @@ function toggleLogic(node, widget) {
                     const has_weight = v.indexOf("Weights") != -1
                     for (let i = 0; i < number_to_show; i++) {
                         toggleWidget(node, getWidgetByName(node, 'lora_name_' + i), true);
-                        ['model_str_' + i, 'clip_str_' + i].map(name => toggleWidget(node, getWidgetByName(node, name), has_weight ? false : true))
+                        ['model_str_' + i, 'clip_str_' + i].map(name => toggleWidget(node, getWidgetByName(node, name), has_weight ? true : false))
                     }
                     ['model_strength', 'clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), has_weight ? false : true))
                     break
@@ -909,8 +909,8 @@ function toggleLogic(node, widget) {
                     var has_clipskip = getWidgetByName(node, 'input_mode').value.indexOf("ClipSkip") != -1
                     var has_vae = getWidgetByName(node, 'input_mode').value.indexOf("VAE") != -1
                     for (let i = 0; i < number_to_show; i++) {
-                        toggleWidget(node, getWidgetByName(node, 'ckpt_name_' + i), true)
-                        toggleWidget(node, getWidgetByName(node, 'clip_skip_' + i), has_clipskip ? true : false)
+                        toggleWidget(node, getWidgetByName(node, 'ckpt_name_' + i), true);
+                        toggleWidget(node, getWidgetByName(node, 'clip_skip_' + i), has_clipskip ? true : false);
                         toggleWidget(node, getWidgetByName(node, 'vae_name_' + i), has_vae ? true : false)
                     }
                     break
