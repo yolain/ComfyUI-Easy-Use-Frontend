@@ -59,9 +59,10 @@ app.registerExtension({
                         values.unshift({
                             content: `<i class="mdi mdi-sitemap comfyui-easyuse-warning" style="margin-right:2px;font-size:14px"></i>${$t('Nodes Map')} ${sitemap_extra}`,
                             callback: _ => {
-                                const active_tab = app.extensionManager.activeSidebarTab
-                                if(active_tab == NODES_MAP_ID) app.extensionManager.updateActiveSidebarTab(null)
-                                else app.extensionManager.updateActiveSidebarTab(NODES_MAP_ID)
+                                const sidebarTab = app.extensionManager?.sidebarTab || app.extensionManager
+                                const activeSidebarTab = app.extensionManager.sidebarTab?.activeSidebarTabId || app.extensionManager?.activeSidebarTab
+                                if(activeSidebarTab == NODES_MAP_ID) sidebarTab.activeSidebarTabId = null
+                                else sidebarTab.activeSidebarTabId = NODES_MAP_ID
                             }
                         })
                     }

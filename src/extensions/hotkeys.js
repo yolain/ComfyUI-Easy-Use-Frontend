@@ -190,9 +190,10 @@ app.registerExtension({
             hotkeys('shift+m', function (event, handler) {
                 const enableToggleMap = getSetting('EasyUse.Hotkeys.toggleNodesMap',null, true);
                 if(!enableToggleMap) return
-                const active_tab = app.extensionManager.activeSidebarTab
-                if(active_tab == NODES_MAP_ID) app.extensionManager.updateActiveSidebarTab(null)
-                else app.extensionManager.updateActiveSidebarTab(NODES_MAP_ID)
+                let sidebarTab = app.extensionManager?.sidebarTab || app.extensionManager
+                let activeSidebarTab = app.extensionManager.sidebarTab?.activeSidebarTabId || app.extensionManager?.activeSidebarTab
+                if(activeSidebarTab == NODES_MAP_ID) sidebarTab.activeSidebarTabId = null
+                else sidebarTab.activeSidebarTabId = NODES_MAP_ID
             })
 
             // Register hotkeys with ALT+1~9 to add node template to canvas qulickly
