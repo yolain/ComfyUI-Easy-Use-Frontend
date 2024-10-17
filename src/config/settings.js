@@ -77,6 +77,13 @@ export default {
         type: 'boolean',
         defaultValue: true,
     },
+    quickOptions:{
+        id: 'EasyUse.ContextMenu.QuickOptions',
+        name: $t('Use three shortcut buttons in the right-click menu'),
+        type: 'combo',
+        options:['At the forefront', 'At the end', 'Disable'],
+        defaultValue: 'At the forefront',
+    },
     // Nodes
     nodesRuntime:{
         id: 'EasyUse.Nodes.Runtime',
@@ -99,4 +106,11 @@ export default {
         options: ['Auto sorting', 'Manual drag&drop sorting'],
         defaultValue: 'Auto sorting',
     },
+    enableNodesMap:{
+        id: 'EasyUse.NodesMap.Enable',
+        name: $t('Enable Nodes Map'),
+        tooltip: $t('You need to refresh the page to update successfully'),
+        type: 'boolean',
+        defaultValue: true,
+    }
 }

@@ -72,6 +72,9 @@ export default {
     "Shift+Up/Down/Left/Right can align selected nodes, Shift+Ctrl+Alt+Left/Right can distribute horizontal/vertical nodes": "Shift+上/下/左/右 可以对齐选中的节点, Shift+Ctrl+Alt+左/右 可以水平/垂直分布节点",
     "Enable Shift+Ctrl+Left key to normalize width and Shift+Ctrl+Right key to normalize height": "启用 Shift+Ctrl+左 键规范化宽度和 Shift+Ctrl+右 键规范化高度",
     "After v1.2.39, Ctrl+g can be used instead of it":"从v1.2.39开始，可以使用Ctrl+g代替",
+    "Use three shortcut buttons in the right-click menu": "在右键菜单中使用三个快捷按钮",
+    "Enable Nodes Map": "启用节点组管理",
+    "You need to refresh the page to update successfully": "您需要刷新页面以成功更新",
     // selector
     "Get styles list Failed": "获取样式列表失败",
     "Get style image Failed": "获取样式图片失败",

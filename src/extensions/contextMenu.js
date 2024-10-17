@@ -41,22 +41,25 @@ app.registerExtension({
                 }
                 // 4. contextmenu on canvas
                 else {
-                    if (options.hasOwnProperty('extra')) {
+                    const options_enabled = getSetting('EasyUse.ContextMenu.QuickOptions',null, 'At the forefront');
+                    if (options.hasOwnProperty('extra') && options_enabled !== 'Disable') {
                         // add reboot and cleanup
-                        values.unshift(null)
+                        options_enabled == 'At the forefront' ? values.unshift(null) : values.push(null);
                         if (isLocalNetwork(window.location.host)) {
-                            values.unshift({
+                            const reboot_icon = {
                                 content: `<i class="mdi mdi-refresh-circle comfyui-easyuse-error" style="margin-right:2px;font-size:16px"></i>${$t('Reboot ComfyUI')}`,
                                 callback: _ => reboot()
-                            })
+                            }
+                            options_enabled == 'At the forefront' ? values.unshift(reboot_icon) : values.push(reboot_icon);
                         }
                         const vram_extra = getSetting('EasyUse.Hotkeys.cleanVRAMUsed',null, true) ? '('+normalize('Shift+r')+')' : ''
-                        values.unshift({
+                        const vram_icon = {
                             content: `<i class="mdi mdi-rocket comfyui-easyuse-theme" style="margin-right:2px;font-size:16px"></i>${$t('Cleanup Of VRAM Usage')} ${vram_extra}`,
                             callback: _ => cleanVRAM()
-                        })
+                        }
+                        options_enabled == 'At the forefront' ? values.unshift(vram_icon) : values.push(vram_icon);
                         const sitemap_extra = getSetting('EasyUse.Hotkeys.toggleNodesMap',null, true) ? '('+normalize('Shift+m')+')' : ''
-                        values.unshift({
+                        const map_icon = {
                             content: `<i class="mdi mdi-sitemap comfyui-easyuse-warning" style="margin-right:2px;font-size:14px"></i>${$t('Nodes Map')} ${sitemap_extra}`,
                             callback: _ => {
                                 const sidebarTab = app.extensionManager?.sidebarTab || app.extensionManager
@@ -64,7 +67,8 @@ app.registerExtension({
                                 if(activeSidebarTab == NODES_MAP_ID) sidebarTab.activeSidebarTabId = null
                                 else sidebarTab.activeSidebarTabId = NODES_MAP_ID
                             }
-                        })
+                        }
+                        options_enabled == 'At the forefront' ? values.unshift(map_icon) : values.push(map_icon);
                     }
 
                 }
