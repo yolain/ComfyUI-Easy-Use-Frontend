@@ -239,7 +239,7 @@ export default {
             "overwrite": "overwrite"
         }
     },
-    // LLM
+    // LLM Party
     persona:{
         category: 'LLM Party Persona',
         nodes:['load_persona','classify_persona','classify_persona_plus','custom_persona','translate_persona','flux_persona'],

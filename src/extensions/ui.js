@@ -572,7 +572,11 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                 if (show_text) {
                     ctx.textAlign = "center";
                     ctx.fillStyle = text_color;
-                    let text = (w.label || w.name)
+                    let text = (w.label || w.name) + " : " + Number(w.value).toFixed(
+                        w.options.precision != null
+                            ? w.options.precision
+                            : 3
+                    );
                     ctx.fillText(
                         text,
                         widget_width * 0.5,
