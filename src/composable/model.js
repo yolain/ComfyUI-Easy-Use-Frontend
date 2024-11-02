@@ -1,7 +1,7 @@
 import { api,$el, ComfyDialog } from "./comfyAPI";
 import {formatTime} from "./util";
 import {$t} from "./i18n.js";
-// import {toast} from "../../components/toast.js";
+import {toast} from "../components/toast.js";
 
 class MetadataDialog extends ComfyDialog {
     constructor() {

@@ -376,8 +376,10 @@ function displayThumbnails(values, options){
                 const protocol = window.location.protocol
                 const host = window.location.host
                 const base_url = `${protocol}//${host}`
-                const thumb_url = thumbnail.replace(':','%3A').replace(/\\/g,'/')
-                newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[$el("span",{},content + ' *'),$el("img",{src:`${base_url}/${thumb_url}?t=${time}`})])
+                let thumb_url = thumbnail.replace(':','%3A').replace(/\\/g,'/')
+                thumb_url = thumb_url.startsWith('/') ? thumb_url.substring(1) : thumb_url
+                let src = `${base_url}/${thumb_url}?time=${time}`
+                newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[$el("span",{},content + ' *'),$el("img",{src})])
             }else{
                 newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[
                     $el("span",{},content)
