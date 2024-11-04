@@ -610,7 +610,7 @@ function toggleLogic(node, widget) {
             if (v === "自定义 x 自定义") {
                 widget.value = 'width x height (custom)'
             }
-            ['empty_latent_width', 'empty_latent_height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'width x height (custom)' ? true : false))
+            ['empty_latent_width', 'empty_latent_height', 'width', 'height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'width x height (custom)' ? true : false))
             break
         case 'ratio':
             ['empty_latent_width', 'empty_latent_height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'custom' ? true : false))
