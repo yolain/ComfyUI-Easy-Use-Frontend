@@ -30,8 +30,8 @@ class chooserImageDialog extends ComfyDialog {
                         this.select_index.push(index)
                         imgEl.classList.add('selected')
                     }
-                    if (node.selected.has(index)) node.selected.delete(index);
-                    else node.selected.add(index);
+                    if (node.selected_images.has(index)) node.selected_images.delete(index);
+                    else node.selected_images.add(index);
                 }
             })
             return imgEl
@@ -52,11 +52,11 @@ class chooserImageDialog extends ComfyDialog {
             textContent: $t('Choose Selected Images'),
             onclick: _ => {
                 if (FlowState.paused()) {
-                    send_message(this.node.id, [...this.node.selected, -1, ...this.node.anti_selected]);
+                    send_message(this.node.id, [...this.node.selected_images, -1, ...this.node.anti_selected]);
                 }
                 if (FlowState.idle()) {
                     skip_next_restart_message();
-                    restart_from_here(this.node.id).then(() => { send_message(this.node.id, [...this.node.selected, -1, ...this.node.anti_selected]); });
+                    restart_from_here(this.node.id).then(() => { send_message(this.node.id, [...this.node.selected_images, -1, ...this.node.anti_selected]); });
                 }
                 super.close()
             }
@@ -69,16 +69,16 @@ class chooserImageDialog extends ComfyDialog {
 function progressButtonPressed() {
     const node = app.graph._nodes_by_id[this.node_id];
     if (node) {
-        const selected = [...node.selected]
+        const selected = [...node.selected_images]
         if(selected?.length>0){
             node.setProperty('values',selected)
         }
         if (FlowState.paused()) {
-            send_message(node.id, [...node.selected, -1, ...node.anti_selected]);
+            send_message(node.id, [...node.selected_images, -1, ...node.anti_selected]);
         }
         if (FlowState.idle()) {
             skip_next_restart_message();
-            restart_from_here(node.id).then(() => { send_message(node.id, [...node.selected, -1, ...node.anti_selected]); });
+            restart_from_here(node.id).then(() => { send_message(node.id, [...node.selected_images, -1, ...node.anti_selected]); });
         }
     }
 }
@@ -140,8 +140,8 @@ app.registerExtension({
         function on_execution_start() {
             if (send_onstart()) {
                 app.graph._nodes.forEach((node)=> {
-                    if (node.selected || node.anti_selected) {
-                        node.selected.clear();
+                    if (node.selected_images || node.anti_selected) {
+                        node.selected_images.clear();
                         node.anti_selected.clear();
                         node.update();
                     }
@@ -201,8 +201,8 @@ app.registerExtension({
 
             nodeType.prototype.imageClicked = function (imageIndex) {
                 if (nodeType?.comfyClass==="easy imageChooser") {
-                    if (this.selected.has(imageIndex)) this.selected.delete(imageIndex);
-                    else this.selected.add(imageIndex);
+                    if (this.selected_images.has(imageIndex)) this.selected_images.delete(imageIndex);
+                    else this.selected_images.add(imageIndex);
                     this.update();
                 }
             }
@@ -212,7 +212,7 @@ app.registerExtension({
                 if (update) update.apply(this,arguments);
                 if (this.send_button_widget) {
                     this.send_button_widget.node_id = this.id;
-                    const selection = ( this.selected ? this.selected.size : 0 ) + ( this.anti_selected ? this.anti_selected.size : 0 )
+                    const selection = ( this.selected ? this.selected_images.size : 0 ) + ( this.anti_selected ? this.anti_selected.size : 0 )
                     const maxlength = this.imgs?.length || 0;
                     if (FlowState.paused_here(this.id) && selection>0) {
                         this.send_button_widget.name = (selection>1) ? "Progress selected (" + selection + '/' + maxlength  +")" : "Progress selected image";

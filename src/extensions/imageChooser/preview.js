@@ -5,7 +5,7 @@ const kSampler = ['easy kSampler', 'easy kSamplerTiled', 'easy fullkSampler']
 function display_preview_images(event) {
     const node = app.graph._nodes_by_id[event.detail.id];
     if (node) {
-        node.selected = new Set();
+        node.selected_images = new Set();
         node.anti_selected = new Set();
         const image = showImages(node, event.detail.urls);
         return {node,image,isKSampler:kSampler.includes(node.type)}
@@ -66,7 +66,9 @@ function additionalDrawBackground(node, ctx) {
     }
     ctx.lineWidth = 2;
     ctx.strokeStyle = "green";
-    node?.selected?.forEach((s) => { drawRect(node,s, ctx) })
+    if(node && node.selected_images){
+        node.selected_images.forEach((s) => { drawRect(node,s, ctx) })
+    }
     ctx.strokeStyle = "#F88";
     node?.anti_selected?.forEach((s) => { drawRect(node,s, ctx) })
 }
