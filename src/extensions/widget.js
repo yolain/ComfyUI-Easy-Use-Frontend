@@ -15,7 +15,7 @@ const allow_widgets = [
     'num_loras', 'num_controlnet', 'mode', 'toggle', 'resolution', 'ratio', 'target_parameter',
     'input_count', 'replace_count', 'downscale_mode', 'range_mode', 'text_combine_mode', 'input_mode',
     'lora_count', 'ckpt_count', 'conditioning_mode', 'preset', 'use_tiled', 'use_batch', 'num_embeds',
-    "easing_mode", "guider", "scheduler", "inpaint_mode", 't5_type', 'rem_mode'
+    "easing_mode", "guider", "scheduler", "inpaint_mode", 't5_type', 'rem_mode', 'encode'
 ]
 // About ipadapter
 const ipa_presets = [
@@ -736,7 +736,10 @@ function toggleLogic(node, widget) {
             }
             updateNodeHeight(node)
             break
-
+        case 'encode':
+            toggleWidget(node, getWidgetByName(node, 'noise_mask'), ['inpaint_model_conditioning','different_diffusion'].includes(v) ? true : false)
+            updateNodeHeight(node)
+            break
         // PreSampling or Sampler
         case 'image_output':
             toggleWidget(node, getWidgetByName(node, 'link_id'), ['Sender', 'Sender&Save'].includes(v) ? true : false);
@@ -766,14 +769,16 @@ function toggleLogic(node, widget) {
         case 'guider':
             switch (v) {
                 case 'Basic':
+                case 'IP2P+Basic':
                     ['cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name)))
                     break
                 case 'CFG':
+                case 'IP2P+CFG':
                     toggleWidget(node, getWidgetByName(node, 'cfg'), true);
                     toggleWidget(node, getWidgetByName(node, 'cfg_negative'))
                     break
-                case 'IP2P+DualCFG':
                 case 'DualCFG':
+                case 'IP2P+DualCFG':
                     ['cfg', 'cfg_negative'].map(name => toggleWidget(node, getWidgetByName(node, name),true))
                     break
             }
