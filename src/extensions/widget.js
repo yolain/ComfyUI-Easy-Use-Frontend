@@ -22,8 +22,12 @@ const ipa_presets = [
     'LIGHT - SD1.5 only (low strength)',
     'STANDARD (medium strength)',
     'VIT-G (medium strength)',
-    'PLUS (high strength)', 'PLUS FACE (portraits)',
+    'FLUX.1-dev',
+    'PLUS (high strength)',
+    'PLUS (kolors genernal)',
+    'PLUS FACE (portraits)',
     'FULL FACE - SD1.5 only (portraits stronger)',
+    'COMPOSITION'
 ]
 const ipa_loras_presets = [
     'FACEID',
@@ -684,7 +688,7 @@ function toggleLogic(node, widget) {
             if (ipa_presets.includes(v)) {
                 let use_tiled = getWidgetByName(node, 'use_tiled')
                 toggleWidget(node, getWidgetByName(node, 'lora_strength'))
-                toggleWidget(node, getWidgetByName(node, 'provider'))
+                toggleWidget(node, getWidgetByName(node, 'provider'), ['FLUX.1-dev'].includes(v) ? true : false)
                 toggleWidget(node, getWidgetByName(node, 'weight_faceidv2'))
                 toggleWidget(node, getWidgetByName(node, 'weight_kolors'))
                 toggleWidget(node, getWidgetByName(node, 'use_tiled'), true)
