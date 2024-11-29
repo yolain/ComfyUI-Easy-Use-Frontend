@@ -212,7 +212,7 @@ app.registerExtension({
                 if (update) update.apply(this,arguments);
                 if (this.send_button_widget) {
                     this.send_button_widget.node_id = this.id;
-                    const selection = ( this.selected ? this.selected_images.size : 0 ) + ( this.anti_selected ? this.anti_selected.size : 0 )
+                    const selection = ( this.selected_images ? this.selected_images.size : 0 ) + ( this.anti_selected ? this.anti_selected.size : 0 )
                     const maxlength = this.imgs?.length || 0;
                     if (FlowState.paused_here(this.id) && selection>0) {
                         this.send_button_widget.name = (selection>1) ? "Progress selected (" + selection + '/' + maxlength  +")" : "Progress selected image";
