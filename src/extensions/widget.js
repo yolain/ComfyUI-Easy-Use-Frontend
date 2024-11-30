@@ -594,7 +594,7 @@ app.registerExtension({
  */
 function toggleLogic(node, widget) {
     const node_name = node.comfyClass
-    const v = widget.value
+    let v = widget.value
     switch (widget.name) {
         // Range Int or Range Flot
         case 'range_mode':
@@ -762,6 +762,7 @@ function toggleLogic(node, widget) {
                     toggleWidget(node, control_widget)
                 }
             } else {
+                if(v === 'enable') widget.value = 'enable (CPU)'
                 toggleWidget(node, getWidgetByName(node, 'seed'), true)
                 if (control_widget) {
                     if (control_widget?.last_value) control_widget.value = control_widget.last_value
