@@ -495,7 +495,9 @@ app.registerExtension({
             nodeType.prototype.onConnectionsChange = async function (output, input) {
                 onConnectionsChange ? onConnectionsChange.apply(this, []) : undefined;
                 const model = this.inputs.find(cate => cate.name === 'model_override')
+                const vae = this.inputs.find(cate => cate.name === 'vae_override')
                 toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
+                toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
             }
         }
     },
