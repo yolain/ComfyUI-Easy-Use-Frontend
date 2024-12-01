@@ -491,6 +491,13 @@ app.registerExtension({
                 }
             }
         }
+        if(['easy fluxLoader', 'easy fullLoader'].includes(node_name)){
+            nodeType.prototype.onConnectionsChange = async function (output, input) {
+                onConnectionsChange ? onConnectionsChange.apply(this, []) : undefined;
+                const model = this.inputs.find(cate => cate.name === 'model_override')
+                toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
+            }
+        }
     },
 
 
