@@ -543,13 +543,14 @@ app.registerExtension({
                 let combo_id = 1;
                 Object.defineProperty(node.widgets[combo_id], "value", {
                     set: (value) => {
-                        const stackTrace = new Error().stack;
-                        if (stackTrace.includes('inner_value_change') || stackTrace.includes('inner_onclick')) {
-                            if (value != "Select the LoRA to add to the text") {
-                                let lora_name = value;
-                                if (lora_name.endsWith('.safetensors'))  lora_name = lora_name.slice(0, -12);
-                                wildcard_text_widget.value += `<lora:${lora_name}>`;
-                            }
+                        // const stackTrace = new Error().stack;
+                        // if (stackTrace.includes('inner_value_change') || stackTrace.includes('inner_onclick')) {
+                        //
+                        // }
+                        if (value != "Select the LoRA to add to the text") {
+                            let lora_name = value;
+                            if (lora_name.endsWith('.safetensors'))  lora_name = lora_name.slice(0, -12);
+                            wildcard_text_widget.value += `<lora:${lora_name}>`;
                         }
                     },
                     get: _ => "Select the LoRA to add to the text"
@@ -557,12 +558,13 @@ app.registerExtension({
 
                 Object.defineProperty(node.widgets[combo_id + 1], "value", {
                     set: (value) => {
-                        const stackTrace = new Error().stack;
-                        if (stackTrace.includes('inner_value_change') || stackTrace.includes('inner_onclick')) {
-                            if (value != "Select the Wildcard to add to the text") {
-                                if (wildcard_text_widget.value != '') wildcard_text_widget.value += ', '
-                                wildcard_text_widget.value += value;
-                            }
+                        // const stackTrace = new Error().stack;
+                        // if (stackTrace.includes('inner_value_change') || stackTrace.includes('inner_onclick')) {
+                        //
+                        // }
+                        if (value != "Select the Wildcard to add to the text") {
+                            if (wildcard_text_widget.value != '') wildcard_text_widget.value += ', '
+                            wildcard_text_widget.value += value;
                         }
                     },
                     get: _ => "Select the Wildcard to add to the text"
