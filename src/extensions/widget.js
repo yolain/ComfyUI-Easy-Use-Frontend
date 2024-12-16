@@ -22,7 +22,7 @@ const ipa_presets = [
     'LIGHT - SD1.5 only (low strength)',
     'STANDARD (medium strength)',
     'VIT-G (medium strength)',
-    'FLUX.1-dev',
+    'REGULAR - FLUX and SD3.5 only (high strength)',
     'PLUS (high strength)',
     'PLUS (kolors genernal)',
     'PLUS FACE (portraits)',
@@ -696,10 +696,11 @@ function toggleLogic(node, widget) {
 
         // IPAdapter Widgets
         case 'preset':
+            if(v == 'FLUX.1-dev') widget.value = 'REGULAR - FLUX and SD3.5 only (high strength)'
             if (ipa_presets.includes(v)) {
                 let use_tiled = getWidgetByName(node, 'use_tiled')
                 toggleWidget(node, getWidgetByName(node, 'lora_strength'))
-                toggleWidget(node, getWidgetByName(node, 'provider'), ['FLUX.1-dev'].includes(v) ? true : false)
+                toggleWidget(node, getWidgetByName(node, 'provider'), ['REGULAR - FLUX and SD3.5 only (high strength)'].includes(v) ? true : false)
                 toggleWidget(node, getWidgetByName(node, 'weight_faceidv2'))
                 toggleWidget(node, getWidgetByName(node, 'weight_kolors'))
                 toggleWidget(node, getWidgetByName(node, 'use_tiled'), true)
