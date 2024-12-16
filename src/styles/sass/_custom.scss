@@ -243,9 +243,11 @@
 
   // new front
   .comfyui-menu{
+    background: var(--comfy-menu-bg);
     border-bottom: 1px solid var(--bg-color);
   }
   .side-tool-bar-container{
+    background: var(--comfy-menu-bg);
     border-right: 1px solid var(--bg-color);
   }
 
@@ -258,19 +260,6 @@
     text-align: center;
     font-size: 18px;
     line-height: 1.5;
-  }
-}
-
-#comfyui-menu-monitor{
-  width:120px;
-  #crystools-monitor-container{
-    margin:0 auto!important;
-    & > div{
-      margin:2px 0!important;
-      & > div > div{
-        padding:0 4px!important;
-      }
-    }
   }
 }
 
