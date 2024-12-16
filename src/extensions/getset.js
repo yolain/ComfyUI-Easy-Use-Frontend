@@ -48,7 +48,7 @@ app.registerExtension({
                     link_info,
                     output
                 ) {
-                    // console.log("onConnectionsChange");
+                    console.log("onConnectionsChange");
                     //On Disconnect
                     if (slotType == 1 && !isChangeConnect) {
                         this.inputs[slot].type = '*';
@@ -60,6 +60,7 @@ app.registerExtension({
                     if (link_info && node.graph && slotType == 1 && isChangeConnect) {
                         const fromNode = node.graph._nodes.find((otherNode) => otherNode.id == link_info.origin_id);
                         const slot = fromNode.outputs[link_info.origin_slot];
+                        if(!slot) return
                         const type = slot.type;
                         const name = node.is_auto_link ? this.widgets[0].value : slot.name;
 
@@ -73,8 +74,10 @@ app.registerExtension({
                         }
 
                         this.validateName(node.graph);
-                        this.inputs[0].type = type;
-                        this.inputs[0].name = name;
+                        if(this.inputs[0]){
+                            this.inputs[0].type = type;
+                            this.inputs[0].name = name;
+                        }
 
                         setTimeout(_=>{
                             this.title = setIcon + this.widgets[0].value;
