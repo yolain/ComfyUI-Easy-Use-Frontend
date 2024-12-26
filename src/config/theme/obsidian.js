@@ -1,5 +1,5 @@
 import { THEME_COLOR } from '../index.js'
-const VERSION = 105
+const VERSION = 106
 const bgcolor = LGraphCanvas.node_colors.bgcolor
 export default {
     ColorPalette: {
@@ -39,7 +39,7 @@ export default {
               "NODE_DEFAULT_COLOR": "#09090b",
               "NODE_DEFAULT_BGCOLOR": "rgba(24,24,27,.9)",
               "NODE_DEFAULT_BOXCOLOR": "rgba(255,255,255,.75)",
-              "NODE_DEFAULT_SHAPE": "box",
+              "NODE_DEFAULT_SHAPE": 2,
               "NODE_BOX_OUTLINE_COLOR": THEME_COLOR,
               "DEFAULT_SHADOW_COLOR": "rgba(0,0,0,0)",
               "DEFAULT_GROUP_FONT": 24,

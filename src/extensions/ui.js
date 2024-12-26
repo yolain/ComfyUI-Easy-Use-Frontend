@@ -12,7 +12,7 @@ import {useNodesStore} from "@/stores/nodes.js";
 
 /* Define Variable */
 let nodesStore = null
-const custom_themes = ["custom_obsidian", "custom_obsidian_dark", "custom_milk_white"]
+const custom_themes = ["custom_obsidian", "custom_obsidian_dark", "custom_milk_white", 'obsidian_dark', 'obsidian', 'milk_white']
 const NODE_CUSTOM_COLORS = {
     "easy positive": "green",
     "easy negative": "red",
@@ -64,12 +64,15 @@ app.registerExtension({
             addPreconnect("https://fonts.googleapis.com", true)
             addCss("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap", false)
             switch (color_palette) {
+                case 'obsidian':
+                case 'obsidian_dark':
                 case 'custom_obsidian':
                 case 'custom_obsidian_dark':
                 case 'dark':
                     LGraphCanvas.node_colors = obsidian.NODE_COLORS
                     break
                 case 'custom_milk_white':
+                case 'milk_white':
                 case 'light':
                     LGraphCanvas.node_colors = milk_white.NODE_COLORS
                     break

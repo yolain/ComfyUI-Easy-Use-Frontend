@@ -59,7 +59,7 @@ export async function setSetting(id, value, storge_key=null) {
  * @param value
  */
 export function addSetting(settings){
-    app.ui.settings.addSetting(settings)
+    if(!app.ui.settings.settingsLookup[settings.id]) app.ui.settings.addSetting(settings)
 }
 
 /**
