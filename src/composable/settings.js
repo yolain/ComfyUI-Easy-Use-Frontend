@@ -67,6 +67,6 @@ export function addSetting(settings){
  * @returns {string}
  */
 export function getLocale(){
-    return getSetting('AGL.Locale')
+    return getSetting('Comfy.Locale')
 }
 
