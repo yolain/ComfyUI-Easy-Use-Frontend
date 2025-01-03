@@ -165,21 +165,17 @@ function updateControlWidgetLabel(widget, controlValueRunBefore = false) {
 function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     //bg rect
     ctx.strokeStyle = fgcolor;
-    ctx.fillStyle = bgcolor;
+    ctx.fillStyle = LiteGraph.use_legacy_node_error_indicator ? "#F00" : bgcolor;
 
-    let title_height = LiteGraph.NODE_TITLE_HEIGHT;
-    let low_quality = this.ds.scale < 0.5;
+    const title_height = LiteGraph.NODE_TITLE_HEIGHT;
+    const low_quality = this.ds.scale < 0.5;
 
     //render node area depending on shape
-    let shape = node._shape || node.constructor.shape || LiteGraph.ROUND_SHAPE;
-    let title_mode = node.constructor.title_mode;
+    const {collapsed} = node.flags;
+    const shape = node._shape || node.constructor.shape || LiteGraph.ROUND_SHAPE;
+    const {title_mode} = node.constructor;
 
-    let render_title = true;
-    if (title_mode == LiteGraph.TRANSPARENT_TITLE || title_mode == LiteGraph.NO_TITLE) {
-        render_title = false;
-    } else if (title_mode == LiteGraph.AUTOHIDE_TITLE && mouse_over) {
-        render_title = true;
-    }
+    const  render_title =  title_mode == LiteGraph.TRANSPARENT_TITLE || title_mode == LiteGraph.NO_TITLE ? false : true;
 
     let area = new Float32Array(4);
     area = [0, render_title ? -title_height : 0, size[0] + 1, render_title ? size[1] + title_height : size[1]]; // [x,y,w,h]
@@ -214,8 +210,20 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     ctx.strokeStyle = fgcolor;
     ctx.fill();
 
+    if (node.has_errors && !LiteGraph.use_legacy_node_error_indicator) {
+        this.strokeShape(ctx, area, {
+            shape,
+            title_mode,
+            title_height,
+            padding: 12,
+            colour: LiteGraph.NODE_ERROR_COLOUR,
+            collapsed,
+            thickness: 10,
+        })
+    }
+
     //separator
-    if (!node.flags.collapsed && render_title) {
+    if (!collapsed && render_title) {
         ctx.shadowColor = "transparent";
         ctx.fillStyle = "rgba(0,0,0,0.2)";
         ctx.fillRect(0, -1, area[2], 2);
@@ -346,7 +354,8 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
         }
         if (!low_quality) {
             ctx.font = this.title_text_font;
-            let title = String(node.getTitle());
+            const rawTitle = node.getTitle() ?? `❌ ${node.type}`
+            const title = String(rawTitle) + (node.pinned ? "📌" : "")
             if (title) {
                 if (selected) {
                     ctx.fillStyle = nodeColorIsDark ? '#ffffff' : LiteGraph.NODE_SELECTED_TITLE_COLOR;
@@ -374,7 +383,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
         }
 
         //subgraph box
-        if (!node.flags.collapsed && node.subgraph && !node.skip_subgraph_button) {
+        if (!collapsed && node.subgraph && !node.skip_subgraph_button) {
             let w = LiteGraph.NODE_TITLE_HEIGHT;
             let x = node.size[0] - w;
             let over = LiteGraph.isInsideRectangle(this.graph_mouse[0] - node.pos[0], this.graph_mouse[1] - node.pos[1], x + 2, -w + 2, w - 4, w - 4);
