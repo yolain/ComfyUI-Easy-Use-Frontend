@@ -826,7 +826,7 @@ function toggleLogic(node, widget) {
                 ['old_cond_start', 'old_cond_end', 'new_cond_start', 'new_cond_end'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
             } else if (v == 'timestep') {
                 ['average_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false));
-                ['old_cond_start', 'old_cond_end', 'new_cond_start', 'new_cond_end'].map(name => toggleWidget(node, getWidgetByName(node, name)))
+                ['old_cond_start', 'old_cond_end', 'new_cond_start', 'new_cond_end'].map(name => toggleWidget(node, getWidgetByName(node, name), true))
             }
             break
 
