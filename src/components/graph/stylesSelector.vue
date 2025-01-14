@@ -11,9 +11,10 @@ div(:class="prefix + ` ${prefix}-styles`", :data-id="id" @mouseleave="hiddenImag
       div(:class="prefix+'-item'" v-for="(item,index) in styles", :key="index", @mouseenter="displayImage(item)",  @mouseleave.stop="hiddenImage(item)")
         span(:class="[prefix+'-item__tag',{'hide':!selectedStyles.includes(item.name) && l(item.name).indexOf(l(search_value)) == -1 && (!item.name_cn || l(item.name_cn).indexOf(l(search_value)) == -1)}]" @click="chooseStyle(item)")
           input(type="checkbox" :name="item.name", :checked="selectedStyles.includes(item.name)")
-          span {{locale == 'zh-CN' && item.name_cn ? item.name_cn : item.name}}
-    div(:class="prefix+'-preview'" v-if="preview?.src")
-      img(:src="preview.src" ref="image", alt="preview" @error="errorImage")
+          span {{['zh','zh_CN'].includes(locale) && item.name_cn ? item.name_cn : item.name}}
+    div(:class="prefix+'-preview'" v-if="preview?.src || preview?.positive || preview?.negative")
+      img(:src="preview.src" ref="image", alt="preview" @error="errorImage" v-if="preview.src")
+
       div(:class="prefix+'-preview__text'")
         b {{preview.name}}
         div(:class="prefix+'-preview__prompt'")
@@ -117,7 +118,7 @@ const displayImage = async(item) =>{
     const url = await getStyleImage(item.imgName).finally(()=> item.imageLoading = false)
     item.imageSrc = url
   }
-  preview.name = locale == 'zh-CN' && item.name_cn ? item.name_cn : item.name
+  preview.name = locale == 'zh' && item.name_cn ? item.name_cn : item.name
   preview.positive = item.prompt
   preview.negative = item.negative_prompt
   preview.src = item.imageSrc
