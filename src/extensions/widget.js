@@ -1,4 +1,4 @@
-import {app, ComfyWidgets} from "@/composable/comfyAPI";
+import {api, app, ComfyWidgets} from "@/composable/comfyAPI";
 
 import {$t} from "@/composable/i18n";
 import {toggleWidget, getWidgetByName, updateNodeHeight} from "@/composable/node";
@@ -49,6 +49,7 @@ const inverse_switch_nodes = ['easy anythingInversedSwitch']
 const change_slots_nodes = [...['easy loadImagesForLoop'],...loop_nodes,...index_switch_nodes,...inverse_switch_nodes]
 const value_names = {'easy anythingInversedSwitch':'out', 'easy anythingIndexSwitch':'value', 'easy imageIndexSwitch':'image', 'easy textIndexSwitch':'text', 'easy conditioningIndexSwitch':'cond'}
 
+let all_nodes = null
 /* Register Extension */
 app.registerExtension({
     name: 'Comfy.EasyUse.Widget',
@@ -496,8 +497,26 @@ app.registerExtension({
                 onConnectionsChange ? onConnectionsChange.apply(this, []) : undefined;
                 const model = this.inputs.find(cate => cate.name === 'model_override')
                 const vae = this.inputs.find(cate => cate.name === 'vae_override')
-                toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
-                toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
+                let vae_name = getWidgetByName(this, 'vae_name')
+                let ckpt_name = getWidgetByName(this, 'ckpt_name')
+                if(!all_nodes) all_nodes = await api.getNodeDefs()
+                if(model?.link && input == 0){
+                    const ckpt_names = all_nodes?.['CheckpointLoaderSimple']?.['input']?.['required']?.['ckpt_name']?.[0]
+                    setTimeout(_ => {
+                        this.widgets[0].value = ckpt_names[0]
+                        this.widgets_values[0] = ckpt_names[0]
+                        toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
+                    }, 1)
+                }
+                else toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
+                if(vae?.link && input == 2){
+                    setTimeout(_ => {
+                        this.widgets[2].value = 'Baked VAE'
+                        this.widgets_values[2] = 'Baked VAE'
+                        toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
+                    },1)
+                }
+                else toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
             }
         }
     },
