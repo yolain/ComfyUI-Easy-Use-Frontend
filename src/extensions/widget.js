@@ -511,8 +511,8 @@ app.registerExtension({
                 else toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
                 if(vae?.link && input == 2){
                     setTimeout(_ => {
-                        this.widgets[2].value = 'Baked VAE'
-                        this.widgets_values[2] = 'Baked VAE'
+                        this.widgets[1].value = 'Baked VAE'
+                        this.widgets_values[1] = 'Baked VAE'
                         toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
                     },1)
                 }
