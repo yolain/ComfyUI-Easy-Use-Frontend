@@ -76,6 +76,12 @@ app.registerExtension({
         if(getSetting('EasyUse.ContextMenu.NodesSort',null, true)){
             LiteGraph.ContextMenu.prototype.addItem = contextMenuAddItem;
         }
+
+        // Force hide Model Thumbnail
+        document.getElementById('graph-canvas').addEventListener('mouseenter',_=>{
+           let image_element = document.getElementById('easyuse-model-thumbnail')
+           if(image_element?.style.opacity == 1 || image_element.src) closeModelsThumbnail()()
+        })
     }
 })
 
