@@ -377,7 +377,7 @@ function setComboOptions(values, options){
 
     if(!enableModelThumbnail && !enableSubDirectories) return null;
     // Allow Extensions
-    const allow_extensions = ['ckpt', 'pt', 'bin', 'pth', 'safetensors']
+    const allow_extensions = ['ckpt', 'pt', 'bin', 'pth', 'safetensors', 'gguf']
     if(values?.length>0){
         const ext = getExtensions(values[values.length-1]);
         if(!allow_extensions.includes(ext)) return null;
@@ -430,26 +430,26 @@ function setComboOptions(values, options){
         }
     }
     const foldersCount = Object.values(folders).length;
-    if(foldersCount > 0){
-        const addContent = (content, folderName='', fullName) => {
-            let newContent
-            newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[
-                $el("span",{},content)
-            ])
-            let folder = modelsList[fullName]?.folder
-            let pathIndex = modelsList[fullName]?.pathIndex
-            const protocol = window.location.protocol
-            const host = window.location.host
-            const base_url = `${protocol}//${host}`
-            let src = folder ? `${base_url}/api/experiment/models/preview/${folder}/${pathIndex}/${encodeRFC3986URIComponent(fullName)}` : ''
-            return {
-                content,
-                thumbnail:enableModelThumbnail ? src : null,
-                title:newContent.outerHTML,
-                callback: newCallback
-            }
+    const newValues = [];
+    const addContent = (content, folderName='', fullName) => {
+        let newContent
+        newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[
+            $el("span",{},content)
+        ])
+        let folder = modelsList[fullName]?.folder
+        let pathIndex = modelsList[fullName]?.pathIndex
+        const protocol = window.location.protocol
+        const host = window.location.host
+        const base_url = `${protocol}//${host}`
+        let src = folder ? `${base_url}/api/experiment/models/preview/${folder}/${pathIndex}/${encodeRFC3986URIComponent(fullName)}` : ''
+        return {
+            content,
+            thumbnail:enableModelThumbnail ? src : null,
+            title:newContent.outerHTML,
+            callback: newCallback
         }
-        const newValues = [];
+    }
+    if(foldersCount > 0){
         const add_sub_folder = (folder, folderName) => {
             let subs = []
             let less = []
@@ -502,9 +502,8 @@ function setComboOptions(values, options){
                 }
             });
         }
-        newValues.push(...folderless.map(f => addContent(f.value, '', f.fullValue)));
-        if(specialOps.length > 0) newValues.push(...specialOps.map(f => addContent(f.value, '', f.fullValue)));
-        return newValues;
     }
-    else return null;
+    newValues.push(...folderless.map(f => addContent(f.value, '', f.fullValue)));
+    if(specialOps.length > 0) newValues.push(...specialOps.map(f => addContent(f.value, '', f.fullValue)));
+    return newValues;
 }
