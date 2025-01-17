@@ -75,22 +75,16 @@
 
   &-model{
     position:relative;
-    &:hover img{
-      display: block;
-      opacity: 1;
-    }
-    img{
-      position: absolute;
-      z-index:1;
-      right:-175px;
-      top:-75px;
-      width:150px;
-      height:auto;
-      display: none;
-      filter:brightness(70%);
-      -webkit-filter: brightness(70%);
-      opacity: 0;
-      @include transition5();
-    }
   }
+}
+#easyuse-model-thumbnail{
+  display: none;
+  position: fixed;
+  z-index:9999;
+  width:150px;
+  height:auto;
+  filter:brightness(70%);
+  -webkit-filter: brightness(70%);
+  opacity: 0;
+  @include transition5();
 }

@@ -59,18 +59,6 @@ export default {
         type: 'boolean',
         defaultValue: false,
     },
-    modelsThumbnailsLimit:{
-        id: 'EasyUse.ContextMenu.ModelsThumbnailsLimit',
-        name: $t('Maximum number of model thumbnails displayed'),
-        tooltip: $t('Too many thumbnails will affect the first loading time, set the maximum value to not load the thumbnail function when there are too many models\'s thumbnail'),
-        type: 'slider',
-        attrs: {
-            min: 0,
-            max: 5000,
-            step: 100,
-        },
-        defaultValue: 500,
-    },
     rightMenuNodesSort:{
         id: 'EasyUse.ContextMenu.NodesSort',
         name: $t('Enable right-click menu to add node A~Z sorting'),

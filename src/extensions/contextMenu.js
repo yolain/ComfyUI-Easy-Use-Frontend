@@ -3,33 +3,21 @@ import {reboot, cleanVRAM} from "@/composable/easyuseAPI.js";
 import {$t} from "@/composable/i18n.js";
 import {isLocalNetwork, normalize} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
-import {COMFYUI_NODE_BASIC_CATEGORY, NODES_MAP_ID} from "@/config";
+import {COMFYUI_NODE_BASIC_CATEGORY, NODES_MAP_ID, NO_PREVIEW_IMAGE} from "@/config";
 import {getSetting} from "@/composable/settings.js";
-/* Variables */
-let thumbnails = []
 
+let modelsList = {}
 /* Register Extension */
 app.registerExtension({
     name: 'Comfy.EasyUse.ContextMenu',
     async setup() {
         LGraphCanvas.onMenuAdd = onMenuAdd;
-        const thumnails_enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, false);
-        const limit = getSetting('EasyUse.ContextMenu.ModelsThumbnailsLimit',null, 500);
-        if(thumnails_enabled && limit > 0){
-            const imgRes = await api.fetchApi(`/easyuse/models/thumbnail?limit=${limit}`)
-            if (imgRes.status === 200) {
-                let data = await imgRes.json();
-                thumbnails = data
-            }
-            else {
-                toast.error($t("Too many thumbnails, have closed the display"))
-            }
-        }
-
+        // Get Models List
+        getModelsList();
+        // ContextMenu ReWrite
         const contextMenu = LiteGraph.ContextMenu;
-        LiteGraph.ContextMenu = function(values,options){
-            const enabled = getSetting('EasyUse.ContextMenu.SubDirectories',null, false);
-            if(!enabled || !(options?.callback) || values.some(i => typeof i !== 'string')) {
+        LiteGraph.ContextMenu = function(values, options){
+            if(!(options?.callback) || values.some(i => typeof i !== 'string')) {
                 if (options.parentMenu) {
                     // 1. contextmenu on submenu
                 }
@@ -77,7 +65,7 @@ app.registerExtension({
                 return contextMenu.apply(this, [...arguments]);
             }
             else{
-                const newValues = displayThumbnails(values,options)
+                const newValues = setComboOptions(values, options)
                 if(newValues)  {
                     return contextMenu.call(this, newValues, options);
                 }
@@ -223,11 +211,17 @@ function contextMenuAddItem(name, value, options){
     if (element && isCustomItem(value) && value?.image && !value.submenu) {
         element.textContent += " *";
         $el("div.pysssss-combo-image", {
-            parent: element,
+            id: `pysssss-image-combo-${name}`,
+            parent: document.body,
             style: {
                 backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
             },
         });
+    }
+    if (element && value?.thumbnail){
+        element.addEventListener("mouseenter", showModelsThumbnail(element, value.thumbnail, this.root),{passive:true})
+        element.addEventListener("mouseleave", closeModelsThumbnail(),{passive:true})
+        element.addEventListener("click",closeModelsThumbnail(),{passive:true})
     }
 
     this.root.appendChild(element);
@@ -322,29 +316,117 @@ function spliceExtensions(fileName){
 function getExtensions(fileName){
     return fileName?.substring(fileName.lastIndexOf('.') + 1)
 }
+
+const calculateImagePosition = (el, rootRect, bodyRect) => {
+    const {x} = el.getBoundingClientRect();
+    let {top, left} = rootRect;
+    const {width: bodyWidth, height: bodyHeight} = bodyRect;
+
+    const isSpaceRight = x <= bodyWidth;
+    if (isSpaceRight) {
+        left += rootRect.width;
+    }
+    const isSpaceBelow = rootRect.top <= bodyHeight;
+    if (!isSpaceBelow) {
+        top = bodyHeight;
+    }
+    return {left, top};
+}
+// Get Models List
+const getModelsList = async () => {
+    ['checkpoints','loras', 'diffusion_models'].map(async(cate)=>{
+        const models = await api.getModels(cate)
+        if(models?.length>0){
+            models.map(i=>{
+                modelsList[i.name] = {folder:cate, pathIndex:i.pathIndex}
+            })
+        }
+    })
+}
+const showModelsThumbnail = (el, src, root) => (e) => {
+    setTimeout(_=>{
+        const rootRect = root.getBoundingClientRect()
+        if(!rootRect) return
+        const bodyRect = document.body.getBoundingClientRect();
+        if (!bodyRect) return;
+        const { left, top } = calculateImagePosition(el, rootRect, bodyRect);
+        const image_element = document.getElementById('easyuse-model-thumbnail')
+        image_element.src = src
+        image_element.style.left = `${left}px`
+        image_element.style.top = `${top}px`
+        image_element.style.display = 'block'
+        image_element.style.opacity = 1
+        image_element.onerror = _=> {
+            image_element.src = NO_PREVIEW_IMAGE
+        }
+    },10)
+}
+const closeModelsThumbnail = () => (e) => {
+    const image_element = document.getElementById('easyuse-model-thumbnail')
+    image_element.style.display = 'none'
+    image_element.style.opacity = 0
+    image_element.src = ''
+    image_element.style.left = '0px'
+    image_element.style.top = '0px'
+}
+
 // display model thumbnails preview
-function displayThumbnails(values, options){
+function setComboOptions(values, options){
+    const enableModelThumbnail = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null);
+    const enableSubDirectories = getSetting('EasyUse.ContextMenu.SubDirectories',null);
+
+    if(!enableModelThumbnail && !enableSubDirectories) return null;
+    // Allow Extensions
+    const allow_extensions = ['ckpt', 'pt', 'bin', 'pth', 'safetensors']
+    if(values?.length>0){
+        const ext = getExtensions(values[values.length-1]);
+        if(!allow_extensions.includes(ext)) return null;
+    }
+
+    // setCallback
+    const oldcallback = options.callback;
+    const originalValues = [...values];
+    options.callback = null;
+    const newCallback = (item,options) => {
+        if(['None','无','無','なし'].includes(item.content)) oldcallback('None',options)
+        else oldcallback(originalValues.find(i => i.endsWith(item.content),options));
+    };
+    // only enable models thumbnails
+    if(enableModelThumbnail && !enableSubDirectories){
+        return values.map(value => {
+            let folder = modelsList[value]?.folder
+            let pathIndex = modelsList[value]?.pathIndex
+            const protocol = window.location.protocol
+            const host = window.location.host
+            const base_url = `${protocol}//${host}`
+            let src = folder ? `${base_url}/api/experiment/models/preview/${folder}/${pathIndex}/${encodeRFC3986URIComponent(value)}` : ''
+            let newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[$el("span",{}, value)])
+            return {
+                content: value,
+                title: newContent.outerHTML,
+                thumbnail:src,
+                callback: newCallback
+            }
+        })
+    }
+
+
     const compatValues = values;
-    const originalValues = [...compatValues];
     const folders = {};
     const specialOps = [];
     const folderless = [];
-    const allow_extensions = ['ckpt', 'pt', 'bin', 'pth', 'safetensors']
-    if(values?.length>0){
-        const firstExt = getExtensions(values[values.length-1]);
-        if(!allow_extensions.includes(firstExt)) return null;
-    }
+
     for(const value of compatValues){
         const splitBy = value.indexOf('/') > -1 ? '/' : '\\';
         const valueSplit = value.split(splitBy);
         if(valueSplit.length > 1){
             const key = valueSplit.shift();
             folders[key] = folders[key] || [];
-            folders[key].push(valueSplit.join(splitBy));
+            folders[key].push({value:valueSplit.join(splitBy),fullValue:value});
         }else if(value === 'CHOOSE' || value.startsWith('DISABLE ')){
-            specialOps.push(value);
+            specialOps.push({value, fullValue:value});
         }else{
-            folderless.push(value);
+            folderless.push({value, fullValue:value});
         }
     }
     const foldersCount = Object.values(folders).length;
@@ -355,39 +437,20 @@ function displayThumbnails(values, options){
             if(['None','无','無','なし'].includes(item.content)) oldcallback('None',options)
             else oldcallback(originalValues.find(i => i.endsWith(item.content),options));
         };
-        const addContent = (content, folderName='') => {
-            const name = folderName ? folderName + '\\' + spliceExtensions(content) : spliceExtensions(content);
-            const ext = getExtensions(content)
-            const time = new Date().getTime()
-            let thumbnail = ''
-            if(allow_extensions.includes(ext)){
-                for(let i=0;i<thumbnails.length;i++){
-                    let thumb = thumbnails[i]
-                    if(name && thumb && thumb.indexOf(name) != -1){
-                        thumbnail = thumbnails[i]
-                        break
-                    }
-                }
-            }
-
+        const addContent = (content, folderName='', fullName) => {
             let newContent
-            const enabled = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null, false);
-            if(thumbnail && enabled){
-                const protocol = window.location.protocol
-                const host = window.location.host
-                const base_url = `${protocol}//${host}`
-                let thumb_url = thumbnail.replace(':','%3A').replace(/\\/g,'/')
-                thumb_url = thumb_url.startsWith('/') ? thumb_url.substring(1) : thumb_url
-                let src = `${base_url}/${thumb_url}?time=${time}`
-                newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[$el("span",{},content + ' *'),$el("img",{src})])
-            }else{
-                newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[
-                    $el("span",{},content)
-                ])
-            }
-
+            newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[
+                $el("span",{},content)
+            ])
+            let folder = modelsList[fullName]?.folder
+            let pathIndex = modelsList[fullName]?.pathIndex
+            const protocol = window.location.protocol
+            const host = window.location.host
+            const base_url = `${protocol}//${host}`
+            let src = folder ? `${base_url}/api/experiment/models/preview/${folder}/${pathIndex}/${encodeRFC3986URIComponent(fullName)}` : ''
             return {
                 content,
+                thumbnail:enableModelThumbnail ? src : null,
                 title:newContent.outerHTML,
                 callback: newCallback
             }
@@ -396,24 +459,24 @@ function displayThumbnails(values, options){
         const add_sub_folder = (folder, folderName) => {
             let subs = []
             let less = []
-            const b = folder.map(name=> {
+            const b = folder.map(({value:name,fullValue:fullName})=> {
                 const _folders = {};
                 const splitBy = name.indexOf('/') > -1 ? '/' : '\\';
                 const valueSplit = name.split(splitBy);
                 if(valueSplit.length > 1){
                     const key = valueSplit.shift();
                     _folders[key] = _folders[key] || [];
-                    _folders[key].push(valueSplit.join(splitBy));
+                    _folders[key].push({value:valueSplit.join(splitBy),fullValue:fullName});
                 }
                 const foldersCount = Object.values(folders).length;
                 if(foldersCount > 0){
                     let key = Object.keys(_folders)[0]
                     if(key && _folders[key]) subs.push({key, value:_folders[key][0]})
                     else{
-                        less.push(addContent(name,key))
+                        less.push(addContent(name,key,fullName))
                     }
                 }
-                return addContent(name,folderName)
+                return addContent(name,folderName,fullName)
             })
             if(subs.length>0){
                 let subs_obj = {}
@@ -445,8 +508,8 @@ function displayThumbnails(values, options){
                 }
             });
         }
-        newValues.push(...folderless.map(f => addContent(f, '')));
-        if(specialOps.length > 0) newValues.push(...specialOps.map(f => addContent(f, '')));
+        newValues.push(...folderless.map(f => addContent(f.value, '', f.fullValue)));
+        if(specialOps.length > 0) newValues.push(...specialOps.map(f => addContent(f.value, '', f.fullValue)));
         return newValues;
     }
     else return null;

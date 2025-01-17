@@ -1,5 +1,6 @@
 <template lang="pug">
 graphNodes
+img#easyuse-model-thumbnail
 toolBar(v-if="newMenuPosition == 'Disabled'")
 </template>
 
@@ -17,19 +18,24 @@ import Map from "@/components/sidebar/map/index.vue"
 import {getSetting, getSettingsLookup} from "@/composable/settings.js";
 const newMenuPositionID = 'Comfy.UseNewMenu'
 const newMenuPosition = ref(null)
+
+
 const init = _=>{
+  const enableNodesMap = getSetting('EasyUse.NodesMap.Enable', null)
   // SideBar
-  app.extensionManager.registerSidebarTab({
-    id: NODES_MAP_ID,
-    icon: 'pi pi-sitemap',
-    title: $t("Nodes Map", true),
-    tooltip: $t("Nodes Map", true),
-    type: 'custom',
-    render: el => {
-      el.style.height = '100%'
-      render(h(Map,{}),el)
-    }
-  })
+  if (enableNodesMap){
+    app.extensionManager.registerSidebarTab({
+      id: NODES_MAP_ID,
+      icon: 'pi pi-sitemap',
+      title: $t("Nodes Map", true),
+      tooltip: $t("Nodes Map", true),
+      type: 'custom',
+      render: el => {
+        el.style.height = '100%'
+        render(h(Map,{}),el)
+      }
+    })
+  }
   newMenuPosition.value = getSetting(newMenuPositionID)
   getSettingsLookup(newMenuPositionID, v=> {
     newMenuPosition.value = v
