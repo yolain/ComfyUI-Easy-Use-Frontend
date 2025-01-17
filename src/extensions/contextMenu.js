@@ -431,12 +431,6 @@ function setComboOptions(values, options){
     }
     const foldersCount = Object.values(folders).length;
     if(foldersCount > 0){
-        const oldcallback = options.callback;
-        options.callback = null;
-        const newCallback = (item,options) => {
-            if(['None','无','無','なし'].includes(item.content)) oldcallback('None',options)
-            else oldcallback(originalValues.find(i => i.endsWith(item.content),options));
-        };
         const addContent = (content, folderName='', fullName) => {
             let newContent
             newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[
