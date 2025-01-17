@@ -83,8 +83,6 @@
   z-index:9999;
   width:200px;
   height:auto;
-  filter:brightness(70%);
-  -webkit-filter: brightness(70%);
   opacity: 0;
   @include transition5();
 }
