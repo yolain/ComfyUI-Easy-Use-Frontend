@@ -5,3 +5,11 @@ export let ComfyDialog = window.comfyAPI?.dialog?.ComfyDialog || null;
 export let ComfyWidgets = window.comfyAPI?.widgets?.ComfyWidgets || null;
 export let applyTextReplacements =  window.comfyAPI?.utils?.applyTextReplacements || null;
 export let GroupNodeConfig = window.comfyAPI?.groupNode?.GroupNodeConfig || null;
+
+export let registerExtension = obj => {
+    try{
+        app.registerExtension(obj)
+    }catch (e){
+        console.log(e)
+    }
+}

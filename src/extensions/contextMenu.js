@@ -80,7 +80,7 @@ app.registerExtension({
         // Force hide Model Thumbnail
         document.getElementById('graph-canvas').addEventListener('mouseenter',_=>{
            let image_element = document.getElementById('easyuse-model-thumbnail')
-           if(image_element?.style.opacity == 1 || image_element.src) closeModelsThumbnail()()
+           if(image_element?.style.opacity == 1 || image_element.src) closeModelsThumbnail()
         })
     }
 })
@@ -225,7 +225,7 @@ function contextMenuAddItem(name, value, options){
         });
     }
     if (element && value?.thumbnail){
-        element.addEventListener("mouseenter", showModelsThumbnail(element, value.thumbnail, this.root),{passive:true})
+        element.addEventListener("mouseenter", showModelsThumbnail(element, value, this.root),{passive:true})
         element.addEventListener("mouseleave", closeModelsThumbnail(),{passive:true})
         element.addEventListener("click",closeModelsThumbnail(),{passive:true})
     }
@@ -349,29 +349,48 @@ const getModelsList = async () => {
         }
     })
 }
-const showModelsThumbnail = (el, src, root) => (e) => {
-    setTimeout(_=>{
-        const rootRect = root.getBoundingClientRect()
-        if(!rootRect) return
-        const bodyRect = document.body.getBoundingClientRect();
-        if (!bodyRect) return;
-        const { left, top } = calculateImagePosition(el, rootRect, bodyRect);
-        const image_element = document.getElementById('easyuse-model-thumbnail')
-        image_element.src = src
-        image_element.style.left = `${left}px`
-        image_element.style.top = `${top}px`
-        image_element.style.display = 'block'
-        image_element.style.opacity = 1
-        image_element.onerror = _=> {
-            image_element.src = NO_PREVIEW_IMAGE
+const showModelsThumbnail = (el, value, root) => (e) => {
+    const image_show = src => {
+        setTimeout(_ =>{
+            const rootRect = root.getBoundingClientRect()
+            if(!rootRect) return
+            const bodyRect = document.body.getBoundingClientRect();
+            if (!bodyRect) return;
+            const { left, top } = calculateImagePosition(el, rootRect, bodyRect);
+            const image_element = document.getElementById('easyuse-model-thumbnail')
+            image_element.src = src
+            image_element.style.left = `${left}px`
+            image_element.style.top = `${top}px`
+            image_element.style.display = 'block'
+            image_element.style.opacity = 1
+            image_element.onerror = _=> {
+                image_element.src = NO_PREVIEW_IMAGE
+            }
+        },10)
+    }
+
+    if(modelsList?.[value.fullName]?.img){
+        let img = modelsList[value.fullName].img
+        img == 'no_preview_image' ?  image_show(NO_PREVIEW_IMAGE) : image_show(img.src)
+    }else{
+        let img = new Image()
+        img.src = value.thumbnail
+        img.onload = _ => {
+            modelsList[value.fullName].img = img
+            image_show(value.thumbnail)
         }
-    },10)
+        img.onerror = _ => {
+            img = null
+            modelsList[value.fullName].img = 'no_preview_image'
+            image_show(NO_PREVIEW_IMAGE)
+        }
+    }
+
 }
 const closeModelsThumbnail = () => (e) => {
     const image_element = document.getElementById('easyuse-model-thumbnail')
     image_element.style.display = 'none'
     image_element.style.opacity = 0
-    image_element.src = ''
     image_element.style.left = '0px'
     image_element.style.top = '0px'
 }
@@ -408,7 +427,9 @@ function setComboOptions(values, options){
             let src = folder ? `${base_url}/api/experiment/models/preview/${folder}/${pathIndex}/${encodeRFC3986URIComponent(value)}` : ''
             let newContent = $el("div.comfyui-easyuse-contextmenu-model", {},[$el("span",{}, value)])
             return {
+                folder,
                 content: value,
+                fullName: value,
                 title: newContent.outerHTML,
                 thumbnail:src,
                 callback: newCallback
@@ -449,7 +470,9 @@ function setComboOptions(values, options){
         const base_url = `${protocol}//${host}`
         let src = folder ? `${base_url}/api/experiment/models/preview/${folder}/${pathIndex}/${encodeRFC3986URIComponent(fullName)}` : ''
         return {
+            folder,
             content,
+            fullName,
             thumbnail:enableModelThumbnail ? src : null,
             title:newContent.outerHTML,
             callback: newCallback

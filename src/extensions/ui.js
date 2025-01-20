@@ -1,4 +1,4 @@
-import { api, app, $el } from '@/composable/comfyAPI'
+import { api, app, $el, registerExtension } from '@/composable/comfyAPI'
 import {addCss, addPreconnect} from "@/composable/head";
 import {getSetting, setSetting, addSetting} from "@/composable/settings";
 import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR, DARK_THEME_CLASS} from "@/config";
@@ -38,7 +38,7 @@ for(let i in settings) {
 }
 
 /* Register Extension */
-app.registerExtension({
+registerExtension({
     name: 'Comfy.EasyUse.UI',
     init() {
         const id = 'Comfy.CustomColorPalettes'
