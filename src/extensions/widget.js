@@ -504,19 +504,18 @@ app.registerExtension({
                     const ckpt_names = all_nodes?.['CheckpointLoaderSimple']?.['input']?.['required']?.['ckpt_name']?.[0]
                     setTimeout(_ => {
                         this.widgets[0].value = ckpt_names[0]
-                        this.widgets_values[0] = ckpt_names[0]
-                        toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
+                        toggleWidget(this, ckpt_name, model?.link ? false : true)
                     }, 1)
                 }
-                else toggleWidget(this, getWidgetByName(this, 'ckpt_name'), model?.link ? false : true)
-                if(vae?.link && input == 2){
+                else toggleWidget(this, ckpt_name, model?.link ? false : true)
+                if(vae?.link && (input == 1 || input == 2)){
+                    let vaeIndex = this.widgets.findIndex(w => w.name == 'vae_name')
                     setTimeout(_ => {
-                        this.widgets[1].value = 'Baked VAE'
-                        this.widgets_values[1] = 'Baked VAE'
-                        toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
+                        this.widgets[vaeIndex].value = 'Baked VAE'
+                        toggleWidget(this, vae_name, vae?.link ? false : true)
                     },1)
                 }
-                else toggleWidget(this, getWidgetByName(this, 'vae_name'), vae?.link ? false : true)
+                else toggleWidget(this, vae_name, vae?.link ? false : true)
             }
         }
     },
@@ -591,6 +590,89 @@ app.registerExtension({
                 // Preventing validation errors from occurring in any situation.
                 node.widgets[combo_id].serializeValue = _ => "Select the LoRA to add to the text";
                 node.widgets[combo_id + 1].serializeValue = _ => "Select the Wildcard to add to the text";
+            }
+
+            // easy prompt
+            if (node_name == 'easy prompt') {
+                const prompt_text_widget = node.widgets.find(w => w.name == 'text');
+                let combo_id = 1;
+                Object.defineProperty(node.widgets[combo_id], "value", {
+                    set: (value) => {
+                        if (value != "Select the prefix to add to the text" && node.widgets[combo_id]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ' ' + value;
+                        }
+                    },
+                    get: _ => "Select the prefix to add to the text"
+                });
+
+                Object.defineProperty(node.widgets[combo_id + 1], "value", {
+                    set: (value) => {
+                        if (value != "👤Select the subject add to the text" && node.widgets[combo_id + 1]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ' ' + value;
+                        }
+                    },
+                    get: _ => "👤Select the subject add to the text"
+                });
+
+                Object.defineProperty(node.widgets[combo_id + 2], "value", {
+                    set: (value) => {
+                        if (value != "🎬Select the action add to the text" && node.widgets[combo_id + 2]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ',' + value;
+                        }
+                    },
+                    get: _ => "🎬Select the action add to the text"
+                });
+
+                Object.defineProperty(node.widgets[combo_id + 3], "value", {
+                    set: (value) => {
+                        if (value != "👚Select the clothes add to the text" && node.widgets[combo_id + 3]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ',' + value;
+                        }
+                    },
+                    get: _ => "👚Select the clothes add to the text"
+                });
+
+                Object.defineProperty(node.widgets[combo_id + 4], "value", {
+                    set: (value) => {
+                        if (value != "☀️Select the illumination environment add to the text" && node.widgets[combo_id + 4]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ',' + value;
+                        }
+                    },
+                    get: _ => "☀️Select the illumination environment add to the text"
+                });
+
+                Object.defineProperty(node.widgets[combo_id + 5], "value", {
+                    set: (value) => {
+                        if (value != "🎞️Select the background add to the text" && node.widgets[combo_id + 5]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ' ' + value;
+                        }
+                    },
+                    get: _ => "🎞️Select the background add to the text"
+                });
+
+                Object.defineProperty(node.widgets[combo_id + 6], "value", {
+                    set: (value) => {
+                        if (value != "🔞Select the nsfw add to the text" && node.widgets[combo_id + 6]?.['options']?.['values'].includes(value)) {
+                            if (prompt_text_widget.value == '') prompt_text_widget.value += value;
+                            else prompt_text_widget.value += ',' + value;
+                        }
+                    },
+                    get: _ => "🔞Select the nsfw add to the text"
+                });
+                // Preventing validation errors from occurring in any situation.
+                node.widgets[combo_id].serializeValue = _ => "Select the prefix add to the text";
+                node.widgets[combo_id + 1].serializeValue = _ => "👤Select the subject add to the text";
+                node.widgets[combo_id + 2].serializeValue = _ => "🎬Select the action add to the text";
+                node.widgets[combo_id + 3].serializeValue = _ => "👚Select the clothes add to the text";
+                node.widgets[combo_id + 4].serializeValue = _ => "☀️Select the illumination environment add to the text";
+                node.widgets[combo_id + 5].serializeValue = _ => "🎞️Select the background add to the text";
+                node.widgets[combo_id + 6].serializeValue = _ => "🔞Select the nsfw add to the text";
             }
 
             // image dynamic nodes
