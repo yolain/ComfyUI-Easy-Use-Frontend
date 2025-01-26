@@ -9,6 +9,7 @@ import settings from "@/config/settings";
 import sleep from "@/composable/sleep";
 import {normalize} from "@/composable/util.js";
 import {useNodesStore} from "@/stores/nodes.js";
+import {drawSlot} from "@/composable/canvas.js";
 
 /* Define Variable */
 let nodesStore = null
@@ -486,12 +487,22 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
     let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
     let margin = 12;
 
+    const is_easyuse_theme = custom_themes?.includes(color_palette) || false
+
     for (let i = 0; i < widgets.length; ++i) {
         let w = widgets[i];
-        let y = posY;
-        if (w.y) {
-            y = w.y;
+
+        const y = w.y || posY
+        const outline_color = w.advanced ? LiteGraph.WIDGET_ADVANCED_OUTLINE_COLOR : LiteGraph.WIDGET_OUTLINE_COLOR
+
+        if (w === this.link_over_widget) {
+            ctx.fillStyle = this.default_connection_color_byType[this.link_over_widget_type] ||
+                this.default_connection_color.input_on
+            // Manually draw a slot next to the widget simulating an input
+            drawSlot(ctx, {}, [is_easyuse_theme ? 6 : 10, y + 10], {})
         }
+
+
         w.last_y = y;
         ctx.strokeStyle = outline_color;
         ctx.fillStyle = background_color;
