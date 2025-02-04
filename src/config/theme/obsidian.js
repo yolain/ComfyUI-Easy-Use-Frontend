@@ -1,6 +1,6 @@
 import { THEME_COLOR } from '../index.js'
 const VERSION = 106
-const bgcolor = LGraphCanvas.node_colors.bgcolor
+const bgcolor = "rgba(24,24,27,.9)"
 export default {
     ColorPalette: {
       "version": VERSION,

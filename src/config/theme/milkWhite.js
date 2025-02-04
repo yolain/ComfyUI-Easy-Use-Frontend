@@ -1,5 +1,5 @@
 const VERSION = 102
-const bgcolor = LGraphCanvas.node_colors.bgcolor
+const bgcolor = "#FFFFFF"
 export default {
     ColorPalette: {
 		"id": "milk_white",

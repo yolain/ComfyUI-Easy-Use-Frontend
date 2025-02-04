@@ -116,8 +116,8 @@ registerExtension({
             const colorKey = NODE_CUSTOM_COLORS[node.comfyClass]
             const theme = NODE_COLOR_THEMES[colorKey];
             if (!theme) return;
-            if (theme.color) node.color = theme.color;
             if (theme.bgcolor) node.bgcolor = theme.bgcolor;
+            if (theme.color) node.color = theme.color;
         }
         // Get Control Mode
         if (!control_mode) control_mode = getSetting('Comfy.WidgetControlMode')
@@ -239,34 +239,18 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     //title bg (remember, it is rendered ABOVE the node)
     if (render_title || title_mode == LiteGraph.TRANSPARENT_TITLE) {
         const nodeColorIsDark = isColorDarkOrLight(node?.color || '#ffffff') == 'dark'
+        const scale = this.ds.scale
         //title bar
         if (node.onDrawTitleBar) {
-            node.onDrawTitleBar(ctx, title_height, size, this.ds.scale, fgcolor);
-        } else if (
-            title_mode != LiteGraph.TRANSPARENT_TITLE &&
-            (node.constructor.title_color || this.render_title_colored)
-        ) {
-            let title_color = node.constructor.title_color || fgcolor;
-
+            node.onDrawTitleBar(ctx, title_height, size, scale, fgcolor);
+        }
+        else if(title_mode !== LiteGraph.TRANSPARENT_TITLE){
             if (node.flags.collapsed) {
                 ctx.shadowColor = LiteGraph.DEFAULT_SHADOW_COLOR;
             }
 
-            //* gradient test
-            if (this.use_gradients) {
-                let grad = LGraphCanvas.gradients[title_color];
-                if (!grad) {
-                    grad = LGraphCanvas.gradients[title_color] = ctx.createLinearGradient(0, 0, 400, 0);
-                    grad.addColorStop(0, title_color); // TODO refactor: validate color !! prevent DOMException
-                    grad.addColorStop(1, "#000");
-                }
-                ctx.fillStyle = grad;
-            } else {
-                ctx.fillStyle = title_color;
-            }
-
-            //ctx.globalAlpha = 0.5 * old_alpha;
-            ctx.beginPath();
+            ctx.fillStyle = node.constructor.title_color || fgcolor
+            ctx.beginPath()
             if (shape == LiteGraph.BOX_SHAPE || low_quality) {
                 ctx.rect(0, -title_height, size[0] + 1, title_height);
             } else if (shape == LiteGraph.ROUND_SHAPE || shape == LiteGraph.CARD_SHAPE) {
@@ -322,6 +306,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
             ctx.fillRect(10, 0 - box_size * 1.05 - 1, box_size * 1.1, box_size * 0.125);
             ctx.fillRect(10, 0 - box_size * 1.45 - 1, box_size * 1.1, box_size * 0.125);
             ctx.fillRect(10, 0 - box_size * 1.85 - 1, box_size * 1.1, box_size * 0.125);
+
         } else {
             if (low_quality) {
                 // ctx.fillStyle = "black";
@@ -332,7 +317,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
                 //     box_size + 2
                 // );
             }
-            ctx.fillStyle = node.boxcolor || colState || LiteGraph.NODE_DEFAULT_BOXCOLOR;
+            ctx.fillStyle = node.renderingBoxColor;
             ctx.fillRect(
                 (title_height - box_size) * 0.5,
                 (title_height + box_size) * -0.5,
@@ -405,16 +390,12 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
         }
 
         //custom title render
-        if (node.onDrawTitle) {
-            node.onDrawTitle(ctx);
-        }
+        node.onDrawTitle?.(ctx);
     }
 
     //render selection marker
     if (selected) {
-        if (node.onBounding) {
-            node.onBounding(area);
-        }
+        node.onBounding?.(area);
 
         if (title_mode == LiteGraph.TRANSPARENT_TITLE) {
             area[1] -= title_height;
