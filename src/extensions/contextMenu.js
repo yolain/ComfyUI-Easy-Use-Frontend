@@ -79,8 +79,14 @@ app.registerExtension({
 
         // Force hide Model Thumbnail
         document.getElementById('graph-canvas').addEventListener('mouseenter',_=>{
-           let image_element = document.getElementById('easyuse-model-thumbnail')
-           if(image_element?.style.opacity == 1 || image_element.src) closeModelsThumbnail()
+            setTimeout(_=>{
+                const image_element = document.getElementById('easyuse-model-thumbnail')
+                if(!image_element || image_element.style.opacity == 0) return
+                image_element.style.display = 'none'
+                image_element.style.opacity = 0
+                image_element.style.left = '0px'
+                image_element.style.top = '0px'
+            },100)
         })
     }
 })
@@ -389,6 +395,7 @@ const showModelsThumbnail = (el, value, root) => (e) => {
 }
 const closeModelsThumbnail = () => (e) => {
     const image_element = document.getElementById('easyuse-model-thumbnail')
+    if(!image_element || image_element.style.opacity == 0) return
     image_element.style.display = 'none'
     image_element.style.opacity = 0
     image_element.style.left = '0px'
