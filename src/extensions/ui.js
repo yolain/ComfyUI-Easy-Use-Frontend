@@ -472,6 +472,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
 
     for (let i = 0; i < widgets.length; ++i) {
         let w = widgets[i];
+        if (w.hidden || (w.advanced && !node.showAdvanced)) continue
 
         const y = w.y || posY
         const outline_color = w.advanced ? LiteGraph.WIDGET_ADVANCED_OUTLINE_COLOR : LiteGraph.WIDGET_OUTLINE_COLOR
