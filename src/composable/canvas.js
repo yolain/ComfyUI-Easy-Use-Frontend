@@ -48,7 +48,22 @@ export function drawText(ctx, text, x, y, color = "#000", fontSize = 12, fontFam
 
 
 
-
+export const RenderShape = {
+    /** Rectangle with square corners */
+    BOX:1,
+    /** Rounded rectangle */
+    ROUND:2,
+    /** Circle is circle */
+    CIRCLE:3,
+    /** Two rounded corners: top left & bottom right */
+    CARD:4,
+    /** Slot shape: Arrow */
+    ARROW:5,
+    /** Slot shape: Grid */
+    GRID:6,
+    /** Slot shape: Hollow circle  */
+    HollowCircle:7,
+}
 export const SlotType = {
     Array: "array",
     Event: -1,
@@ -180,4 +195,84 @@ export function drawSlot(
     ctx.fillStyle = originalFillStyle
     ctx.strokeStyle = originalStrokeStyle
     ctx.lineWidth = originalLineWidth
+}
+
+export function strokeShape(
+    ctx,
+    area,
+    options = {},
+) {
+    // Don't deconstruct in function arguments. If deconstructed in the argument list, the defaults will be evaluated
+    // once when the function is defined, and will not be re-evaluated when the function is called.
+    const {
+        shape = RenderShape.BOX,
+        round_radius = LiteGraph.ROUND_RADIUS,
+        title_height = LiteGraph.NODE_TITLE_HEIGHT,
+        title_mode = LiteGraph.NORMAL_TITLE,
+        colour = LiteGraph.NODE_BOX_OUTLINE_COLOR,
+        padding = 6,
+        collapsed = false,
+        thickness = 1,
+    } = options
+
+    // Adjust area if title is transparent
+    if (title_mode === LiteGraph.TRANSPARENT_TITLE) {
+        area[1] -= title_height
+        area[3] += title_height
+    }
+
+    // Set up context
+    const { lineWidth, strokeStyle } = ctx
+    ctx.lineWidth = thickness
+    ctx.globalAlpha = 0.8
+    ctx.strokeStyle = colour
+    ctx.beginPath()
+
+    // Draw shape based on type
+    const [x, y, width, height] = area
+    switch (shape) {
+        case RenderShape.BOX: {
+            ctx.rect(
+                x - padding,
+                y - padding,
+                width + 2 * padding,
+                height + 2 * padding,
+            )
+            break
+        }
+        case RenderShape.ROUND:
+        case RenderShape.CARD: {
+            const radius = round_radius + padding
+            const isCollapsed = shape === RenderShape.CARD && collapsed
+            const cornerRadii =
+                isCollapsed || shape === RenderShape.ROUND
+                    ? [radius]
+                    : [radius, 2, radius, 2]
+            ctx.roundRect(
+                x - padding,
+                y - padding,
+                width + 2 * padding,
+                height + 2 * padding,
+                cornerRadii,
+            )
+            break
+        }
+        case RenderShape.CIRCLE: {
+            const centerX = x + width / 2
+            const centerY = y + height / 2
+            const radius = Math.max(width, height) / 2 + padding
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
+            break
+        }
+    }
+
+    // Stroke the shape
+    ctx.stroke()
+
+    // Reset context
+    ctx.lineWidth = lineWidth
+    ctx.strokeStyle = strokeStyle
+
+    // TODO: Store and reset value properly.  Callers currently expect this behaviour (e.g. muted nodes).
+    ctx.globalAlpha = 1
 }

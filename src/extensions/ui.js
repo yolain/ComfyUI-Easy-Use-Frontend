@@ -9,7 +9,7 @@ import settings from "@/config/settings";
 import sleep from "@/composable/sleep";
 import {normalize} from "@/composable/util.js";
 import {useNodesStore} from "@/stores/nodes.js";
-import {drawSlot} from "@/composable/canvas.js";
+import {drawSlot, strokeShape} from "@/composable/canvas.js";
 
 /* Define Variable */
 let nodesStore = null
@@ -212,7 +212,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     ctx.fill();
 
     if (node.has_errors && !LiteGraph.use_legacy_node_error_indicator) {
-        this.strokeShape(ctx, area, {
+        strokeShape(ctx, area, {
             shape,
             title_mode,
             title_height,
