@@ -1,34 +1,77 @@
 <template lang="pug">
 div(:class="prefix")
   div(:class="prefix+'__header'" @mousedown="e=>$emit('handleHeader',e)")
-    .title {{ $t('Nodes Map', true) }}
+    .title {{ $t('Nodes Map') }}
     .toolbar
       Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click.stop="expandAll" size="small" v-tooltip.top="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0")
       slot(name="icon")
   div(:class="prefix+'__content'")
-    template(v-if="groups_nodes?.length>0")
-      ol
-        li(v-for="(item,i) in groups_nodes" :key="i" @dragstart="e=>dragstart(e,i)" @dragend="e=>dragend(e,i)" @dragover="e=>dragover(e,i)" :draggable="true")
-          template(v-if="item.children!== undefined")
+    div(:class="prefix+'__content-searchbox'")
+      IconField
+        InputText.search-box-input(v-model="search" :placeholder="$t('Search by Node ID/Name...')" variant="outlined" style="width:100%")
+        InputIcon(v-if="!search" class="pi pi-search")
+        InputIcon(v-else class="pi pi-times" @click="search=''")
+    template(v-if="search_nodes?.length>0 && search")
+      ul
+        li(v-for="(item,i) in search_nodes" :key="i")
+          Node(
+            :node="item"
+            @changeMode="changeNodeMode(item)"
+            @mousedown="mouseDown(item,'node')"
+            @mouseup="mouseUp")
+    template(v-else-if="groups_nodes?.length>0 && !search")
+      ul
+        li(v-for="(item,i) in groups_nodes" :key="i" @dragstart="e=>dragstart(e,i)" @dragend="e=>dragend(e,i)" @dragover="e=>dragover(e,i)" :draggable="true"  @contextmenu.stop="e=>handleContextMenu(e,item)")
+          // 递归组件模板
+          template(v-if="item.children?.length")
             Group(:item="item" @changeMode="changeGroupMode(item)" @mousedown="mouseDown(item, 'group')" @mouseup="mouseUp")
-              template(v-for="(node,j) in item.children" :key="j")
-                Node(:node="node" @changeMode="changeNodeMode(node)" @mousedown="mouseDown(node, 'node')" @mouseup="mouseUp")
-          template(v-else)
-            Node(:node="item.info" @changeMode="changeNodeMode(item.info)" @mousedown="mouseDown(item.info,'node')" @mouseup="mouseUp")
+              // 递归子节点
+              ol
+                li(v-for="(child,j) in item.children" :key="j" @contextmenu.stop="e=>handleContextMenu(e,child)")
+                  template(v-if="child.children?.length")
+                    Group(:item="child" @changeMode="changeGroupMode(child)" @mousedown="mouseDown(child, 'group')" @mouseup="mouseUp" )
+                      // 递归子节点
+                      ol
+                        li(v-for="(sub,j) in child.children" :key="j" @contextmenu.stop="e=>handleContextMenu(e,sub)")
+                          template(v-if="sub.children?.length")
+                            Group(:item="sub" @changeMode="changeGroupMode(sub)" @mousedown="mouseDown(sub, 'group')" @mouseup="mouseUp")
+                          template(v-else-if="!showGroupOnly")
+                            Node(:node="sub"
+                              @changeMode="changeNodeMode(sub)"
+                              @mousedown="mouseDown(sub,'node')"
+                              @mouseup="mouseUp")
+                  template(v-else-if="!showGroupOnly")
+                    Node(
+                      :node="child"
+                      @changeMode="changeNodeMode(child)"
+                      @mousedown="mouseDown(child,'node')"
+                      @mouseup="mouseUp")
+          // 叶子节点
+          template(v-else-if="!showGroupOnly")
+            Node(:node="item.info"
+              @changeMode="changeNodeMode(item.info)"
+              @mousedown="mouseDown(item.info,'node')"
+              @mouseup="mouseUp")
     .no_result(v-else style="height:100%")
-      NoResultsPlaceholder(icon="pi pi-sitemap", :title="$t('No Nodes',true)", :message="$t('No nodes found in the map',true)")
+      NoResultsPlaceholder(icon="pi pi-sitemap", :title="$t('No Nodes',true)", :message="search ? $t('No nodes found in the search') : $t('No nodes found in the map',true)")
+  ContextMenu(ref="menuRef" :model="menuItems" :autoZIndex="false" appendTo="self")
 </template>
 
 <script setup>
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import ContextMenu from "primevue/contextmenu";
 import Button from "primevue/button";
 import vTooltip from 'primevue/tooltip';
 import NoResultsPlaceholder from "@/components/common/noResultsPlaceholder.vue";
 import Group from "@/components/sidebar/map/group.vue";
 import Node from "@/components/sidebar/map/node.vue";
 import {app} from "@/composable/comfyAPI";
+import {jumpToNodeId} from "@/composable/node.js";
 import {toast} from "@/components/toast";
 import { $t } from '@/composable/i18n'
-import {ref, watch, defineEmits} from "vue";
+import {ref, watch, defineEmits, computed, onMounted} from "vue";
 import {NODE_MODE} from "@/config/index.js";
 
 const prefix = 'comfyui-easyuse-map-nodes'
@@ -37,7 +80,9 @@ import {storeToRefs} from "pinia";
 import {useNodesStore} from "@/stores/nodes.js";
 import {getSetting} from "@/composable/settings.js";
 const store = useNodesStore()
-const {groups_nodes, groups} = storeToRefs(store)
+const {groups_nodes, groups, nodes} = storeToRefs(store)
+
+const showGroupOnly = computed(_=> getSetting('EasyUse.NodesMap.DisplayGroupOnly'))
 
 // Expand / Collapse
 const isExpand = ref(false)
@@ -46,6 +91,84 @@ const expandAll = _=>{
   app.canvas.graph._groups.forEach(group=>{
     group.show_nodes = isExpand.value
   })
+  store.setGroups(app.canvas.graph._groups)
+}
+
+// Search
+const search = ref('')
+const search_nodes = computed(_=>{
+  return nodes?.value.filter(node=> (node.id).toString().includes(search.value) || node['type'].includes(search.value) || node['title'].includes(search.value)) || []
+})
+// Context Menu
+const menuRef = ref(null)
+const targetIsNode = ref(false)
+const menuItems = computed(() =>
+    targetIsNode.value ?
+    [
+      {
+        label: $t('Jump to this node'),
+        icon: 'pi pi-arrow-circle-right',
+        visible: true,
+        command: () => JumpNode(menuTarget.value),
+      },
+      {
+        label: $t('Rename node'),
+        icon: 'pi pi-file-edit',
+        visible: true,
+        command: () => renameNode(menuTarget.value),
+      },
+      {
+        label: $t('Delete node'),
+        icon: 'pi pi-trash',
+        command: () => deleteNode(menuTarget.value),
+        visible: true,
+      },
+    ]
+    :
+    [
+      {
+        label: $t('Rename group'),
+        icon: 'pi pi-file-edit',
+        visible: true,
+        command: () => renameGroup(menuTarget.value),
+      },
+      {
+        label: $t('Delete group'),
+        icon: 'pi pi-trash',
+        command: () => deleteGroup(menuTarget.value),
+        visible: true,
+      },
+    ]
+)
+const menuTarget = ref(null)
+const handleContextMenu = (event, groupOrNode) => {
+  menuTarget.value = groupOrNode
+  targetIsNode.value = groupOrNode.children ? false : true
+  menuRef.value.show(event)
+}
+const JumpNode = (node) =>{
+  jumpToNodeId(node?.info ? node.info.id : node.id)
+}
+const renameNode = (node) =>{
+  if(node.info) node.info.is_edit = true
+  else node.is_edit = true
+}
+const deleteNode = (node) =>{
+  const id = node.info ? node.info.id : node.id
+  app.canvas.graph.beforeChange()
+  app.canvas.graph._nodes.splice(app.canvas.graph._nodes.findIndex(n=>n.id == id),1)
+  app.canvas.graph.afterChange()
+  app.canvas.setDirty(true, true)
+  store.setNodes(app.canvas.graph._nodes)
+}
+const renameGroup = (group) =>{
+  group.info.is_edit = true
+}
+const deleteGroup = (group) =>{
+  app.canvas.graph.beforeChange()
+  app.canvas.graph._groups.splice(app.canvas.graph._groups.findIndex(g=>g.id == group.info.id),1)
+  app.canvas.graph.afterChange()
+  app.canvas.setDirty(true, true)
   store.setGroups(app.canvas.graph._groups)
 }
 

@@ -94,6 +94,18 @@ export default {
         options: ['Auto sorting', 'Manual drag&drop sorting'],
         defaultValue: 'Auto sorting',
     },
+    displayNodesID:{
+        id: 'EasyUse.NodesMap.DisplayNodeID',
+        name: $t('Display Node ID'),
+        type: 'boolean',
+        defaultValue: true,
+    },
+    onlyDisplayGroup:{
+        id: 'EasyUse.NodesMap.DisplayGroupOnly',
+        name: $t('Display Groups Only'),
+        type: 'boolean',
+        defaultValue: false,
+    },
     enableNodesMap:{
         id: 'EasyUse.NodesMap.Enable',
         name: $t('Enable Nodes Map'),

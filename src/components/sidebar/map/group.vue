@@ -5,11 +5,11 @@ div(:class="prefix" @click="toggle")
     .edit(v-if="item.info?.is_edit")
       InputText(ref="modifyRef" v-model="title" variant="outline" size="small" type="text" @blur="setGroupTitle" @keydown.enter="setGroupTitle" @keydown.esc="setGroupTitle" style="width:100%")
     .label(v-else)
-      span(@dblclick.stop="toModify(item)") {{item.info.title}}
+      span {{item.info.title}}
   .right.toolbar
     template(v-if="item.children?.length>0")
       Button(size="small" :icon="item.children.find(cate=>cate.mode == NODE_MODE.ALWAYS) ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="$emit('changeMode')" @mousedown.stop="$emit('mousedown')" @mouseup.stop="$emit('mouseup')")
-.nodes(v-if="item.children?.length>0 && item.info.show_nodes")
+.child(v-if="item.children?.length>0 && item.info.show_nodes")
   slot
 </template>
 
@@ -19,7 +19,7 @@ import Button from "primevue/button";
 import {app} from "@/composable/comfyAPI.js";
 import {NODE_MODE} from "@/config/index.js";
 
-import {ref, defineComponent, defineProps, defineEmits} from 'vue'
+import {ref, defineComponent, defineProps, defineEmits, watch} from 'vue'
 defineEmits(['mousedown', 'mouseup','changeMode'])
 
 const prefix = 'comfyui-easyuse-map-nodes-group'
@@ -40,6 +40,9 @@ const isModifying = ref(false)
 const modifyRef = ref(null)
 const title = ref('')
 
+watch(_=> props.item.info.is_edit, value =>{
+  if(value) title.value = props.item.info.title
+})
 const toggle = _=>{
   let item = props.item
   if(item.info?.is_edit) return

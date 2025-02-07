@@ -16,8 +16,8 @@
       top: 0;
       left: 0;
       width:100%;
-      padding: 0.25rem 0 0.25rem 1rem;
-      height:2.7rem;
+      padding: 0.25rem 0 0.25rem 0.5rem;
+      height:2.8rem;
       background: var(--comfy-menu-bg);
       border-bottom: 1px solid var(--border-color);
       @include flex-b();
@@ -37,15 +37,20 @@
     }
     &__content{
       position: relative;
-      padding: 2.7rem 0 0;
+      padding: 2.8rem 0 0;
       height:100%;
       overflow: auto;
+      &-searchbox{
+        padding: 1rem;
+        //border-bottom: 1px dashed var(--border-color);
+        //margin-bottom: .5rem;
+      }
       dl{
         .label{
           padding-left: 1rem;
         }
       }
-      ol,dl{
+      ul,ol,dl{
         list-style-type: none;
         padding:0;
         margin:0;
@@ -65,10 +70,21 @@
           }
         }
       }
+      ol{
+        padding: 0;
+        padding-block-start:2px;
+        padding-inline-start: 1rem;
+      }
       .no_result{
         @include flex-c();
         text-align: center;
       }
+    }
+    .p-contextmenu{
+      display: block!important;
+      position: fixed!important;
+      z-index: 1000!important;
+      //margin-right:var(--sidebar-width);
     }
     // group
     &-group{
@@ -134,9 +150,22 @@
       position: relative;
       overflow: hidden;
       pointer-events: auto;
+      .node_id{
+        background: #0b2000;
+        padding:0.25rem;
+        margin:0 0 0 0.25rem;
+        border-radius: 0.25rem;
+        text-align: center;
+        color:white;
+        font-size: 12px;
+      }
+      .left{
+        height: 100%;
+        @include flex-y();
+      }
       .label{
         text-indent: 0.5rem;
-        @include font-title(13px,400);
+        @include font-title(14px,400);
         @include flex-1();
         @include css3(user-select, none);
         margin-right: .25rem;
@@ -165,10 +194,5 @@
       }
     }
 
-    .nodes{
-      .label{
-        text-indent: 1rem;
-      }
-    }
   }
 }

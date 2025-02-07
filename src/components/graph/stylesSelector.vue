@@ -28,11 +28,12 @@ div(:class="prefix + ` ${prefix}-styles`", :data-id="id" @mouseleave="hiddenImag
 
 <script setup>
 import {api } from '@/composable/comfyAPI'
-import { $t,locale } from '@/composable/i18n'
+import { $t } from '@/composable/i18n'
 import {toast} from '@/components/toast'
 import { ref, reactive, computed, watch, defineComponent, defineProps, defineEmits, onMounted } from 'vue'
 import vClickOutside from "@/directive/clickOutside";
 
+const locale = computed(_=> getSetting('Comfy.Locale') || 'en')
 const prefix = 'comfyui-easyuse-selector'
 defineComponent({name:prefix+'-styles'})
 
@@ -61,6 +62,7 @@ const store = useGraphStore()
 const {selectors_styles} = storeToRefs(store)
 
 import cloneDeep from "lodash/cloneDeep";
+import {getSetting} from "@/composable/settings.js";
 const styles = ref([])
 const getStylesList = async(name) =>{
   if(selectors_styles.value[props.type]) return true

@@ -12,6 +12,7 @@ const prefix = 'comfyui-easyuse-map'
 import {useNodesStore} from "@/stores/nodes.js";
 const store = useNodesStore()
 
+
 onMounted(_=>{
   store.watchGraph()
 })
