@@ -14,69 +14,65 @@ export const useNodesStore = defineStore('groups', {
             let groups_nodes = []
             let un_groups = []
 
+            // 首先构建组树结构
             const transformGroup = (group) => {
                 return {
                     info: group,
-                    children: group.sub_groups?.length>0 ? group.sub_groups.map(transformGroup) : []
+                    children: group.sub_groups?.length>0 ? group.sub_groups.map(transformGroup) : [],
+                    bounds: {
+                        x1: group.pos[0],
+                        y1: group.pos[1],
+                        x2: group.pos[0] + group.size[0],
+                        y2: group.pos[1] + group.size[1]
+                    }
                 };
             };
             groups_nodes = this.groups.map(transformGroup)
 
             if(this.nodes?.length>0){
-                this.nodes.map(node=>{
-                    let pos = node.pos
-                    let has_group = false
-
-                    for (let i = 0; i < groups_nodes.length; i++) {
-                        const group = groups_nodes[i];
-
-                        // 递归查找匹配组的函数
-                        const checkGroup = (currentGroup) => {
-                            const groupInfo = currentGroup.info || currentGroup;
-
-                            // 检查当前组边界
-                            if (pos[0] >= groupInfo.pos[0] &&
-                                pos[0] <= groupInfo.pos[0] + groupInfo.size[0] &&
-                                pos[1] >= groupInfo.pos[1] &&
-                                pos[1] <= groupInfo.pos[1] + groupInfo.size[1]) {
-
-                                // 先检查子组
-                                if (currentGroup.children) {
-                                    for (const childGroup of currentGroup.children) {
-                                        if (checkGroup(childGroup)) {
-                                            return true;
-                                        }
-                                    }
-                                }
-
-                                // 没有子组匹配，添加到当前组
-                                if (!currentGroup.children) {
-                                    currentGroup.children = [];
-                                }
-                                currentGroup.children.push(node);
-                                return true;
-                            }
-                            return false;
-                        };
-
-                        if (checkGroup(group)) {
-                            has_group = true;
-                            break;
-                        }
-                    }
-
-                    if(!has_group){
-                        un_groups.push({info:node})
-                    }
-                })
-                // add groups without nodes
-                for(let i=0;i< this.groups.length;i++){
-                    if(!groups_nodes[i]){
-                        groups_nodes[i] = {info:this.groups[i],children:[]}
-                    }
+                // 检查一个点是否在组的边界内
+                const isPointInBounds = (pos, bounds) => {
+                    return pos[0] >= bounds.x1 &&
+                           pos[0] <= bounds.x2 &&
+                           pos[1] >= bounds.y1 &&
+                           pos[1] <= bounds.y2;
                 }
+
+                // 查找节点所属的最内层组
+                const findDeepestGroup = (node, groups) => {
+                    let deepestGroup = null;
+                    let maxDepth = -1;
+
+                    const traverse = (group, depth) => {
+                        if (group.bounds && isPointInBounds(node.pos, group.bounds)) {
+                            if (depth > maxDepth) {
+                                maxDepth = depth;
+                                deepestGroup = group;
+                            }
+                            group.children.forEach(child => traverse(child, depth + 1));
+                        }
+                    };
+
+                    groups.forEach(group => traverse(group, 0));
+                    return deepestGroup;
+                };
+
+                // 为每个节点找到对应的组
+                this.nodes.forEach(node => {
+                    const group = findDeepestGroup(node, groups_nodes);
+                    if (group) {
+                        if (!group.children) {
+                            group.children = [];
+                        }
+                        group.children.push(node);
+                    } else {
+                        un_groups.push({info: node});
+                    }
+                });
+
             }
-            return [...groups_nodes,...un_groups]
+
+            return [...groups_nodes, ...un_groups];
         }
     },
     actions:{
