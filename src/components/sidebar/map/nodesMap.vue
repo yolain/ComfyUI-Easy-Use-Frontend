@@ -1,7 +1,7 @@
 <template lang="pug">
 div(:class="prefix")
   div(:class="prefix+'__header'" @mousedown="e=>$emit('handleHeader',e)")
-    .title {{ $t('Nodes Map') }}
+    .title {{ $t('NODES MAP') }}
     .toolbar
       Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click.stop="expandAll" size="small" v-tooltip.top="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0")
       slot(name="icon")
@@ -21,37 +21,19 @@ div(:class="prefix")
             @mouseup="mouseUp")
     template(v-else-if="groups_nodes?.length>0 && !search")
       ul
-        li(v-for="(item,i) in groups_nodes" :key="i" @dragstart="e=>dragstart(e,i)" @dragend="e=>dragend(e,i)" @dragover="e=>dragover(e,i)" :draggable="true"  @contextmenu.stop="e=>handleContextMenu(e,item)")
-          // 递归组件模板
-          template(v-if="item.children?.length")
-            Group(:item="item" @changeMode="changeGroupMode(item)" @mousedown="mouseDown(item, 'group')" @mouseup="mouseUp")
-              // 递归子节点
-              ol
-                li(v-for="(child,j) in item.children" :key="j" @contextmenu.stop="e=>handleContextMenu(e,child)")
-                  template(v-if="child.children?.length")
-                    Group(:item="child" @changeMode="changeGroupMode(child)" @mousedown="mouseDown(child, 'group')" @mouseup="mouseUp" )
-                      // 递归子节点
-                      ol
-                        li(v-for="(sub,j) in child.children" :key="j" @contextmenu.stop="e=>handleContextMenu(e,sub)")
-                          template(v-if="sub.children?.length")
-                            Group(:item="sub" @changeMode="changeGroupMode(sub)" @mousedown="mouseDown(sub, 'group')" @mouseup="mouseUp")
-                          template(v-else-if="!showGroupOnly")
-                            Node(:node="sub"
-                              @changeMode="changeNodeMode(sub)"
-                              @mousedown="mouseDown(sub,'node')"
-                              @mouseup="mouseUp")
-                  template(v-else-if="!showGroupOnly")
-                    Node(
-                      :node="child"
-                      @changeMode="changeNodeMode(child)"
-                      @mousedown="mouseDown(child,'node')"
-                      @mouseup="mouseUp")
-          // 叶子节点
-          template(v-else-if="!showGroupOnly")
-            Node(:node="item.info"
-              @changeMode="changeNodeMode(item.info)"
-              @mousedown="mouseDown(item.info,'node')"
-              @mouseup="mouseUp")
+        Tree(v-for="(item,i) in groups_nodes"
+          :key="i"
+          :item="item"
+          :index="i"
+          :showGroupOnly="showGroupOnly"
+          @dragstart="dragstart"
+          @dragend="dragend"
+          @dragover="dragover"
+          @contextmenu="handleContextMenu"
+          @changeGroupMode="changeGroupMode"
+          @changeNodeMode="changeNodeMode"
+          @mousedown="mouseDown"
+          @mouseup="mouseUp")
     .no_result(v-else style="height:100%")
       NoResultsPlaceholder(icon="pi pi-sitemap", :title="$t('No Nodes',true)", :message="search ? $t('No nodes found in the search') : $t('No nodes found in the map',true)")
   ContextMenu(ref="menuRef" :model="menuItems" :autoZIndex="false" appendTo="self")
@@ -65,8 +47,8 @@ import ContextMenu from "primevue/contextmenu";
 import Button from "primevue/button";
 import vTooltip from 'primevue/tooltip';
 import NoResultsPlaceholder from "@/components/common/noResultsPlaceholder.vue";
-import Group from "@/components/sidebar/map/group.vue";
 import Node from "@/components/sidebar/map/node.vue";
+import Tree from './tree.vue';
 import {app} from "@/composable/comfyAPI";
 import {jumpToNodeId} from "@/composable/node.js";
 import {toast} from "@/components/toast";

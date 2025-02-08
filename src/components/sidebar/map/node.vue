@@ -5,7 +5,7 @@ div(:draggable="false" :class="[prefix,{'never':node.mode!==undefined && node.mo
     .edit(v-if="node?.is_edit")
       InputText(ref="modifyRef" v-model="title" variant="outline" size="small" type="text" @blur="setNodeTitle" @keydown.enter="setNodeTitle" @keydown.esc="setNodeTitle" style="width:100%")
     span.label(@dblclick.stop="jumpToNodeId(node.id)" v-else-if="node.title !== undefined") {{node.title}}
-    span.label.error(v-else) {{node.type}}
+    span.label.error(v-else @dblclick.stop="jumpToNodeId(node.id)") {{node.type}}
   .right.toolbar
     Button(size="small" :icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="$emit('changeMode')" @mousedown.stop="$emit('mousedown')" @mouseup.stop="$emit('mouseup')")
 </template>
