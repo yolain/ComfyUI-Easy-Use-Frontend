@@ -79,7 +79,7 @@ const expandAll = _=>{
 // Search
 const search = ref('')
 const search_nodes = computed(_=>{
-  return nodes?.value.filter(node=> (node.id).toString().includes(search.value) || node['type'].includes(search.value) || node['title'].includes(search.value)) || []
+  return nodes?.value.filter(node=> node.id?.toString()?.includes(search.value) || node['type']?.includes(search.value) || node['title']?.includes(search.value)) || []
 })
 // Context Menu
 const menuRef = ref(null)

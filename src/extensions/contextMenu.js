@@ -73,7 +73,7 @@ app.registerExtension({
             }
         }
         LiteGraph.ContextMenu.prototype = contextMenu.prototype;
-        if(getSetting('EasyUse.ContextMenu.NodesSort',null, true)){
+        if(getSetting('EasyUse.ContextMenu.NodesSort')){
             LiteGraph.ContextMenu.prototype.addItem = contextMenuAddItem;
         }
 
@@ -179,7 +179,6 @@ const isCustomItem = (value) => value && typeof value === "object" && "image" in
 function contextMenuAddItem(name, value, options){
     var that = this;
     options = options || {};
-
     var element = document.createElement("div");
     element.className = "litemenu-entry submenu";
 
@@ -222,13 +221,20 @@ function contextMenuAddItem(name, value, options){
 
     if (element && isCustomItem(value) && value?.image && !value.submenu) {
         element.textContent += " *";
+        const key = `pysssss-image-combo-${name}`
         $el("div.pysssss-combo-image", {
-            id: `pysssss-image-combo-${name}`,
+            id: key,
             parent: document.body,
             style: {
                 backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
             },
         });
+        const showHandler = () => showPyssssImage(element, key);
+        const closeHandler = () => closePyssssImage(key);
+
+        element.addEventListener("mouseenter", showHandler, { passive: true });
+        element.addEventListener("mouseleave", closeHandler, { passive: true });
+        element.addEventListener("click", closeHandler, { passive: true });
     }
     if (element && value?.thumbnail){
         element.addEventListener("mouseenter", showModelsThumbnail(element, value, this.root),{passive:true})
@@ -400,6 +406,59 @@ const closeModelsThumbnail = () => (e) => {
     image_element.style.opacity = 0
     image_element.style.left = '0px'
     image_element.style.top = '0px'
+}
+
+const getPyssssImage = (imageId) => document.querySelector(`#${CSS.escape(imageId)}`);
+
+const calculatePyssssImagePosition = (el, bodyRect) => {
+    const IMAGE_WIDTH = 384;
+    const IMAGE_HEIGHT = 384;
+    let { top, left, right } = el.getBoundingClientRect();
+    const { width: bodyWidth, height: bodyHeight } = bodyRect;
+
+    const isSpaceRight = right + IMAGE_WIDTH <= bodyWidth;
+    if (isSpaceRight) {
+        left = right;
+    } else {
+        left -= IMAGE_WIDTH;
+    }
+
+    top = top - IMAGE_HEIGHT / 2;
+    if (top + IMAGE_HEIGHT > bodyHeight) {
+        top = bodyHeight - IMAGE_HEIGHT;
+    }
+    if (top < 0) {
+        top = 0;
+    }
+
+    return { left: Math.round(left), top: Math.round(top), isLeft: !isSpaceRight };
+};
+
+function showPyssssImage(el, imageId) {
+    const img = getPyssssImage(imageId);
+    if (img) {
+        const bodyRect = document.body.getBoundingClientRect();
+        if (!bodyRect) return;
+
+        const { left, top, isLeft } = calculatePyssssImagePosition(el, bodyRect);
+
+        img.style.display = "block";
+        img.style.left = `${left}px`;
+        img.style.top = `${top}px`;
+
+        if (isLeft) {
+            img.classList.add("left");
+        } else {
+            img.classList.remove("left");
+        }
+    }
+}
+
+function closePyssssImage(imageId) {
+    const img = getPyssssImage(imageId);
+    if (img) {
+        img.style.display = "none";
+    }
 }
 
 // display model thumbnails preview
