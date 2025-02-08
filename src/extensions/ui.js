@@ -450,6 +450,167 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     // these counter helps in conditioning drawing based on if the node has been executed or an action occurred
     if (node.execute_triggered > 0) node.execute_triggered--;
     if (node.action_triggered > 0) node.action_triggered--;
+
+    // draw missing node widgets for workflow json version 0.4
+    if (!node.flags.collapsed && !node.widgets && node.widgets_values?.length>0){
+        drawMissingNodeWidgets(node, ctx, this)
+    }
+}
+
+function drawMissingNodeWidgets(node, ctx, _this){
+    let max_y = 0
+    const slot_pos = new Float32Array(2)
+    if (node.inputs) {
+        for (let i = 0; i < node.inputs.length; i++) {
+            const pos = node.getConnectionPos(true, i, slot_pos)
+            pos[0] -= node.pos[0]
+            pos[1] -= node.pos[1]
+            if (max_y < pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5) {
+                max_y = pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5
+            }
+        }
+    }
+    if (node.outputs) {
+        for (let i = 0; i < node.outputs.length; i++) {
+            const pos = node.getConnectionPos(false, i, slot_pos)
+            pos[0] -= node.pos[0]
+            pos[1] -= node.pos[1]
+            if (max_y < pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5) {
+                max_y = pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5
+            }
+        }
+    }
+    let posY = max_y
+    if (node.horizontal || node.widgets_up) {
+        posY = 2
+    }
+    if (node.widgets_start_y != null) posY = node.widgets_start_y
+
+    let widget_width = node.size[0];
+    let widget_height = node.size[1];
+    let widgets = node.widgets_values;
+    posY += 2;
+    let H = LiteGraph.NODE_WIDGET_HEIGHT;
+    let show_text = _this.ds.scale > 0.5;
+    ctx.save();
+    ctx.globalAlpha = _this.editor_alpha;
+    let outline_color = LiteGraph.WIDGET_OUTLINE_COLOR;
+    let background_color = LiteGraph.WIDGET_BGCOLOR;
+    let text_color = LiteGraph.WIDGET_TEXT_COLOR;
+    let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
+    let margin = 12;
+
+    for(let i=0; i< widgets.length; ++i){
+        let w = widgets[i];
+        let type = typeof w
+        switch (type){
+            case 'string':
+                ctx.textAlign = "left";
+                ctx.strokeStyle = outline_color;
+                ctx.fillStyle = background_color;
+                ctx.beginPath();
+                if (show_text)
+                    ctx.roundRect(margin, posY, widget_width - margin * 2, H, [H * 0.25]);
+                else
+                    ctx.rect(margin, posY, widget_width - margin * 2, H);
+                ctx.fill();
+                if (show_text) {
+                    if (!w.disabled)
+                        ctx.stroke();
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(margin, posY, widget_width - margin * 2, H);
+                    ctx.clip();
+
+                    //ctx.stroke();
+                    ctx.fillStyle = secondary_text_color;
+                    const label = 'widget_' + (i+1);
+                    ctx.font = "10px Inter"
+                    if (label != null) {
+                        ctx.fillText(label, margin * 2, posY + H * 0.7);
+                    }
+                    ctx.fillStyle = text_color;
+                    ctx.textAlign = "right";
+                    ctx.fillText(String(w).substr(0, 30), widget_width - margin * 2, posY + H * 0.7); //30 chars max
+                    ctx.restore();
+                }
+                break
+            case 'number':
+                ctx.textAlign = "left";
+                ctx.strokeStyle = outline_color;
+                ctx.fillStyle = background_color;
+                ctx.beginPath();
+                if (show_text)
+                    ctx.roundRect(margin, posY, widget_width - margin * 2, H, [H * 0.25]);
+                else
+                    ctx.rect(margin, posY, widget_width - margin * 2, H);
+                ctx.fill();
+                if (show_text) {
+                    ctx.stroke();
+                    ctx.fillStyle = text_color;
+                    ctx.beginPath();
+                    ctx.moveTo(margin + 12, posY + 6.5);
+                    ctx.lineTo(margin + 6, posY + H * 0.5);
+                    ctx.lineTo(margin + 12, posY + H - 6.5);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(widget_width - margin - 12, posY + 6.5);
+                    ctx.lineTo(widget_width - margin - 6, posY + H * 0.5);
+                    ctx.lineTo(widget_width - margin - 12, posY + H - 6.5);
+                    ctx.fill();
+
+                    ctx.fillStyle = secondary_text_color;
+                    ctx.font = "10px Inter"
+                    ctx.fillText('widget_'+ (i+1), margin * 2 + 5, posY + H * 0.7);
+                    ctx.fillStyle = text_color;
+                    ctx.textAlign = "right";
+                    let rightDistance = 6
+                    ctx.font = "10px Inter"
+                    ctx.fillText(
+                        Number(w),
+                        widget_width - margin * 2 - rightDistance,
+                        posY + H * 0.7
+                    );
+                }
+                break
+            case 'boolean':
+                ctx.font = "10px Inter"
+                ctx.textAlign = "left";
+                ctx.strokeStyle = outline_color;
+                ctx.fillStyle = background_color;
+                ctx.beginPath();
+                if (show_text)
+                    ctx.roundRect(margin, posY, widget_width - margin * 2, H, [H * 0.25]);
+                else
+                    ctx.rect(margin, posY, widget_width - margin * 2, H);
+                ctx.fill();
+                if (show_text && !w.disabled)
+                    ctx.stroke();
+                ctx.fillStyle = w.value ? THEME_COLOR : outline_color;
+                ctx.beginPath();
+                ctx.arc(widget_width - margin * 2, posY + H * 0.5, H * 0.25, 0, Math.PI * 2);
+                ctx.fill();
+                if (show_text) {
+                    ctx.fillStyle = secondary_text_color;
+                    const label = 'widget_'+ (i+1);
+                    if (label != null) {
+                        ctx.fillText(label, margin * 1.6, posY + H * 0.7);
+                    }
+                    ctx.font = "10px Inter"
+                    ctx.fillStyle = w ? text_color : secondary_text_color;
+                    ctx.textAlign = "right";
+                    ctx.fillText(w.toString(),
+                        widget_width - 35,
+                        posY + H * 0.7
+                    );
+                }
+                break
+        }
+        posY = posY + H + 4
+        ctx.globalAlpha = _this.editor_alpha
+    }
+    ctx.restore();
+    ctx.textAlign = "left";
 }
 
 function drawNodeWidgets(node, posY, ctx, active_widget) {
