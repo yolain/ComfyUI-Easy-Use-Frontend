@@ -35,7 +35,8 @@ export default {
     "Reboot ComfyUI":"重启ComfyUI",
     "Are you sure you'd like to reboot the server?": "是否要重启ComfyUI？",
     // Nodes Map
-    "Nodes Map": "管理节点组",
+    "NODES MAP": "管理节点组",
+    "Nodes Map (Shirt + m)": "节点组 (Shirt + m)",
     "Nodes map sorting mode": "管理节点组排序模式",
     "Search by Node ID/Name...": "通过节点ID/名称搜索...",
     "No Nodes": "未找到节点",
