@@ -170,10 +170,15 @@ function onMenuAdd(node, options, e, prev_menu, callback) {
 
 // ContextMenu AddItem
 function encodeRFC3986URIComponent(str) {
-    return encodeURIComponent(str).replace(
-        /[!'()*]/g,
-        (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
-    );
+    try{
+        return encodeURIComponent(str).replace(
+            /[!'()*]/g,
+            (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+        );
+    }
+    catch (e){
+        return str
+    }
 }
 const isCustomItem = (value) => value && typeof value === "object" && "image" in value && value.content;
 function contextMenuAddItem(name, value, options){
