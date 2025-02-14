@@ -503,7 +503,7 @@ app.registerExtension({
                 if(model?.link && input == 0){
                     const ckpt_names = all_nodes?.['CheckpointLoaderSimple']?.['input']?.['required']?.['ckpt_name']?.[0]
                     setTimeout(_ => {
-                        this.widgets[0].value = ckpt_names[0]
+                        this.widgets[0].value = ckpt_names[0] || 'None'
                         toggleWidget(this, ckpt_name, model?.link ? false : true)
                     }, 1)
                 }

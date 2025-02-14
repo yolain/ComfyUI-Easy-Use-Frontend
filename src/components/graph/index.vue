@@ -40,7 +40,6 @@ const createStylesSelector = async(node) => {
   let selector_divs = selectorsRef.value
   let selector_div = selector_divs[node.id]?.['_']?.vnode?.el
   if(!selector_div) return
-  let selector = node.addDOMWidget('select_styles','btn', selector_div);
   if(!node.properties['values']) node.setProperty('values', [])
   _selectors[selector_index]['show'] = true
   await store.setSelectors(_selectors)
@@ -59,18 +58,19 @@ const createStylesSelector = async(node) => {
     get:_=>styles_value
   })
   // selector
-  Object.defineProperty(selector, 'value',{
-    set:value=>{
+  let selector = node.addDOMWidget('select_styles','btn', selector_div, {
+    setValue(){
       setTimeout(_=>{
         _selectors[selector_index].value = value.split(',')
         store.setSelectors(_selectors)
       },150)
     },
-    get:_=>{
+    getValue() {
       node.properties['values'] = selectors.value?.[selector_index]?.value || []
       return node.properties['values'].join(',')
     }
-  })
+  });
+
   if(node.size?.[0]<150 || node.size?.[1]<150) node.setSize([425, 500]);
 
   // removed
