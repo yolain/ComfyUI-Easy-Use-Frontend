@@ -1,11 +1,11 @@
 import { api, app, $el, registerExtension } from '@/composable/comfyAPI'
 import {addCss, addPreconnect} from "@/composable/head";
 import {getSetting, setSetting, addSetting} from "@/composable/settings";
-import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR, DARK_THEME_CLASS} from "@/config";
-import obsidian from "@/config/theme/obsidian";
-import obsidian_dark from "@/config/theme/obsidianDark";
-import milk_white from "@/config/theme/milkWhite";
-import settings from "@/config/settings";
+import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR, DARK_THEME_CLASS} from "@/constants";
+import obsidian from "@/constants/theme/obsidian";
+import obsidian_dark from "@/constants/theme/obsidianDark";
+import milk_white from "@/constants/theme/milkWhite";
+import settings from "@/constants/settings";
 import sleep from "@/composable/sleep";
 import {normalize} from "@/composable/util.js";
 import {useNodesStore} from "@/stores/nodes.js";
@@ -33,9 +33,10 @@ let monitor = null
 let prefix = '👽 '
 /* add settings */
 for(let i in settings) {
-    const name =  getSetting('Comfy.UseNewMenu') == 'Disabled' ? prefix+normalize(settings[i].name) : normalize(settings[i].name)
-    const tooltip = settings[i].tooltip ? normalize(settings[i].tooltip) : ''
-    addSetting({...settings[i],...{name,tooltip}})
+    // const name =  getSetting('Comfy.UseNewMenu') == 'Disabled' ? prefix+normalize(settings[i].name) : normalize(settings[i].name)
+    // const tooltip = settings[i].tooltip ? normalize(settings[i].tooltip) : ''
+    // addSetting({...settings[i],...{name,tooltip}})
+    addSetting(settings[i])
 }
 
 /* Register Extension */

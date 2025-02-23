@@ -1,7 +1,7 @@
 import {app} from "@/composable/comfyAPI";
 import {LoraInfoDialog, CheckpointInfoDialog} from "@/composable/model"
 import {$t} from '@/composable/i18n.js'
-import swap from "@/config/swap.js";
+import swap from "@/constants/swap.js";
 
 // Replace node
 function replaceNode(oldNode, newNodeName, type) {

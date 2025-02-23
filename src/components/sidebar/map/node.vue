@@ -14,7 +14,7 @@ div(:draggable="false" :class="[prefix,{'never':node.mode!==undefined && node.mo
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import {jumpToNodeId} from "@/composable/node.js";
-import {NODE_MODE} from "@/config/index.js";
+import {NODE_MODE} from "@/constants/index.js";
 
 import {defineProps, defineEmits, computed, watch, ref} from 'vue'
 import {getSetting} from "@/composable/settings.js";

@@ -3,7 +3,7 @@ import {reboot, cleanVRAM} from "@/composable/easyuseAPI.js";
 import {$t} from "@/composable/i18n.js";
 import {isLocalNetwork, normalize} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
-import {COMFYUI_NODE_BASIC_CATEGORY, NODES_MAP_ID, NO_PREVIEW_IMAGE} from "@/config";
+import {COMFYUI_NODE_BASIC_CATEGORY, NODES_MAP_ID, NO_PREVIEW_IMAGE} from "@/constants";
 import {getSetting} from "@/composable/settings.js";
 
 let modelsList = {}

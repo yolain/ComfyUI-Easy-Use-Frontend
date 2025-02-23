@@ -54,7 +54,7 @@ import {jumpToNodeId} from "@/composable/node.js";
 import {toast} from "@/components/toast";
 import { $t } from '@/composable/i18n'
 import {ref, watch, defineEmits, computed, onMounted} from "vue";
-import {NODE_MODE} from "@/config/index.js";
+import {NODE_MODE} from "@/constants/index.js";
 
 const prefix = 'comfyui-easyuse-map-nodes'
 

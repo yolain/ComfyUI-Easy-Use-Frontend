@@ -4,7 +4,7 @@ import {$t} from "@/composable/i18n";
 import {toggleWidget, getWidgetByName, updateNodeHeight} from "@/composable/node";
 import {toast} from "@/components/toast";
 import sleep from "@/composable/sleep.js";
-import {MAX_SEED_NUM} from "@/config";
+import {MAX_SEED_NUM} from "@/constants";
 
 /* Variables */
 const allow_widgets = [

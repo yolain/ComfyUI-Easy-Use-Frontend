@@ -11,7 +11,7 @@ import {ref, onMounted, h, render } from 'vue'
 
 import {api, app} from "@/composable/comfyAPI";
 import {$t} from "@/composable/i18n";
-import {NODES_MAP_ID} from "@/config/index";
+import {NODES_MAP_ID} from "@/constants/index";
 
 /* Register Extensions*/
 import Map from "@/components/sidebar/map/index.vue"

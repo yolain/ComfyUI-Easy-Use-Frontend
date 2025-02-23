@@ -58,7 +58,7 @@ const createStylesSelector = async(node) => {
     get:_=>styles_value
   })
   // selector
-  let selector = node.addDOMWidget('select_styles','btn', selector_div, {
+  node.addDOMWidget('select_styles','btn', selector_div, {
     setValue(){
       setTimeout(_=>{
         _selectors[selector_index].value = value.split(',')
@@ -113,7 +113,6 @@ const createHumanSegmentation = async(node) => {
   let selector_divs = segsRef.value
   let selector_div = selector_divs[node.id]?.['_']?.vnode?.el
   if(!selector_div) return
-  let selector = node.addDOMWidget('mask_components','btn', selector_div);
   if(!node.properties['values']) node.setProperty('values', [])
   _seg_selectors[selector_index]['show'] = true
   await store.setSegSelectors(_seg_selectors)
@@ -132,19 +131,20 @@ const createHumanSegmentation = async(node) => {
     },
     get:_=>method_value
   })
-  // selector
-  Object.defineProperty(selector, 'value',{
-    set:value=>{
+
+
+  node.addDOMWidget('mask_components','btn', selector_div, {
+    setValue(){
       setTimeout(_=>{
         _seg_selectors[selector_index].value = value.split(',')
         store.setSegSelectors(_seg_selectors)
       },150)
     },
-    get:_=>{
+    getValue(){
       node.properties['values'] = seg_selectors.value?.[selector_index].value || []
       return node.properties['values'].join(',')
     }
-  })
+  });
 
   toggleWidget(node, getWidgetByName(node, 'confidence'), method_value === 'selfie_multiclass_256x256' ? true : false)
   node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 500]);
@@ -193,17 +193,15 @@ const createSliderControl = async(node)=>{
   let divs = slidersRef.value
   let div = divs[node.id]?.['_']?.vnode?.el
   if(!div) return
-  let sliders =node.addDOMWidget('values','btn', div);
-  if(!node.properties['values']) node.setProperty('values', [])
-
-  Object.defineProperty(sliders, 'value',{
-    set: function() {},
-    get:_=>{
+  node.addDOMWidget('values','btn', div, {
+    setValue(){},
+    getValue(){
       const values = slider_controls.value?.[slider_index].value || []
       node.properties['values'] = values.map((v,i)=> (`${i}:${v.value}`))
       return node.properties['values'].join(',')
     }
-  })
+  });
+  if(!node.properties['values']) node.setProperty('values', [])
 
   node.setSize(type_widget.value == 'sdxl' ? [375,320] : [455,320])
   type_widget.callback = v => {

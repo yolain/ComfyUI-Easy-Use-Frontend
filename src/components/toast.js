@@ -1,5 +1,5 @@
 import {$el} from "@/composable/comfyAPI";
-import {PREFIX_CLASS} from '@/config'
+import {PREFIX_CLASS} from '@/constants'
 import sleep from "@/composable/sleep.js";
 class Toast {
 

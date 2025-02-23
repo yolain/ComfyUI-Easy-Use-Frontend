@@ -17,7 +17,7 @@ div(:class="prefix" @click="toggle")
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import {app} from "@/composable/comfyAPI.js";
-import {NODE_MODE} from "@/config/index.js";
+import {NODE_MODE} from "@/constants/index.js";
 
 import {ref, defineComponent, defineProps, defineEmits, watch} from 'vue'
 defineEmits(['mousedown', 'mouseup','changeMode'])

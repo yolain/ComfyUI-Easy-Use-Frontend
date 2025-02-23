@@ -14,7 +14,7 @@ import {
 } from "@/composable/node.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {cleanVRAM} from "@/composable/easyuseAPI.js";
-import {NODES_MAP_ID} from "@/config/index.js";
+import {NODES_MAP_ID} from "@/constants/index.js";
 /* Variables */
 let nodesStore = null
 
