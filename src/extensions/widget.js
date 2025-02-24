@@ -1043,6 +1043,7 @@ function toggleLogic(node, widget) {
         // Image
         case 'rem_mode':
             toggleWidget(node, getWidgetByName(node, 'torchscript_jit'), v === 'Inspyrenet' ? true : false)
+            toggleWidget(node, getWidgetByName(node, 'refine_foreground'), v === 'BEN2' ? true : false)
             updateNodeHeight(node)
             break
     }
