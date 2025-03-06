@@ -1,7 +1,8 @@
-import {api, app, ComfyWidgets} from "@/composable/comfyAPI";
+import {api, app, ComfyWidgets} from "@/composable/comfyAPI.js";
 
 import {$t} from "@/composable/i18n";
-import {toggleWidget, getWidgetByName, updateNodeHeight} from "@/composable/node";
+import {toggleWidget, getWidgetByName, updateNodeHeight} from "@/composable/node.js";
+import {unsafeDrawBackground} from "@/composable/drawBackground.js";
 import {toast} from "@/components/toast";
 import sleep from "@/composable/sleep.js";
 import {MAX_SEED_NUM} from "@/constants";
@@ -42,6 +43,7 @@ const ipa_faceid_presets = [
 // Nodes List
 const has_seed_nodes = ["easy seed", "easy latentNoisy", "easy wildcards", "easy preSampling", "easy preSamplingAdvanced", "easy preSamplingNoiseIn", "easy preSamplingSdTurbo", "easy preSamplingCascade", "easy preSamplingDynamicCFG", "easy preSamplingLayerDiffusion", "easy fullkSampler", "easy fullCascadeKSampler"]
 const loader_nodes = ["easy fullLoader", "easy a1111Loader", "easy comfyLoader", "easy hyditLoader", "easy pixArtLoader"]
+const samplers_nodes = ["easy fullkSampler", "easy kSampler", "easy kSamplerCustom", "easy kSamplerTiled", "easy kSamplerLayerDiffusion", "easy kSamplerInpainting", "easy kSamplerDownscaleUnet", "easy kSamplerSDTurbo", "easy fullCascadeKSampler", "easy cascadeKSampler"]
 const image_dynamic_nodes = ["easy imageSize","easy imageSizeBySide","easy imageSizeByLongerSide","easy imageSizeShow", "easy imageRatio", "easy imagePixelPerfect"]
 const loop_nodes = ['easy forLoopStart','easy forLoopEnd', 'easy whileLoopStart', 'easy whileLoopEnd']
 const index_switch_nodes = ['easy anythingIndexSwitch', 'easy imageIndexSwitch', 'easy textIndexSwitch', 'easy conditioningIndexSwitch']
@@ -516,6 +518,16 @@ app.registerExtension({
                     },1)
                 }
                 else toggleWidget(this, vae_name, vae?.link ? false : true)
+            }
+        }
+
+        if(samplers_nodes.includes(node_name)){
+            nodeType.prototype.onDrawBackground = function(ctx) {
+                try {
+                    unsafeDrawBackground(this, ctx)
+                } catch (error) {
+                    console.error('Error drawing node background', error)
+                }
             }
         }
     },
