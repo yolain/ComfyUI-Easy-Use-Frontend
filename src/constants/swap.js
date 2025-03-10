@@ -315,4 +315,67 @@ export default {
             "MASKS":"MASKS",
         },
     },
+    // FastUse
+    fast_loaders:{
+      category:'Fast Loaders',
+      nodes:['fast ckptLoader', 'fast unetLoader'],
+      input:{
+          "开始加载": "开始加载"
+      },
+      output:{
+          "模型加载器": "模型加载器",
+          "MODEL": "MODEL",
+          "VAE": "VAE",
+          "CLIP": "CLIP"
+      }
+    },
+    fast_inputs:{
+        category: 'Fast Inputs',
+        nodes:['fast sdInput', 'fast fluxInput', 'fast videoInput'],
+        input:{
+            "模型加载器": "模型加载器",
+            "更多Controlnet": "更多Controlnet",
+            "图像": "图像",
+            "遮罩": "遮罩",
+            "功能节点": "功能节点",
+        },
+        output:{
+            "采样":"采样",
+            "正面条件": "正面条件",
+            "负面条件": "负面条件",
+            "潜空间": "潜空间"
+        },
+        widget:{
+            "Sigmas":"Sigmas",
+            "分离Sigmas步数":"分离Sigmas步数",
+            "分离降噪":"分离降噪",
+            "降噪":"降噪",
+            "添加噪声":"添加噪声",
+            "seed": "seed",
+            "生成数量": "生成数量"
+        }
+    },
+    fast_outputResult:{
+        category: 'Fast Outputs',
+        nodes:['fast outputResult', 'fast outputResultVideo'],
+        input:{
+            "采样":"采样",
+            "噪声":"噪声",
+            "模型加载器":"模型加载器",
+        },
+        output:{
+            "图像":"图像序列",
+            "图像序列":"图像",
+            "输出":"输出",
+            "降噪输出":"降噪输出",
+            "VAE":"VAE",
+        },
+        widget:{
+            "采样预览":"采样预览",
+            "VAE解码":"VAE解码",
+            "图像输出":"视频输出",
+            "视频输出":"图像输出",
+            "保存路径":"保存路径",
+        }
+    }
 }
