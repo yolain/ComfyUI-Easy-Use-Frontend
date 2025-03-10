@@ -1,6 +1,6 @@
 :root {
-   --theme-color:var(--primary-bg);
-   --theme-color-light: var(--primary-hover-bg);
+   --theme-color:var(--p-primary-color, #60a5fa);
+   --theme-color-light: var(--p-primary-hover-color, #93c5fd);
    --success-color: #52c41a;
    --error-color: #ff4d4f;
    --warning-color: #faad14;

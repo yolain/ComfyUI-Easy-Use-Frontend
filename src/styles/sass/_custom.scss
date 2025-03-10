@@ -1,7 +1,8 @@
 .comfyui-easyuse{
+  --primary-bg:var(--theme-color)!important;
+  --primary-hover-bg: var(--theme-color-light)!important;
   --p-datatable-header-cell-padding: 0.15rem 1rem;
   --p-datatable-body-cell-padding: 0.15rem 1rem;
-  --p-primary-color: var(--theme-color-light)!important;
   --border-color-solid: var(--border-color);
   --border-radius: 8px;
   &.dark-theme{

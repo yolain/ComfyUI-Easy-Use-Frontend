@@ -1,7 +1,7 @@
 export const PREFIX_CLASS = 'comfyui-easyuse-'
 export const DARK_THEME_CLASS = 'dark-theme'
-export const THEME_COLOR = "#236692"
-export const THEME_COLOR_LIGHT = "#3485bb"
+export const THEME_COLOR = "#60a5fa"
+export const THEME_COLOR_LIGHT = "#93c5fd"
 export const CUSTOM_LINK_TYPES_COLOR = {
     "PIPE_LINE": "#7737AA",
     "PIPE_LINE_SDXL": "#7737AA",
