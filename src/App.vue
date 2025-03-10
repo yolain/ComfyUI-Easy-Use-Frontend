@@ -20,7 +20,7 @@ const newMenuPositionID = 'Comfy.UseNewMenu'
 const newMenuPosition = ref(null)
 
 
-const init = _=>{
+const init = async()=>{
   const enableNodesMap = getSetting('EasyUse.NodesMap.Enable', null)
   // SideBar
   if (enableNodesMap){
@@ -35,6 +35,23 @@ const init = _=>{
         render(h(Map,{}),el)
       }
     })
+  }
+  // About
+  const resp = await api.fetchApi(`/easyuse/version`);
+  if (resp.status === 200) {
+    let data = await resp.json();
+    if(data.version){
+      app.registerExtension({
+        name: 'EasyUse Version',
+        aboutPageBadges: [
+          {
+            label: `EasyUse v` + data.version,
+            url: 'https://github.com/yolain/ComfyUI-Easy-Use',
+            icon: 'pi pi-github'
+          }
+        ]
+      })
+    }
   }
   newMenuPosition.value = getSetting(newMenuPositionID)
   getSettingsLookup(newMenuPositionID, v=> {
