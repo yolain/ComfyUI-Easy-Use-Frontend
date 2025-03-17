@@ -5,8 +5,10 @@ import {isLocalNetwork, normalize} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
 import {COMFYUI_NODE_BASIC_CATEGORY, NODES_MAP_ID, NO_PREVIEW_IMAGE} from "@/constants";
 import {getSetting} from "@/composable/settings.js";
+import {getWidgetByName, getWidgetValue} from "@/composable/node.js";
 
 let modelsList = {}
+let isPyssssNode = false
 /* Register Extension */
 app.registerExtension({
     name: 'Comfy.EasyUse.ContextMenu',
@@ -88,6 +90,25 @@ app.registerExtension({
                 image_element.style.top = '0px'
             },100)
         })
+    },
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        const onNodeCreated = nodeType.prototype.onNodeCreated;
+        if (["CheckpointLoader|pysssss", "LoraLoader|pysssss"].includes(nodeData.name)) {
+            nodeType.prototype.onNodeCreated = async function () {
+                onNodeCreated ? onNodeCreated.apply(this, []) : undefined;
+                let widget = getWidgetByName(this, 'lora_name') || getWidgetByName(this, 'ckpt_name')
+                if (widget) {
+                    let oldClick = widget.onClick
+                    widget.onClick = function (options) {
+                        isPyssssNode = true
+                        setTimeout(_=>{
+                            isPyssssNode = false
+                        },500)
+                        return oldClick.call(this, options)
+                    }
+                }
+            }
+        }
     }
 })
 
@@ -222,24 +243,6 @@ function contextMenuAddItem(name, value, options){
         if (value.className) {
             element.className += " " + value.className;
         }
-    }
-
-    if (element && isCustomItem(value) && value?.image && !value.submenu) {
-        element.textContent += " *";
-        const key = `pysssss-image-combo-${name}`
-        $el("div.pysssss-combo-image", {
-            id: key,
-            parent: document.body,
-            style: {
-                backgroundImage: `url(/pysssss/view/${encodeRFC3986URIComponent(value.image)})`,
-            },
-        });
-        const showHandler = () => showPyssssImage(element, key);
-        const closeHandler = () => closePyssssImage(key);
-
-        element.addEventListener("mouseenter", showHandler, { passive: true });
-        element.addEventListener("mouseleave", closeHandler, { passive: true });
-        element.addEventListener("click", closeHandler, { passive: true });
     }
     if (element && value?.thumbnail){
         element.addEventListener("mouseenter", showModelsThumbnail(element, value, this.root),{passive:true})
@@ -413,65 +416,12 @@ const closeModelsThumbnail = () => (e) => {
     image_element.style.top = '0px'
 }
 
-const getPyssssImage = (imageId) => document.querySelector(`#${CSS.escape(imageId)}`);
-
-const calculatePyssssImagePosition = (el, bodyRect) => {
-    const IMAGE_WIDTH = 384;
-    const IMAGE_HEIGHT = 384;
-    let { top, left, right } = el.getBoundingClientRect();
-    const { width: bodyWidth, height: bodyHeight } = bodyRect;
-
-    const isSpaceRight = right + IMAGE_WIDTH <= bodyWidth;
-    if (isSpaceRight) {
-        left = right;
-    } else {
-        left -= IMAGE_WIDTH;
-    }
-
-    top = top - IMAGE_HEIGHT / 2;
-    if (top + IMAGE_HEIGHT > bodyHeight) {
-        top = bodyHeight - IMAGE_HEIGHT;
-    }
-    if (top < 0) {
-        top = 0;
-    }
-
-    return { left: Math.round(left), top: Math.round(top), isLeft: !isSpaceRight };
-};
-
-function showPyssssImage(el, imageId) {
-    const img = getPyssssImage(imageId);
-    if (img) {
-        const bodyRect = document.body.getBoundingClientRect();
-        if (!bodyRect) return;
-
-        const { left, top, isLeft } = calculatePyssssImagePosition(el, bodyRect);
-
-        img.style.display = "block";
-        img.style.left = `${left}px`;
-        img.style.top = `${top}px`;
-
-        if (isLeft) {
-            img.classList.add("left");
-        } else {
-            img.classList.remove("left");
-        }
-    }
-}
-
-function closePyssssImage(imageId) {
-    const img = getPyssssImage(imageId);
-    if (img) {
-        img.style.display = "none";
-    }
-}
-
 // display model thumbnails preview
 function setComboOptions(values, options){
     const enableModelThumbnail = getSetting('EasyUse.ContextMenu.ModelsThumbnails',null);
     const enableSubDirectories = getSetting('EasyUse.ContextMenu.SubDirectories',null);
-
     if(!enableModelThumbnail && !enableSubDirectories) return null;
+    if(isPyssssNode) return null;
     // Allow Extensions
     const allow_extensions = ['ckpt', 'pt', 'bin', 'pth', 'safetensors', 'gguf']
     if(values?.length>0){
@@ -507,7 +457,6 @@ function setComboOptions(values, options){
             }
         })
     }
-
 
     const compatValues = values;
     const folders = {};
