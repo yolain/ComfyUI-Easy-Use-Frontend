@@ -8,6 +8,7 @@ import milk_white from "@/constants/theme/milkWhite";
 import settings from "@/constants/settings";
 import sleep from "@/composable/sleep";
 import {normalize} from "@/composable/util.js";
+import {toast} from "@/components/toast.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {drawSlot, strokeShape} from "@/composable/canvas.js";
 
@@ -109,6 +110,23 @@ registerExtension({
         setTimeout(_=> setCrystoolsUI(getSetting('Comfy.UseNewMenu') || 'Disabled'),1)
         const changeNewMenuPosition = app.ui.settings.settingsLookup?.['Comfy.UseNewMenu']
         if(changeNewMenuPosition) changeNewMenuPosition.onChange = v => setCrystoolsUI(v)
+        // toast
+        api.addEventListener("easyuse-toast",event=>{
+            const content = event.detail.content
+            const type = event.detail.type
+            const duration = event.detail.duration
+            if(!type){
+                toast.info(content, duration)
+            }
+            else{
+                toast.show({
+                    id: `toast-${type}`,
+                    icon:toast[type+"_icon"],
+                    content: `${content}`,
+                    duration: duration || 3000,
+                })
+            }
+        })
     },
 
     async nodeCreated(node) {

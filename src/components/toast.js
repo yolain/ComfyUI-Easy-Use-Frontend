@@ -7,6 +7,12 @@ class Toast {
     children = HTMLElement
     container =  document.body
 
+    info_icon = `mdi mdi-information ${PREFIX_CLASS}theme`
+    success_icon = `mdi mdi-check-circle ${PREFIX_CLASS}success`
+    error_icon = `mdi mdi-close-circle ${PREFIX_CLASS}error`
+    warn_icon = `mdi mdi-alert-circle ${PREFIX_CLASS}warning`
+    loading_icon = `mdi mdi-rotate-right loading`
+
     constructor() {
         this.container.appendChild(this.element)
     }
@@ -49,7 +55,7 @@ class Toast {
     async info(content, duration = 3000, actions = []) {
         this.show({
             id: `toast-info`,
-            icon:`mdi mdi-information ${PREFIX_CLASS}theme`,
+            icon:this.info_icon,
             content,
             duration,
         });
@@ -57,7 +63,7 @@ class Toast {
     async success(content, duration = 3000) {
         this.show({
             id: `toast-success`,
-            icon:`mdi mdi-check-circle ${PREFIX_CLASS}success`,
+            icon:this.success_icon,
             content,
             duration,
         });
@@ -65,7 +71,7 @@ class Toast {
     async error(content, duration = 3000) {
         this.show({
             id: `toast-error`,
-            icon:`mdi mdi-close-circle ${PREFIX_CLASS}error`,
+            icon:this.error_icon,
             content,
             duration,
         });
@@ -73,7 +79,7 @@ class Toast {
     async warn(content, duration = 3000) {
         this.show({
             id: `toast-warn`,
-            icon:`mdi mdi-alert-circle ${PREFIX_CLASS}warning`,
+            icon:this.warn_icon,
             content,
             duration,
         });
@@ -81,7 +87,7 @@ class Toast {
     async showLoading(content, duration = 0) {
         this.show({
             id: `toast-loading`,
-            icon:`mdi mdi-rotate-right loading`,
+            icon:this.loading_icon,
             content,
             duration,
         });
