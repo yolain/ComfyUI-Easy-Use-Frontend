@@ -164,10 +164,17 @@ app.registerExtension({
                 })
             }
             if(node?.imagey === undefined){
-                Object.defineProperty(node, 'imagey', {
-                    get : function() { return null; },
-                    set: function (v) {return node.widgets[node.widgets.length-1].last_y+LiteGraph.NODE_WIDGET_HEIGHT;},
-                })
+                setTimeout(_=>{
+                    let value = node.imagey
+                    Object.defineProperty(node, 'imagey', {
+                        get: function (){
+                            return node.widgets[node.widgets.length-1].last_y+LiteGraph.NODE_WIDGET_HEIGHT
+                        },
+                        set: function (v) {
+                            node.imagey = v
+                        }
+                    })
+                },100)
             }
 
             /* Capture clicks */
@@ -195,8 +202,7 @@ app.registerExtension({
 
             const onDrawBackground = nodeType.prototype.onDrawBackground;
             nodeType.prototype.onDrawBackground = function(ctx) {
-                onDrawBackground.apply(this, arguments);
-                additionalDrawBackground(this, ctx);
+                additionalDrawBackground(this, ctx, this.imagey || 100);
             }
 
             nodeType.prototype.imageClicked = function (imageIndex) {
