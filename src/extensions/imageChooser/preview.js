@@ -1,7 +1,49 @@
 import { app } from "@/composable/comfyAPI";
-import {is_all_same_aspect_ratio, calculateImageGrid} from '@/composable/drawBackground.js';
-
 const kSampler = ['easy kSampler', 'easy kSamplerTiled', 'easy fullkSampler']
+
+
+const is_all_same_aspect_ratio = imgs => {
+    if (!imgs.length || imgs.length === 1) return true
+
+    const ratio = imgs[0].naturalWidth / imgs[0].naturalHeight
+
+    for (let i = 1; i < imgs.length; i++) {
+        const this_ratio = imgs[i].naturalWidth / imgs[i].naturalHeight
+        if (ratio != this_ratio) return false
+    }
+    return true
+}
+export function calculateImageGrid(imgs, dw, dh) {
+    let best = 0
+    let w = imgs[0].naturalWidth
+    let h = imgs[0].naturalHeight
+    const numImages = imgs.length
+
+    let cellWidth, cellHeight, cols, rows, shiftX
+    // compact style
+    for (let c = 1; c <= numImages; c++) {
+        const r = Math.ceil(numImages / c)
+        const cW = dw / c
+        const cH = dh / r
+        const scaleX = cW / w
+        const scaleY = cH / h
+
+        const scale = Math.min(scaleX, scaleY, 1)
+        const imageW = w * scale
+        const imageH = h * scale
+        const area = imageW * imageH * numImages
+
+        if (area > best) {
+            best = area
+            cellWidth = imageW
+            cellHeight = imageH
+            cols = c
+            rows = r
+            shiftX = c * ((cW - imageW) / 2)
+        }
+    }
+    return { cellWidth, cellHeight, cols, rows, shiftX }
+}
 
 function display_preview_images(event) {
     const node = app.graph._nodes_by_id[event.detail.id];
@@ -65,7 +107,7 @@ function additionalDrawBackground(node, ctx, shiftY=0) {
                 0
             )
             const fakeImgs = []
-            fakeImgs.length = imgs.length
+            fakeImgs.length = node.imgs?.length
             fakeImgs[0] = {
                 naturalWidth: largestDimension,
                 naturalHeight: largestDimension
