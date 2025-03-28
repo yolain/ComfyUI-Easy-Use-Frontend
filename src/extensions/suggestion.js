@@ -10,283 +10,283 @@ const ipadapterNodes = ["easy ipadapterApply", "easy ipadapterApplyADV" , "easy 
 const pipeNodes = ['easy pipeIn','easy pipeOut', 'easy pipeEdit', 'easy pipeEditPrompt']
 const xyNodes = ['easy XYPlot', 'easy XYPlotAdvanced']
 const extraNodes = ['easy setNode']
-const modelNormalNodes = [...["Reroute"],...['RescaleCFG','LoraLoaderModelOnly','LoraLoader','FreeU','FreeU_v2'],...ipadapterNodes,...extraNodes]
+const modelNormalNodes = [...['RescaleCFG','LoraLoaderModelOnly','LoraLoader','FreeU','FreeU_v2'],...ipadapterNodes,...extraNodes]
 const suggestions = {
     // prompt
     "easy seed":{
         "from":{
-            "INT": [...["Reroute"],...preSamplingNodes,...['easy fullkSampler']]
+            "INT": [...preSamplingNodes,...['easy fullkSampler']]
         }
     },
     "easy positive":{
         "from":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy negative":{
         "from":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy wildcards":{
         "from":{
-            "STRING": [...["Reroute","easy showAnything"],...propmts,]
+            "STRING": [...["easy showAnything"],...propmts,]
         }
     },
     "easy stylesSelector":{
         "from":{
-            "STRING": [...["Reroute","easy showAnything"],...propmts,]
+            "STRING": [...["easy showAnything"],...propmts,]
         }
     },
     "easy promptConcat":{
         "from":{
-            "STRING": [...["Reroute","easy showAnything"],...propmts,]
+            "STRING": [...["easy showAnything"],...propmts,]
         }
     },
     "easy promptReplace":{
         "from":{
-            "STRING": [...["Reroute","easy showAnything"],...propmts,]
+            "STRING": [...["easy showAnything"],...propmts,]
         }
     },
     // sd相关
     "easy fullLoader": {
         "from":{
-            "PIPE_LINE": [...["Reroute"],...preSamplingNodes,...['easy fullkSampler'],...pipeNodes,...extraNodes],
+            "PIPE_LINE": [...preSamplingNodes,...['easy fullkSampler'],...pipeNodes,...extraNodes],
             "MODEL":modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy a1111Loader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy comfyLoader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy hunyuanDiTLoader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy kolorsLoader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy pixArtLoader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy fluxLoader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy svdLoader":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy preSampling", "easy preSamplingAdvanced", "easy preSamplingDynamicCFG"], ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...["easy preSampling", "easy preSamplingAdvanced", "easy preSamplingDynamicCFG"], ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy zero123Loader":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy preSampling", "easy preSamplingAdvanced", "easy preSamplingDynamicCFG"], ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...["easy preSampling", "easy preSamplingAdvanced", "easy preSamplingDynamicCFG"], ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy sv3dLoader":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy preSampling", "easy preSamplingAdvanced", "easy preSamplingDynamicCFG"], ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...["easy preSampling", "easy preSamplingAdvanced", "easy preSamplingDynamicCFG"], ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "STRING": [...["Reroute"],...propmts]
+            "STRING": [...propmts]
         }
     },
     "easy preSampling": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
+            "PIPE_LINE": [ ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
         },
     },
     "easy preSamplingAdvanced": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
+            "PIPE_LINE": [ ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
         }
     },
     "easy preSamplingDynamicCFG": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
+            "PIPE_LINE": [ ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
         }
     },
     "easy preSamplingCustom": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
+            "PIPE_LINE": [ ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
         }
     },
     "easy preSamplingLayerDiffusion": {
         "from": {
-            "PIPE_LINE": [...["Reroute", "easy kSamplerLayerDiffusion"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
+            "PIPE_LINE": [...["easy kSamplerLayerDiffusion"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
         }
     },
     "easy preSamplingNoiseIn": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
+            "PIPE_LINE": [ ...kSampler, ...pipeNodes, ...controlNetNodes, ...xyNodes, ...extraNodes]
         }
     },
     // ksampler
     "easy fullkSampler": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...pipeNodes.reverse(), ...['easy preDetailerFix', 'easy preMaskDetailerFix'], ...preSamplingNodes, ...extraNodes]
+            "PIPE_LINE": [ ...pipeNodes.reverse(), ...['easy preDetailerFix', 'easy preMaskDetailerFix'], ...preSamplingNodes, ...extraNodes]
         }
     },
     "easy kSampler": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...pipeNodes.reverse(), ...['easy preDetailerFix', 'easy preMaskDetailerFix', 'easy hiresFix'], ...preSamplingNodes, ...extraNodes],
+            "PIPE_LINE": [ ...pipeNodes.reverse(), ...['easy preDetailerFix', 'easy preMaskDetailerFix', 'easy hiresFix'], ...preSamplingNodes, ...extraNodes],
         }
     },
     // cn
     "easy controlnetLoader": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
         }
     },
     "easy controlnetLoaderADV":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
         }
     },
     // instant
     "easy instantIDApply": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "COMBO": [...["Reroute", "easy promptLine"]]
+            "COMBO": [...["easy promptLine"]]
         }
     },
     "easy instantIDApplyADV":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes
         },
         "to":{
-            "COMBO": [...["Reroute", "easy promptLine"]]
+            "COMBO": [...["easy promptLine"]]
         }
     },
     "easy ipadapterApply":{
         "to":{
-            "COMBO": [...["Reroute", "easy promptLine"]]
+            "COMBO": [...["easy promptLine"]]
         }
     },
     "easy ipadapterApplyADV":{
         "to":{
-            "STRING": [...["Reroute", "easy sliderControl"], ...propmts],
-            "COMBO": [...["Reroute", "easy promptLine"]]
+            "STRING": [...["easy sliderControl"], ...propmts],
+            "COMBO": [...["easy promptLine"]]
         }
     },
     "easy ipadapterStyleComposition":{
         "to":{
-            "COMBO": [...["Reroute", "easy promptLine"]]
+            "COMBO": [...["easy promptLine"]]
         }
     },
     // fix
     "easy preDetailerFix":{
         "from": {
-            "PIPE_LINE": [...["Reroute", "easy detailerFix"], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [...["easy detailerFix"], ...pipeNodes, ...extraNodes]
         },
         "to":{
-            "PIPE_LINE": [...["Reroute", "easy ultralyticsDetectorPipe", "easy samLoaderPipe", "easy kSampler", "easy fullkSampler"]]
+            "PIPE_LINE": [...["easy ultralyticsDetectorPipe", "easy samLoaderPipe", "easy kSampler", "easy fullkSampler"]]
         }
     },
     "easy preMaskDetailerFix":{
         "from": {
-            "PIPE_LINE": [...["Reroute", "easy detailerFix"], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [...["easy detailerFix"], ...pipeNodes, ...extraNodes]
         }
     },
     "easy samLoaderPipe": {
         "from":{
-            "PIPE_LINE": [...["Reroute", "easy preDetailerFix"], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [...["easy preDetailerFix"], ...pipeNodes, ...extraNodes]
         }
     },
     "easy ultralyticsDetectorPipe": {
         "from":{
-            "PIPE_LINE": [...["Reroute", "easy preDetailerFix"], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [...["easy preDetailerFix"], ...pipeNodes, ...extraNodes]
         }
     },
     // cascade相关
     "easy cascadeLoader":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy fullCascadeKSampler", 'easy preSamplingCascade'], ...controlNetNodes, ...pipeNodes, ...extraNodes],
+            "PIPE_LINE": [ ...["easy fullCascadeKSampler", 'easy preSamplingCascade'], ...controlNetNodes, ...pipeNodes, ...extraNodes],
             "MODEL": modelNormalNodes.filter(cate => !ipadapterNodes.includes(cate))
         }
     },
     "easy fullCascadeKSampler":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy preSampling", "easy preSamplingAdvanced"], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...["easy preSampling", "easy preSamplingAdvanced"], ...pipeNodes, ...extraNodes]
         }
     },
     "easy preSamplingCascade":{
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy cascadeKSampler",], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...["easy cascadeKSampler",], ...pipeNodes, ...extraNodes]
         }
     },
     "easy cascadeKSampler": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...["easy preSampling", "easy preSamplingAdvanced"], ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...["easy preSampling", "easy preSamplingAdvanced"], ...pipeNodes, ...extraNodes]
         }
     },
     // pipe
     "easy pipeEdit": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...extraNodes],
         },
         "to":{
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
         }
     },
     "easy pipeEditPrompt": {
         "from": {
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...extraNodes],
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...extraNodes],
         },
         "to":{
-            "PIPE_LINE": [...["Reroute"], ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
+            "PIPE_LINE": [ ...preSamplingNodes, ...controlNetNodes, ...instantIDNodes, ...pipeNodes, ...extraNodes]
         }
     },
 }
@@ -304,8 +304,7 @@ app.registerExtension({
     async setup(app) {
         const createDefaultNodeForSlot = LGraphCanvas.prototype.createDefaultNodeForSlot;
         LGraphCanvas.prototype.createDefaultNodeForSlot = function(optPass) { // addNodeMenu for connection
-            var optPass = optPass || {};
-            var opts = Object.assign({   nodeFrom: null // input
+            const opts = Object.assign({   nodeFrom: null // input
                     ,slotFrom: null // input
                     ,nodeTo: null   // output
                     ,slotTo: null   // output
@@ -314,7 +313,7 @@ app.registerExtension({
                     ,posAdd:[0,0]	// adjust x,y
                     ,posSizeFix:[0,0] // alpha, adjust the position x,y based on the new node size w,h
                 }
-                ,optPass
+                ,optPass || {}
             );
             const { afterRerouteId } = opts
             const that = this;
