@@ -292,10 +292,17 @@ const suggestions = {
 }
 
 
+class NullGraphError extends Error {
+    constructor(message="Attempted to access LGraph reference that was null or undefined.", cause) {
+        super(message, {cause})
+        this.name = "NullGraphError"
+    }
+}
 /* Register the extension */
 app.registerExtension({
     name: "Comfy.EasyUse.Suggestions",
     async setup(app) {
+        const createDefaultNodeForSlot = LGraphCanvas.prototype.createDefaultNodeForSlot;
         LGraphCanvas.prototype.createDefaultNodeForSlot = function(optPass) { // addNodeMenu for connection
             var optPass = optPass || {};
             var opts = Object.assign({   nodeFrom: null // input
@@ -309,10 +316,16 @@ app.registerExtension({
                 }
                 ,optPass
             );
-            var that = this;
+            const { afterRerouteId } = opts
+            const that = this;
 
-            var isFrom = opts.nodeFrom && opts.slotFrom!==null;
-            var isTo = !isFrom && opts.nodeTo && opts.slotTo!==null;
+            const isFrom = opts.nodeFrom && opts.slotFrom!==null;
+            const isTo = !isFrom && opts.nodeTo && opts.slotTo!==null;
+            const node = isFrom ? opts.nodeFrom : opts.nodeTo
+            // Not an Easy Use node, skip showConnectionMenu hijack
+            if(!node || !Object.keys(suggestions).includes(node.type)){
+                return createDefaultNodeForSlot.call(this, optPass)
+            }
 
             if (!isFrom && !isTo){
                 console.warn("No data passed to createDefaultNodeForSlot "+opts.nodeFrom+" "+opts.slotFrom+" "+opts.nodeTo+" "+opts.slotTo);
@@ -323,11 +336,11 @@ app.registerExtension({
                 return false;
             }
 
-            var nodeX = isFrom ? opts.nodeFrom : opts.nodeTo;
-            var slotX = isFrom ? opts.slotFrom : opts.slotTo;
-            var nodeType = nodeX.type
+            const nodeX = isFrom ? opts.nodeFrom : opts.nodeTo;
+            const nodeType = nodeX.type
+            let slotX = isFrom ? opts.slotFrom : opts.slotTo;
 
-            var iSlotConn = false;
+            let iSlotConn = false;
             switch (typeof slotX){
                 case "string":
                     iSlotConn = isFrom ? nodeX.findOutputSlot(slotX,false) : nodeX.findInputSlot(slotX,false);
@@ -449,32 +462,41 @@ app.registerExtension({
             return false;
         }
 
+        let showConnectionMenu = LGraphCanvas.prototype.showConnectionMenu
         LGraphCanvas.prototype.showConnectionMenu = function(optPass) { // addNodeMenu for connection
-            var optPass = optPass || {};
-            var opts = Object.assign({   nodeFrom: null  // input
-                    ,slotFrom: null // input
-                    ,nodeTo: null   // output
-                    ,slotTo: null   // output
-                    ,e: null
-                    ,allow_searchbox: this.allow_searchbox
-                    ,showSearchBox: this.showSearchBox
+            const opts = Object.assign({
+                    nodeFrom: null,  // input
+                    slotFrom: null, // input
+                    nodeTo: null,   // output
+                    slotTo: null,   // output
+                    e: undefined,
+                    allow_searchbox: this.allow_searchbox,
+                    showSearchBox: this.showSearchBox,
                 }
-                ,optPass
+                ,optPass || {}
             );
-            var that = this;
+            const that = this;
+            const { graph } = this
+            const { afterRerouteId } = opts
+            const isFrom = opts.nodeFrom && opts.slotFrom;
+            const isTo = !isFrom && opts.nodeTo && opts.slotTo;
+            const node = isFrom ? opts.nodeFrom : opts.nodeTo
 
-            var isFrom = opts.nodeFrom && opts.slotFrom;
-            var isTo = !isFrom && opts.nodeTo && opts.slotTo;
+            // Not an Easy Use node, skip showConnectionMenu hijack
+            if(!node || !Object.keys(suggestions).includes(node.type)){
+                return showConnectionMenu.call(this, optPass)
+            }
 
             if (!isFrom && !isTo){
                 console.warn("No data passed to showConnectionMenu");
                 return false;
             }
 
-            var nodeX = isFrom ? opts.nodeFrom : opts.nodeTo;
-            var slotX = isFrom ? opts.slotFrom : opts.slotTo;
+            const nodeX = isFrom ? opts.nodeFrom : opts.nodeTo;
+            if (!nodeX) throw new TypeError("nodeX was null when creating default node for slot.")
+            let slotX = isFrom ? opts.slotFrom : opts.slotTo;
 
-            var iSlotConn = false;
+            let iSlotConn = false;
             switch (typeof slotX){
                 case "string":
                     iSlotConn = isFrom ? nodeX.findOutputSlot(slotX,false) : nodeX.findInputSlot(slotX,false);
@@ -495,7 +517,7 @@ app.registerExtension({
                     return false;
             }
 
-            var options = ["Add Node",null];
+            const options = ["Add Node", "Add Reroute", null]
             if (opts.allow_searchbox){
                 options.push("Search");
                 options.push(null);
@@ -524,8 +546,12 @@ app.registerExtension({
             // build menu
             var menu = new LiteGraph.ContextMenu(options, {
                 event: opts.e,
-                title: (slotX && slotX.name!="" ? (slotX.name + (fromSlotType?" | ":"")) : "")+(slotX && fromSlotType ? fromSlotType : ""),
-                callback: inner_clicked
+                extra: slotX,
+                title:
+                    (slotX && slotX.name != ""
+                        ? slotX.name + (fromSlotType ? " | " : "")
+                        : "") + (slotX && fromSlotType ? fromSlotType : ""),
+                callback: inner_clicked,
             });
 
             // callback
@@ -533,14 +559,30 @@ app.registerExtension({
                 //console.log("Process showConnectionMenu selection");
                 switch (v) {
                     case "Add Node":
-                        LGraphCanvas.onMenuAdd(null, null, e, menu, function(node){
-                            if (isFrom){
-                                opts.nodeFrom.connectByType( iSlotConn, node, fromSlotType );
-                            }else{
-                                opts.nodeTo.connectByTypeOutput( iSlotConn, node, fromSlotType );
+                        LGraphCanvas.onMenuAdd(null, null, e, menu, function (node) {
+                            if (!node) return
+
+                            if (isFrom) {
+                                opts.nodeFrom?.connectByType(iSlotConn, node, fromSlotType, { afterRerouteId })
+                            } else {
+                                opts.nodeTo?.connectByTypeOutput(iSlotConn, node, fromSlotType, { afterRerouteId })
                             }
-                        });
+                        })
                         break;
+                    case "Add Reroute":
+                        const node = isFrom ? opts.nodeFrom : opts.nodeTo
+                        const slot = options.extra
+                        if (!graph) throw new NullGraphError()
+                        if (!node) throw new TypeError("Cannot add reroute: node was null")
+                        if (!slot) throw new TypeError("Cannot add reroute: slot was null")
+                        if (!opts.e) throw new TypeError("Cannot add reroute: CanvasPointerEvent was null")
+
+                        const reroute = node.connectFloatingReroute([opts.e.canvasX, opts.e.canvasY], slot, afterRerouteId)
+                        if (!reroute) throw new Error("Failed to create reroute")
+
+                        that.dirty_canvas = true
+                        that.dirty_bgcanvas = true
+                        break
                     case "Search":
                         if(isFrom){
                             opts.showSearchBox(e,{node_from: opts.nodeFrom, slot_from: slotX, type_filter_in: fromSlotType});
@@ -549,16 +591,13 @@ app.registerExtension({
                         }
                         break;
                     default:
-                        // check for defaults nodes for this slottype
-                        var nodeCreated = that.createDefaultNodeForSlot(Object.assign(opts,{ position: [opts.e.canvasX, opts.e.canvasY]
-                            ,nodeType: v
-                        }));
-                        if (nodeCreated){
-                            // new node created
-                            //console.log("node "+v+" created")
-                        }else{
-                            // failed or v is not in defaults
+                        const customProps = {
+                            position: [opts.e?.canvasX ?? 0, opts.e?.canvasY ?? 0],
+                            nodeType: v,
+                            afterRerouteId,
                         }
+                        // check for defaults nodes for this slottype
+                        that.createDefaultNodeForSlot(Object.assign(opts, customProps))
                         break;
                 }
             }

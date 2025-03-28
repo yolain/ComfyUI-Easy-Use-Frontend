@@ -188,12 +188,14 @@ app.registerExtension({
                     serialize:false,
                 })
                 cost_widget.disabled = true
-                setTimeout(_=>{
-                    if(seed_control.name == 'control_before_generate' && seed_widget.value === 0){
-                        seed_widget.value = Math.floor(Math.random() * 4294967294)
-                    }
-                    cost_widget.value = '-'+api_cost[model_widget.value]
-                },100)
+                if(seed_control){
+                    setTimeout(_=>{
+                        if(seed_control.name == 'control before generate' && seed_widget.value === 0){
+                            seed_widget.value = Math.floor(Math.random() * 4294967294)
+                        }
+                        cost_widget.value = '-'+api_cost[model_widget.value]
+                    },100)
+                }
                 let user_div = $el('div.easyuse-account-user', [$t('Loading UserInfo...')])
                 let account = this.addDOMWidget('account',"btn",$el('div.easyuse-account',user_div));
                 // 更新balance信息

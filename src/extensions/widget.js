@@ -278,8 +278,8 @@ app.registerExtension({
             nodeType.prototype.onNodeCreated = async function () {
                 onNodeCreated ? onNodeCreated.apply(this, []) : undefined;
                 const seed_widget = this.widgets.find(w => ['seed_num', 'seed'].includes(w.name))
-                const seed_control = this.widgets.find(w => ['control_before_generate', 'control_after_generate'].includes(w.name))
-                if (nodeData.name == 'easy seed') {
+                const seed_control = this.widgets.find(w => ['control before generate', 'control after generate','control_before_generate', 'control_after_generate'].includes(w.name))
+                if (nodeData.name == 'easy seed' && seed_control) {
                     const randomSeedButton = this.addWidget("button", "🎲 Manual Random Seed", null, _ => {
                         if (seed_control.value != 'fixed') seed_control.value = 'fixed'
                         seed_widget.value = Math.floor(Math.random() * MAX_SEED_NUM)
@@ -291,12 +291,15 @@ app.registerExtension({
             nodeType.prototype.onAdded = async function () {
                 onAdded ? onAdded.apply(this, []) : undefined;
                 const seed_widget = this.widgets.find(w => ['seed_num', 'seed'].includes(w.name))
-                const seed_control = this.widgets.find(w => ['control_before_generate', 'control_after_generate'].includes(w.name))
-                setTimeout(_ => {
-                    if (seed_control.name == 'control_before_generate' && seed_widget.value === 0) {
-                        seed_widget.value = Math.floor(Math.random() * MAX_SEED_NUM)
-                    }
-                }, 1)
+                const seed_control = this.widgets.find(w => ['control before generate', 'control after generate', 'control_before_generate', 'control_after_generate'].includes(w.name))
+                if(seed_control){
+                    setTimeout(_ => {
+                        if (['control before generate','control_before_generate'].includes(seed_control.name) && seed_widget.value === 0) {
+                            seed_widget.value = Math.floor(Math.random() * MAX_SEED_NUM)
+                        }
+                    }, 1)
+                }
+
             }
         }
 
