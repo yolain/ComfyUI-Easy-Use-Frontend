@@ -139,24 +139,24 @@ registerExtension({
             if (theme.color) node.color = theme.color;
         }
         // Get Control Mode
-        if (!control_mode) control_mode = getSetting('Comfy.WidgetControlMode')
+        // if (!control_mode) control_mode = getSetting('Comfy.WidgetControlMode')
         // Fix Official ComfyUI Bug
         // - When the widget value control mode is before, the widget text on the node is not changed when the page is loaded for the first time.
-        if (control_mode == 'before') {
-            const controlValueRunBefore = control_mode == 'before'
-            if (node.widgets?.length > 0) {
-                for (const w of node.widgets) {
-                    if (['control_before_generate', 'control_after_generate'].includes(w.name)) {
-                        await updateControlWidgetLabel(w, controlValueRunBefore);
-                        if (w.linkedWidgets) {
-                            for (const l of w.linkedWidgets) {
-                                await updateControlWidgetLabel(l, controlValueRunBefore);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // if (control_mode == 'before') {
+        //     const controlValueRunBefore = control_mode == 'before'
+        //     if (node.widgets?.length > 0) {
+        //         for (const w of node.widgets) {
+        //             if (['control_before_generate', 'control_after_generate'].includes(w.name)) {
+        //                 await updateControlWidgetLabel(w, controlValueRunBefore);
+        //                 if (w.linkedWidgets) {
+        //                     for (const l of w.linkedWidgets) {
+        //                         await updateControlWidgetLabel(l, controlValueRunBefore);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 })
 
