@@ -185,14 +185,14 @@ function updateControlWidgetLabel(widget, controlValueRunBefore = false) {
 function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     //bg rect
     ctx.strokeStyle = fgcolor;
-    ctx.fillStyle = LiteGraph.use_legacy_node_error_indicator ? "#F00" : bgcolor;
+    ctx.fillStyle = bgcolor;
 
     const title_height = LiteGraph.NODE_TITLE_HEIGHT;
-    const low_quality = this.ds.scale < 0.5;
+    const {low_quality} = this
 
     //render node area depending on shape
     const {collapsed} = node.flags;
-    const shape = node._shape || node.constructor.shape || LiteGraph.ROUND_SHAPE;
+    const shape = node.renderingShape;
     const {title_mode} = node.constructor;
 
     const  render_title =  title_mode == LiteGraph.TRANSPARENT_TITLE || title_mode == LiteGraph.NO_TITLE ? false : true;
@@ -258,32 +258,38 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     //title bg (remember, it is rendered ABOVE the node)
     if (render_title || title_mode == LiteGraph.TRANSPARENT_TITLE) {
         const nodeColorIsDark = isColorDarkOrLight(node?.color || '#ffffff') == 'dark'
-        const scale = this.ds.scale
         //title bar
-        if (node.onDrawTitleBar) {
-            node.onDrawTitleBar(ctx, title_height, size, scale, fgcolor);
-        }
-        else if(title_mode !== LiteGraph.TRANSPARENT_TITLE){
-            if (node.flags.collapsed) {
-                ctx.shadowColor = LiteGraph.DEFAULT_SHADOW_COLOR;
-            }
+        // const scale = this.ds.scale
+        // if (node.onDrawTitleBar) {
+        //     node.onDrawTitleBar(ctx, title_height, size, scale, fgcolor);
+        // }
+        // else if(title_mode !== LiteGraph.TRANSPARENT_TITLE){
+        //     if (node.flags.collapsed) {
+        //         ctx.shadowColor = LiteGraph.DEFAULT_SHADOW_COLOR;
+        //     }
+        //
+        //     ctx.fillStyle = node.constructor.title_color || fgcolor
+        //     ctx.beginPath()
+        //     if (shape == LiteGraph.BOX_SHAPE || low_quality) {
+        //         ctx.rect(0, -title_height, size[0] + 1, title_height);
+        //     } else if (shape == LiteGraph.ROUND_SHAPE || shape == LiteGraph.CARD_SHAPE) {
+        //         ctx.roundRect(
+        //             0,
+        //             -title_height,
+        //             size[0] + 1,
+        //             title_height,
+        //             node.flags.collapsed ? [this.round_radius] : [this.round_radius, this.round_radius, 0, 0]
+        //         );
+        //     }
+        //     ctx.fill();
+        //     ctx.shadowColor = "transparent";
+        // }
+        node.drawTitleBarBackground(ctx, {
+            scale: this.ds.scale,
+            low_quality,
+        })
+        ctx.globalAlpha = old_alpha
 
-            ctx.fillStyle = node.constructor.title_color || fgcolor
-            ctx.beginPath()
-            if (shape == LiteGraph.BOX_SHAPE || low_quality) {
-                ctx.rect(0, -title_height, size[0] + 1, title_height);
-            } else if (shape == LiteGraph.ROUND_SHAPE || shape == LiteGraph.CARD_SHAPE) {
-                ctx.roundRect(
-                    0,
-                    -title_height,
-                    size[0] + 1,
-                    title_height,
-                    node.flags.collapsed ? [this.round_radius] : [this.round_radius, this.round_radius, 0, 0]
-                );
-            }
-            ctx.fill();
-            ctx.shadowColor = "transparent";
-        }
 
         let colState = false;
         if (LiteGraph.node_box_coloured_by_mode) {
@@ -413,223 +419,78 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     }
 
     //render selection marker
-    if (selected) {
-        node.onBounding?.(area);
-
-        if (title_mode == LiteGraph.TRANSPARENT_TITLE) {
-            area[1] -= title_height;
-            area[3] += title_height;
+    // if (selected) {
+    //     node.onBounding?.(area);
+    //
+    //     if (title_mode == LiteGraph.TRANSPARENT_TITLE) {
+    //         area[1] -= title_height;
+    //         area[3] += title_height;
+    //     }
+    //     ctx.lineWidth = 2;
+    //     ctx.globalAlpha = 0.8;
+    //     ctx.beginPath();
+    //     // let out_a = -6,out_b = 12,scale = 2
+    //     let out_a = 0, out_b = 0, scale = 1
+    //     if (shape == LiteGraph.BOX_SHAPE) {
+    //         ctx.rect(
+    //             out_a + area[0],
+    //             out_a + area[1],
+    //             out_b + area[2],
+    //             out_b + area[3]
+    //         );
+    //     } else if (
+    //         shape == LiteGraph.ROUND_SHAPE ||
+    //         (shape == LiteGraph.CARD_SHAPE && node.flags.collapsed)
+    //     ) {
+    //         ctx.roundRect(
+    //             out_a + area[0],
+    //             out_a + area[1],
+    //             out_b + area[2],
+    //             out_b + area[3],
+    //             [this.round_radius * scale]
+    //         );
+    //     } else if (shape == LiteGraph.CARD_SHAPE) {
+    //         ctx.roundRect(
+    //             out_a + area[0],
+    //             out_a + area[1],
+    //             out_b + area[2],
+    //             out_b + area[3],
+    //             [this.round_radius * scale, scale, this.round_radius * scale, scale]
+    //         );
+    //     } else if (shape == LiteGraph.CIRCLE_SHAPE) {
+    //         ctx.arc(
+    //             size[0] * 0.5,
+    //             size[1] * 0.5,
+    //             size[0] * 0.5 + 6,
+    //             0,
+    //             Math.PI * 2
+    //         );
+    //     }
+    //     ctx.strokeStyle = LiteGraph.NODE_BOX_OUTLINE_COLOR;
+    //     ctx.stroke();
+    //     ctx.strokeStyle = fgcolor;
+    //     ctx.globalAlpha = 1;
+    // }
+    // Draw stroke styles
+    for (const getStyle of Object.values(node.strokeStyles)) {
+        const strokeStyle = getStyle.call(node)
+        if (strokeStyle) {
+            strokeShape(ctx, area, {
+                shape,
+                title_height,
+                title_mode,
+                collapsed,
+                ...strokeStyle,
+            })
         }
-        ctx.lineWidth = 2;
-        ctx.globalAlpha = 0.8;
-        ctx.beginPath();
-        // let out_a = -6,out_b = 12,scale = 2
-        let out_a = 0, out_b = 0, scale = 1
-        if (shape == LiteGraph.BOX_SHAPE) {
-            ctx.rect(
-                out_a + area[0],
-                out_a + area[1],
-                out_b + area[2],
-                out_b + area[3]
-            );
-        } else if (
-            shape == LiteGraph.ROUND_SHAPE ||
-            (shape == LiteGraph.CARD_SHAPE && node.flags.collapsed)
-        ) {
-            ctx.roundRect(
-                out_a + area[0],
-                out_a + area[1],
-                out_b + area[2],
-                out_b + area[3],
-                [this.round_radius * scale]
-            );
-        } else if (shape == LiteGraph.CARD_SHAPE) {
-            ctx.roundRect(
-                out_a + area[0],
-                out_a + area[1],
-                out_b + area[2],
-                out_b + area[3],
-                [this.round_radius * scale, scale, this.round_radius * scale, scale]
-            );
-        } else if (shape == LiteGraph.CIRCLE_SHAPE) {
-            ctx.arc(
-                size[0] * 0.5,
-                size[1] * 0.5,
-                size[0] * 0.5 + 6,
-                0,
-                Math.PI * 2
-            );
-        }
-        ctx.strokeStyle = LiteGraph.NODE_BOX_OUTLINE_COLOR;
-        ctx.stroke();
-        ctx.strokeStyle = fgcolor;
-        ctx.globalAlpha = 1;
     }
+
+    node.drawProgressBar(ctx)
 
     // these counter helps in conditioning drawing based on if the node has been executed or an action occurred
     if (node.execute_triggered > 0) node.execute_triggered--;
     if (node.action_triggered > 0) node.action_triggered--;
 
-    // draw missing node widgets for workflow json version 0.4
-    if (!node.flags.collapsed && !node.widgets && node.widgets_values?.length>0){
-        drawMissingNodeWidgets(node, ctx, this)
-    }
-}
-
-function drawMissingNodeWidgets(node, ctx, _this){
-    let max_y = 0
-    const slot_pos = new Float32Array(2)
-    if (node.inputs) {
-        for (let i = 0; i < node.inputs.length; i++) {
-            const pos = node.getConnectionPos(true, i, slot_pos)
-            pos[0] -= node.pos[0]
-            pos[1] -= node.pos[1]
-            if (max_y < pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5) {
-                max_y = pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5
-            }
-        }
-    }
-    if (node.outputs) {
-        for (let i = 0; i < node.outputs.length; i++) {
-            const pos = node.getConnectionPos(false, i, slot_pos)
-            pos[0] -= node.pos[0]
-            pos[1] -= node.pos[1]
-            if (max_y < pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5) {
-                max_y = pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5
-            }
-        }
-    }
-    let posY = max_y
-    if (node.horizontal || node.widgets_up) {
-        posY = 2
-    }
-    if (node.widgets_start_y != null) posY = node.widgets_start_y
-
-    let widget_width = node.size[0];
-    let widget_height = node.size[1];
-    let widgets = node.widgets_values;
-    posY += 2;
-    let H = LiteGraph.NODE_WIDGET_HEIGHT;
-    let show_text = _this.ds.scale > 0.5;
-    ctx.save();
-    ctx.globalAlpha = _this.editor_alpha;
-    let outline_color = LiteGraph.WIDGET_OUTLINE_COLOR;
-    let background_color = LiteGraph.WIDGET_BGCOLOR;
-    let text_color = LiteGraph.WIDGET_TEXT_COLOR;
-    let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
-    let margin = 12;
-
-    for(let i=0; i< widgets.length; ++i){
-        let w = widgets[i];
-        let type = typeof w
-        switch (type){
-            case 'string':
-                ctx.textAlign = "left";
-                ctx.strokeStyle = outline_color;
-                ctx.fillStyle = background_color;
-                ctx.beginPath();
-                if (show_text)
-                    ctx.roundRect(margin, posY, widget_width - margin * 2, H, [H * 0.25]);
-                else
-                    ctx.rect(margin, posY, widget_width - margin * 2, H);
-                ctx.fill();
-                if (show_text) {
-                    if (!w.disabled)
-                        ctx.stroke();
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.rect(margin, posY, widget_width - margin * 2, H);
-                    ctx.clip();
-
-                    //ctx.stroke();
-                    ctx.fillStyle = secondary_text_color;
-                    const label = 'widget_' + (i+1);
-                    ctx.font = "10px Inter"
-                    if (label != null) {
-                        ctx.fillText(label, margin * 2, posY + H * 0.7);
-                    }
-                    ctx.fillStyle = text_color;
-                    ctx.textAlign = "right";
-                    ctx.fillText(String(w).substr(0, 30), widget_width - margin * 2, posY + H * 0.7); //30 chars max
-                    ctx.restore();
-                }
-                break
-            case 'number':
-                ctx.textAlign = "left";
-                ctx.strokeStyle = outline_color;
-                ctx.fillStyle = background_color;
-                ctx.beginPath();
-                if (show_text)
-                    ctx.roundRect(margin, posY, widget_width - margin * 2, H, [H * 0.25]);
-                else
-                    ctx.rect(margin, posY, widget_width - margin * 2, H);
-                ctx.fill();
-                if (show_text) {
-                    ctx.stroke();
-                    ctx.fillStyle = text_color;
-                    ctx.beginPath();
-                    ctx.moveTo(margin + 12, posY + 6.5);
-                    ctx.lineTo(margin + 6, posY + H * 0.5);
-                    ctx.lineTo(margin + 12, posY + H - 6.5);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(widget_width - margin - 12, posY + 6.5);
-                    ctx.lineTo(widget_width - margin - 6, posY + H * 0.5);
-                    ctx.lineTo(widget_width - margin - 12, posY + H - 6.5);
-                    ctx.fill();
-
-                    ctx.fillStyle = secondary_text_color;
-                    ctx.font = "10px Inter"
-                    ctx.fillText('widget_'+ (i+1), margin * 2 + 5, posY + H * 0.7);
-                    ctx.fillStyle = text_color;
-                    ctx.textAlign = "right";
-                    let rightDistance = 6
-                    ctx.font = "10px Inter"
-                    ctx.fillText(
-                        Number(w),
-                        widget_width - margin * 2 - rightDistance,
-                        posY + H * 0.7
-                    );
-                }
-                break
-            case 'boolean':
-                ctx.font = "10px Inter"
-                ctx.textAlign = "left";
-                ctx.strokeStyle = outline_color;
-                ctx.fillStyle = background_color;
-                ctx.beginPath();
-                if (show_text)
-                    ctx.roundRect(margin, posY, widget_width - margin * 2, H, [H * 0.25]);
-                else
-                    ctx.rect(margin, posY, widget_width - margin * 2, H);
-                ctx.fill();
-                if (show_text && !w.disabled)
-                    ctx.stroke();
-                ctx.fillStyle = w.value ? THEME_COLOR : outline_color;
-                ctx.beginPath();
-                ctx.arc(widget_width - margin * 2, posY + H * 0.5, H * 0.25, 0, Math.PI * 2);
-                ctx.fill();
-                if (show_text) {
-                    ctx.fillStyle = secondary_text_color;
-                    const label = 'widget_'+ (i+1);
-                    if (label != null) {
-                        ctx.fillText(label, margin * 1.6, posY + H * 0.7);
-                    }
-                    ctx.font = "10px Inter"
-                    ctx.fillStyle = w ? text_color : secondary_text_color;
-                    ctx.textAlign = "right";
-                    ctx.fillText(w.toString(),
-                        widget_width - 35,
-                        posY + H * 0.7
-                    );
-                }
-                break
-        }
-        posY = posY + H + 4
-        ctx.globalAlpha = _this.editor_alpha
-    }
-    ctx.restore();
-    ctx.textAlign = "left";
 }
 
 function drawNodeWidgets(node, posY, ctx, active_widget) {

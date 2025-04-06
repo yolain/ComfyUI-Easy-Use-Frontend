@@ -209,11 +209,12 @@ export function strokeShape(
         round_radius = LiteGraph.ROUND_RADIUS,
         title_height = LiteGraph.NODE_TITLE_HEIGHT,
         title_mode = LiteGraph.NORMAL_TITLE,
-        colour = LiteGraph.NODE_BOX_OUTLINE_COLOR,
+        color = LiteGraph.NODE_BOX_OUTLINE_COLOR,
         padding = 6,
         collapsed = false,
         thickness = 1,
     } = options
+
 
     // Adjust area if title is transparent
     if (title_mode === LiteGraph.TRANSPARENT_TITLE) {
@@ -225,7 +226,7 @@ export function strokeShape(
     const { lineWidth, strokeStyle } = ctx
     ctx.lineWidth = thickness
     ctx.globalAlpha = 0.8
-    ctx.strokeStyle = colour
+    ctx.strokeStyle = color
     ctx.beginPath()
 
     // Draw shape based on type

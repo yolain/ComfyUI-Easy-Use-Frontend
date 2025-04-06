@@ -1,5 +1,5 @@
 import { THEME_COLOR } from '../index.js'
-const VERSION = 111
+const VERSION = 112
 const bgcolor = "rgba(24,24,27,.9)"
 export default {
     ColorPalette: {
@@ -43,6 +43,8 @@ export default {
               "NODE_DEFAULT_BOXCOLOR": "rgba(255,255,255,.75)",
               "NODE_DEFAULT_SHAPE": 2,
               "NODE_BOX_OUTLINE_COLOR": THEME_COLOR,
+              "NODE_BYPASS_BGCOLOR": "#FF00FF",
+              "NODE_ERROR_COLOUR": "#E00",
               "DEFAULT_SHADOW_COLOR": "rgba(0,0,0,0)",
               "DEFAULT_GROUP_FONT": 24,
 
