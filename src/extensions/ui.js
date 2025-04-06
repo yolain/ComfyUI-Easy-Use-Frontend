@@ -236,7 +236,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
             title_mode,
             title_height,
             padding: 12,
-            colour: LiteGraph.NODE_ERROR_COLOUR,
+            color: LiteGraph.NODE_ERROR_COLOUR,
             collapsed,
             thickness: 10,
         })
