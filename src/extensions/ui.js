@@ -418,74 +418,77 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
         node.onDrawTitle?.(ctx);
     }
 
-    //render selection marker
-    // if (selected) {
-    //     node.onBounding?.(area);
-    //
-    //     if (title_mode == LiteGraph.TRANSPARENT_TITLE) {
-    //         area[1] -= title_height;
-    //         area[3] += title_height;
-    //     }
-    //     ctx.lineWidth = 2;
-    //     ctx.globalAlpha = 0.8;
-    //     ctx.beginPath();
-    //     // let out_a = -6,out_b = 12,scale = 2
-    //     let out_a = 0, out_b = 0, scale = 1
-    //     if (shape == LiteGraph.BOX_SHAPE) {
-    //         ctx.rect(
-    //             out_a + area[0],
-    //             out_a + area[1],
-    //             out_b + area[2],
-    //             out_b + area[3]
-    //         );
-    //     } else if (
-    //         shape == LiteGraph.ROUND_SHAPE ||
-    //         (shape == LiteGraph.CARD_SHAPE && node.flags.collapsed)
-    //     ) {
-    //         ctx.roundRect(
-    //             out_a + area[0],
-    //             out_a + area[1],
-    //             out_b + area[2],
-    //             out_b + area[3],
-    //             [this.round_radius * scale]
-    //         );
-    //     } else if (shape == LiteGraph.CARD_SHAPE) {
-    //         ctx.roundRect(
-    //             out_a + area[0],
-    //             out_a + area[1],
-    //             out_b + area[2],
-    //             out_b + area[3],
-    //             [this.round_radius * scale, scale, this.round_radius * scale, scale]
-    //         );
-    //     } else if (shape == LiteGraph.CIRCLE_SHAPE) {
-    //         ctx.arc(
-    //             size[0] * 0.5,
-    //             size[1] * 0.5,
-    //             size[0] * 0.5 + 6,
-    //             0,
-    //             Math.PI * 2
-    //         );
-    //     }
-    //     ctx.strokeStyle = LiteGraph.NODE_BOX_OUTLINE_COLOR;
-    //     ctx.stroke();
-    //     ctx.strokeStyle = fgcolor;
-    //     ctx.globalAlpha = 1;
-    // }
     // Draw stroke styles
-    for (const getStyle of Object.values(node.strokeStyles)) {
-        const strokeStyle = getStyle.call(node)
-        if (strokeStyle) {
-            strokeShape(ctx, area, {
-                shape,
-                title_height,
-                title_mode,
-                collapsed,
-                ...strokeStyle,
-            })
+    if(node?.strokeStyles){
+        for (const getStyle of Object.values(node.strokeStyles)) {
+            const strokeStyle = getStyle.call(node)
+            if (strokeStyle) {
+                strokeShape(ctx, area, {
+                    shape,
+                    title_height,
+                    title_mode,
+                    collapsed,
+                    ...strokeStyle,
+                })
+            }
+        }
+        node?.drawProgressBar(ctx)
+    }
+    else{
+        // render selection marker
+        if (selected) {
+            node.onBounding?.(area);
+
+            if (title_mode == LiteGraph.TRANSPARENT_TITLE) {
+                area[1] -= title_height;
+                area[3] += title_height;
+            }
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.8;
+            ctx.beginPath();
+            // let out_a = -6,out_b = 12,scale = 2
+            let out_a = 0, out_b = 0, scale = 1
+            if (shape == LiteGraph.BOX_SHAPE) {
+                ctx.rect(
+                    out_a + area[0],
+                    out_a + area[1],
+                    out_b + area[2],
+                    out_b + area[3]
+                );
+            } else if (
+                shape == LiteGraph.ROUND_SHAPE ||
+                (shape == LiteGraph.CARD_SHAPE && node.flags.collapsed)
+            ) {
+                ctx.roundRect(
+                    out_a + area[0],
+                    out_a + area[1],
+                    out_b + area[2],
+                    out_b + area[3],
+                    [this.round_radius * scale]
+                );
+            } else if (shape == LiteGraph.CARD_SHAPE) {
+                ctx.roundRect(
+                    out_a + area[0],
+                    out_a + area[1],
+                    out_b + area[2],
+                    out_b + area[3],
+                    [this.round_radius * scale, scale, this.round_radius * scale, scale]
+                );
+            } else if (shape == LiteGraph.CIRCLE_SHAPE) {
+                ctx.arc(
+                    size[0] * 0.5,
+                    size[1] * 0.5,
+                    size[0] * 0.5 + 6,
+                    0,
+                    Math.PI * 2
+                );
+            }
+            ctx.strokeStyle = LiteGraph.NODE_BOX_OUTLINE_COLOR;
+            ctx.stroke();
+            ctx.strokeStyle = fgcolor;
+            ctx.globalAlpha = 1;
         }
     }
-
-    node.drawProgressBar(ctx)
 
     // these counter helps in conditioning drawing based on if the node has been executed or an action occurred
     if (node.execute_triggered > 0) node.execute_triggered--;
@@ -507,7 +510,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
     let background_color = LiteGraph.WIDGET_BGCOLOR;
     let text_color = LiteGraph.WIDGET_TEXT_COLOR;
     let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
-    let margin = 12;
+    let margin = 16;
 
     const is_easyuse_theme = custom_themes?.includes(color_palette) || false
 
@@ -518,21 +521,22 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
         const y = w.y || posY
         const outline_color = w.advanced ? LiteGraph.WIDGET_ADVANCED_OUTLINE_COLOR : LiteGraph.WIDGET_OUTLINE_COLOR
 
-        if (w === this.link_over_widget) {
-            ctx.fillStyle = this.default_connection_color_byType[this.link_over_widget_type] ||
-                this.default_connection_color.input_on
-            // Manually draw a slot next to the widget simulating an input
-            drawSlot(ctx, {}, [is_easyuse_theme ? 6 : 10, y + 10], {})
-        }
+        // if (w === this.link_over_widget) {
+        //     ctx.fillStyle = this.default_connection_color_byType[this.link_over_widget_type] ||
+        //         this.default_connection_color.input_on
+        //     // Manually draw a slot next to the widget simulating an input
+        //     drawSlot(ctx, {}, [is_easyuse_theme ? 2 : 10, y + 10], {})
+        // }
 
 
         w.last_y = y;
+        w.computedDisabled = w.disabled || node.inputs?.find(slot => slot.link && slot.widget.name === w.name)?.link != null
+
         ctx.strokeStyle = outline_color;
         ctx.fillStyle = background_color;
         ctx.textAlign = "left";
         ctx.lineWidth = 1;
-        if (w.disabled)
-            ctx.globalAlpha *= 0.5;
+        if (w.computedDisabled) ctx.globalAlpha *= 0.5
         let widget_width = w.width || width;
         let widget_height = w.height || height;
 
@@ -572,13 +576,13 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                     ctx.stroke();
                 ctx.fillStyle = w.value ? THEME_COLOR : outline_color;
                 ctx.beginPath();
-                ctx.arc(widget_width - margin * 2, y + H * 0.5, H * 0.25, 0, Math.PI * 2);
+                ctx.arc(widget_width - margin * 2 + 5, y + H * 0.5, H * 0.25, 0, Math.PI * 2);
                 ctx.fill();
                 if (show_text) {
                     ctx.fillStyle = secondary_text_color;
                     const label = w.label || w.name;
                     if (label != null) {
-                        ctx.fillText(label, margin * 1.6, y + H * 0.7);
+                        ctx.fillText(label, margin * 2 - 10, y + H * 0.7);
                     }
                     ctx.font = "10px Inter"
                     ctx.fillStyle = w.value ? text_color : secondary_text_color;
@@ -587,7 +591,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                         w.value
                             ? w.options.on || "true"
                             : w.options.off || "false",
-                        widget_width - 35,
+                        widget_width - 38,
                         y + H * 0.7
                     );
                 }
@@ -660,10 +664,10 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                     }
                     ctx.fillStyle = secondary_text_color;
                     ctx.font = "10px Inter"
-                    ctx.fillText(w.label || w.name, margin * 2 + 5, y + H * 0.7);
+                    ctx.fillText(w.label || w.name, margin * 2, y + H * 0.7);
                     ctx.fillStyle = text_color;
                     ctx.textAlign = "right";
-                    let rightDistance = 6
+                    let rightDistance = 2
                     if (w.type == "number") {
                         ctx.font = "10px Inter"
                         ctx.fillText(
