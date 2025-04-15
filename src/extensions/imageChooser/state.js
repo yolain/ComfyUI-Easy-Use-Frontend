@@ -33,7 +33,7 @@ class FlowState {
         return (!app.runningNodeId);
     }
     static paused() {
-        return true;
+        return hud.current_node_is_chooser;
     }
     static paused_here(node_id) {
         return (FlowState.paused() && FlowState.here(node_id))

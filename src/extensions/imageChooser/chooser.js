@@ -103,7 +103,11 @@ function disable_serialize(widget) {
 app.registerExtension({
     name:'Comfy.EasyUse.imageChooser',
     init() {
-        window.addEventListener("beforeunload", send_cancel, true);
+        window.addEventListener("beforeunload", _=>{
+            if (FlowState.paused()) {
+                send_cancel();
+            }
+        }, true);
     },
     setup(app) {
 
