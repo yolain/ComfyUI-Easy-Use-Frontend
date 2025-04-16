@@ -378,7 +378,7 @@ app.registerExtension({
                     if (flow_output_index !== -1) this.outputs[flow_output_index]['shape'] = 5
                     // await sleep(1)
                     if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
-                    this.inputs = this.inputs.filter((cate,index) => index <= getStartInputIndex())
+                    this.inputs = this.inputs.filter((cate,index) => index <= getStartInputIndex() || cate.widget)
                     this.outputs = this.outputs.filter((cate,index) => index <= getStartOutputIndex())
                     updateNodeHeight(this)
                 }
@@ -387,7 +387,7 @@ app.registerExtension({
                    if(node_name == 'easy textIndexSwitch'){
                        this.widgets = this.widgets.filter((cate,index) => index <= 2)
                    }
-                    this.inputs = this.inputs.filter((cate,index) => index <= 1)
+                    this.inputs = this.inputs.filter((cate,index) => index <= 1 || cate.widget)
                     updateNodeHeight(this)
                 }
                 return onNodeCreated?.apply(this, arguments)
@@ -397,7 +397,7 @@ app.registerExtension({
                 if (!link_info) return
                 // input
                 if (type == 1) {
-                    let is_input_all_connected = this.inputs.every(cate => cate.link !== null)
+                    let is_input_all_connected = this.inputs.every(cate => cate.link !== null || cate.widget)
                     let inputs = this.inputs.filter(cate=> !['condition','index','total'].includes(cate.name))
                     // loop nodes
                     if(loop_nodes.includes(node_name)){
