@@ -1,4 +1,4 @@
-.#{$prefix}dialog{
+.#{$prefix}chooser-dialog{
   max-width: 600px;
   &-title{
     font-size: 18px;
@@ -22,9 +22,9 @@
       &:hover {
         filter: brightness(100%);
       }
-    }
-    &.selected{
-      border: 4px solid var(--success-color);
+      &.selected{
+        border: 4px solid var(--success-color);
+      }
     }
   }
   &-hidden{

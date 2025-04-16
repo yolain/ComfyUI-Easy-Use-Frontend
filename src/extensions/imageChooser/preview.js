@@ -65,7 +65,7 @@ function showImages(node, urls) {
         img.onload = () => { app.graph.setDirtyCanvas(true); };
         img.src = `/view?filename=${encodeURIComponent(u.filename)}&type=temp&subfolder=${app.getPreviewFormatParam()}`
     })
-    node.setSizeForImage?.();
+    // node.setSizeForImage?.();
     return node.imgs
 }
 

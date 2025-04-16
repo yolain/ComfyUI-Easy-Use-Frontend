@@ -74,6 +74,7 @@ function progressButtonPressed() {
             node.setProperty('values',selected)
         }
         if (FlowState.paused()) {
+            hud.current_node_is_chooser = false
             send_message(node.id, [...node.selected_images, -1, ...node.anti_selected]);
         }
         if (FlowState.idle()) {
@@ -103,6 +104,7 @@ function disable_serialize(widget) {
 app.registerExtension({
     name:'Comfy.EasyUse.imageChooser',
     init() {
+        console.log(FlowState.paused())
         window.addEventListener("beforeunload", _=>{
             if (FlowState.paused()) {
                 send_cancel();
@@ -123,6 +125,7 @@ app.registerExtension({
         function easyuseImageChooser(event) {
             const {node,image,isKSampler} = display_preview_images(event);
             if(isKSampler) {
+                hud.current_node_is_chooser = true
                 const dialog = new chooserImageDialog();
                 dialog.show(image,node)
             }
@@ -147,7 +150,7 @@ app.registerExtension({
                     if (node.selected_images || node.anti_selected) {
                         node.selected_images.clear();
                         node.anti_selected.clear();
-                        node.update();
+                        if(node.update) node.update();
                     }
                 })
             }

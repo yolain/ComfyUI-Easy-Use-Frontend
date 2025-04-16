@@ -331,7 +331,7 @@ export default {
     },
     fast_inputs:{
         category: 'Fast Inputs',
-        nodes:['fast sdInput', 'fast fluxInput', 'fast videoInput'],
+        nodes:['fast sdInput', 'fast fluxInput', 'fast hiDreamInput', 'fast videoInput'],
         input:{
             "模型加载器": "模型加载器",
             "更多Controlnet": "更多Controlnet",
