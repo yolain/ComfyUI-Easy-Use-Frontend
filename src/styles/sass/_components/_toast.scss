@@ -43,6 +43,7 @@
       border-radius: var(--border-radius);
       font-size: 14px;
       pointer-events: all;
+      margin-top: 40px;
       @include flex-c();
       & > span{
         @include flex-c();
