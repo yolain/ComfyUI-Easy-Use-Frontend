@@ -336,6 +336,8 @@ app.registerExtension({
             }
 
             const nodeX = isFrom ? opts.nodeFrom : opts.nodeTo;
+            if (!nodeX) throw new TypeError("nodeX was null when creating default node for slot.")
+
             const nodeType = nodeX.type
             let slotX = isFrom ? opts.slotFrom : opts.slotTo;
 
@@ -346,6 +348,10 @@ app.registerExtension({
                     slotX = isFrom ? nodeX.outputs[slotX] : nodeX.inputs[slotX];
                     break;
                 case "object":
+                    if (slotX === null) {
+                        console.warn("Cant get slot information", slotX)
+                        return false
+                    }
                     // ok slotX
                     iSlotConn = isFrom ? nodeX.findOutputSlot(slotX.name) : nodeX.findInputSlot(slotX.name);
                     break;
@@ -368,12 +374,7 @@ app.registerExtension({
             // check for defaults nodes for this slottype
             var fromSlotType = slotX.type==LiteGraph.EVENT?"_event_":slotX.type;
             var slotTypesDefault = isFrom ? LiteGraph.slot_types_default_out : LiteGraph.slot_types_default_in;
-            if(slotTypesDefault && slotTypesDefault[fromSlotType]){
-                if (slotX.link !== null) {
-                    // is connected
-                }else{
-                    // is not not connected
-                }
+            if(slotTypesDefault?.[fromSlotType]){
                 let nodeNewType = false;
                 const fromOrTo = isFrom ? 'from' : 'to'
                 if(suggestions[nodeType] && suggestions[nodeType][fromOrTo] && suggestions[nodeType][fromOrTo][fromSlotType]?.length>0){
@@ -444,11 +445,24 @@ app.registerExtension({
                         newNode.pos = [	opts.position[0]+opts.posAdd[0]+(opts.posSizeFix[0]?opts.posSizeFix[0]*newNode.size[0]:0)
                             ,opts.position[1]+opts.posAdd[1]+(opts.posSizeFix[1]?opts.posSizeFix[1]*newNode.size[1]:0)]; //that.last_click_position; //[e.canvasX+30, e.canvasX+5];*/
 
+                        // Interim API - allow the link connection to be canceled.
+                        // TODO: https://github.com/Comfy-Org/litegraph.js/issues/946
+                        const detail = { node: newNode, opts }
+                        const mayConnectLinks = this.canvas.dispatchEvent(new CustomEvent("connect-new-default-node", { detail, cancelable: true }))
+                        if (!mayConnectLinks) return true
+
                         // connect the two!
                         if (isFrom){
+                            if (!opts.nodeFrom) throw new TypeError("createDefaultNodeForSlot - nodeFrom was null")
                             opts.nodeFrom.connectByType( iSlotConn, newNode, fromSlotType );
                         }else{
+                            if (!opts.nodeTo) throw new TypeError("createDefaultNodeForSlot - nodeTo was null")
                             opts.nodeTo.connectByTypeOutput( iSlotConn, newNode, fromSlotType );
+                        }
+
+                        // if connecting in between
+                        if (isFrom && isTo) {
+                            // TODO
                         }
 
                         return true;
@@ -474,6 +488,7 @@ app.registerExtension({
                 }
                 ,optPass || {}
             );
+            const dirty = () => this.#dirty()
             const that = this;
             const { graph } = this
             const { afterRerouteId } = opts
@@ -502,6 +517,10 @@ app.registerExtension({
                     slotX = isFrom ? nodeX.outputs[slotX] : nodeX.inputs[slotX];
                     break;
                 case "object":
+                    if (slotX === null) {
+                        console.warn("Cant get slot information", slotX)
+                        return
+                    }
                     // ok slotX
                     iSlotConn = isFrom ? nodeX.findOutputSlot(slotX.name) : nodeX.findInputSlot(slotX.name);
                     break;
@@ -518,8 +537,7 @@ app.registerExtension({
 
             const options = ["Add Node", "Add Reroute", null]
             if (opts.allow_searchbox){
-                options.push("Search");
-                options.push(null);
+                options.push("Search", null);
             }
 
             // get defaults nodes for this slottype
@@ -552,6 +570,8 @@ app.registerExtension({
                         : "") + (slotX && fromSlotType ? fromSlotType : ""),
                 callback: inner_clicked,
             });
+
+            return menu
 
             // callback
             function inner_clicked(v,options,e) {
@@ -600,8 +620,6 @@ app.registerExtension({
                         break;
                 }
             }
-
-            return false;
         };
     }
 })
