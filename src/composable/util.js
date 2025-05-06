@@ -173,3 +173,25 @@ export function off(
 
 export const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
 export const normalize = str => isMac ? str.replace(/Ctrl/g, '⌘').replace(/Alt/g, '⌥').replace(/Shift/g, '⇧') : str
+
+
+/**
+ * compareVersion 比较两个版本号
+ * @param {string} version1 - 版本号1，格式为 x.x.x
+ * @param {string} version2 - 版本号2，格式为 x.x.x
+ * @returns {number} - 如果version1 > version2返回1，如果version1 < version2返回-1，相等返回0
+ */
+export function compareVersion(version1, version2) {
+    const v1 = version1.split('.').map(Number);
+    const v2 = version2.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+        const num1 = i < v1.length ? v1[i] : 0;
+        const num2 = i < v2.length ? v2[i] : 0;
+
+        if (num1 > num2) return 1;
+        if (num1 < num2) return -1;
+    }
+
+    return 0;
+}

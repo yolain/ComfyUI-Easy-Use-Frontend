@@ -1,4 +1,5 @@
-import { api, app, $el, registerExtension } from '@/composable/comfyAPI'
+import { api, app, $el, registerExtension, ComfyUI } from '@/composable/comfyAPI'
+import {$t} from "@/composable/i18n";
 import {addCss, addPreconnect} from "@/composable/head";
 import {getSetting, setSetting, addSetting} from "@/composable/settings";
 import {CUSTOM_LINK_TYPES_COLOR, THEME_COLOR, DARK_THEME_CLASS} from "@/constants";
@@ -7,7 +8,7 @@ import obsidian_dark from "@/constants/theme/obsidianDark";
 import milk_white from "@/constants/theme/milkWhite";
 import settings from "@/constants/settings";
 import sleep from "@/composable/sleep";
-import {normalize} from "@/composable/util.js";
+import {normalize, compareVersion} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {drawSlot, strokeShape} from "@/composable/canvas.js";
@@ -127,6 +128,24 @@ registerExtension({
                 })
             }
         })
+        // api.addEventListener('graphChanged', () => {
+        //     const frontend_version = window?.__COMFYUI_FRONTEND_VERSION__ || '1.0.0'
+        //     if(compareVersion(frontend_version, '1.16.0') == -1){
+        //         const sortNodes = getSetting('Comfy.Workflow.SortNodeIdOnSave')
+        //         let workflow = app.graph.serialize({sortNodes})
+        //         let workflow_version = workflow?.extra?.frontendVersion
+        //         if(!workflow_version || compareVersion(workflow_version, '1.16.0') == -1){
+        //             return
+        //         }
+        //         let nodes = workflow?.nodes
+        //         if(nodes?.length>0){
+        //             toast.warn('[EasyUse] '+ $t('The workflow version is too high and has been fixed to an old version of the workflow for you'), 5000)
+        //             workflow.nodes = nodes.map(cate=> ({...cate, ...{inputs:cate.inputs.filter(cate=> !cate.widget)}}))
+        //             workflow.extra.frontendVersion = frontend_version
+        //             app.loadGraphData(workflow)
+        //         }
+        //     }
+        // })
     },
 
     async nodeCreated(node) {
@@ -138,25 +157,6 @@ registerExtension({
             if (theme.bgcolor) node.bgcolor = theme.bgcolor;
             if (theme.color) node.color = theme.color;
         }
-        // Get Control Mode
-        // if (!control_mode) control_mode = getSetting('Comfy.WidgetControlMode')
-        // Fix Official ComfyUI Bug
-        // - When the widget value control mode is before, the widget text on the node is not changed when the page is loaded for the first time.
-        // if (control_mode == 'before') {
-        //     const controlValueRunBefore = control_mode == 'before'
-        //     if (node.widgets?.length > 0) {
-        //         for (const w of node.widgets) {
-        //             if (['control_before_generate', 'control_after_generate'].includes(w.name)) {
-        //                 await updateControlWidgetLabel(w, controlValueRunBefore);
-        //                 if (w.linkedWidgets) {
-        //                     for (const l of w.linkedWidgets) {
-        //                         await updateControlWidgetLabel(l, controlValueRunBefore);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
 })
 
@@ -514,6 +514,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
 
     const is_easyuse_theme = custom_themes?.includes(color_palette) || false
 
+    const excludeDiabledNodes = ['fast llm']
     for (let i = 0; i < widgets.length; ++i) {
         let w = widgets[i];
         if (w.hidden || (w.advanced && !node.showAdvanced)) continue
@@ -528,9 +529,8 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
         //     drawSlot(ctx, {}, [is_easyuse_theme ? 2 : 10, y + 10], {})
         // }
 
-
         w.last_y = y;
-        w.computedDisabled = w.disabled || node.inputs?.find(slot => slot.link && slot.widget.name === w.name)?.link != null
+        w.computedDisabled = w.disabled || (!excludeDiabledNodes.includes(node.type) && node.inputs?.find(slot => slot.link && slot.widget?.name === w?.name)?.link != null)
 
         ctx.strokeStyle = outline_color;
         ctx.fillStyle = background_color;

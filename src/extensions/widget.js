@@ -571,7 +571,7 @@ app.registerExtension({
             }
 
             // easy wildcards
-            if (node_name == 'easy wildcards') {
+            if (['easy wildcards','easy wildcardsMatrix'].includes(node_name)) {
                 const wildcard_text_widget = node.widgets.find(w => w.name == 'text');
                 let combo_id = 1;
                 Object.defineProperty(node.widgets[combo_id], "value", {
