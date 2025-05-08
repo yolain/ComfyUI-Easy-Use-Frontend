@@ -47,16 +47,15 @@ const createStylesSelector = async(node) => {
 
   // switch styles type
   let styles_value = styles_type_widget.value
-  Object.defineProperty(styles_type_widget, 'value',{
-    set:value=>{
-      styles_value = value
-      _selectors[selector_index]['type'] = value
-      node.properties['values'] = []
-      _selectors[selector_index]['value'] = []
-      store.setSelectors(_selectors)
-    },
-    get:_=>styles_value
-  })
+  styles_type_widget.getValue = _ => styles_value
+  styles_type_widget.setValue = value => {
+    styles_value = value
+    _selectors[selector_index]['type'] = value
+    node.properties['values'] = []
+    _selectors[selector_index]['value'] = []
+    store.setSelectors(_selectors)
+  }
+
   // selector
   node.addDOMWidget('select_styles','btn', selector_div, {
     setValue(){
@@ -119,18 +118,18 @@ const createHumanSegmentation = async(node) => {
 
   // switch method
   let method_value = method_widget.value
-  Object.defineProperty(method_widget, 'value',{
-    set:value=>{
-      method_value = value
-      _seg_selectors[selector_index]['type'] = value
-      node.properties['values'] = []
-      _seg_selectors[selector_index]['value'] = []
-      toggleWidget(node, getWidgetByName(node, 'confidence'), method_value === 'selfie_multiclass_256x256' ? true : false)
-      node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 400]);
-      store.setSegSelectors(_seg_selectors)
-    },
-    get:_=>method_value
-  })
+  method_widget.getValue = _=> {
+    return method_value
+  }
+  method_widget.setValue = _=> {
+    method_value = value
+    _seg_selectors[selector_index]['type'] = value
+    node.properties['values'] = []
+    _seg_selectors[selector_index]['value'] = []
+    toggleWidget(node, getWidgetByName(node, 'confidence'), method_value === 'selfie_multiclass_256x256' ? true : false)
+    node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 400]);
+    store.setSegSelectors(_seg_selectors)
+  }
 
 
   node.addDOMWidget('mask_components','btn', selector_div, {
