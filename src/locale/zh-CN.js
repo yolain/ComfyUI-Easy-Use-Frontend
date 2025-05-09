@@ -145,4 +145,7 @@ export default {
     "ComfyUI Basic": "ComfyUI 基础节点",
     "Recommend Nodes": "推荐节点",
     "Others A~Z": "其他节点 A~Z",
+    // for loop
+    "The maximum number of inputs is 20": "输入数量最大20个",
+    "The maximum number of outputs is 20": "输出数量最大20个",
 }

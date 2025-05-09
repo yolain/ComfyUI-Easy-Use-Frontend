@@ -46,10 +46,8 @@ const createStylesSelector = async(node) => {
 
 
   // switch styles type
-  let styles_value = styles_type_widget.value
-  styles_type_widget.getValue = _ => styles_value
   styles_type_widget.setValue = value => {
-    styles_value = value
+    styles_type_widget.value = value
     _selectors[selector_index]['type'] = value
     node.properties['values'] = []
     _selectors[selector_index]['value'] = []
@@ -117,17 +115,13 @@ const createHumanSegmentation = async(node) => {
   await store.setSegSelectors(_seg_selectors)
 
   // switch method
-  let method_value = method_widget.value
-  method_widget.getValue = _=> {
-    return method_value
-  }
-  method_widget.setValue = _=> {
-    method_value = value
+  method_widget.setValue = value => {
+    method_widget.value = value
     _seg_selectors[selector_index]['type'] = value
     node.properties['values'] = []
     _seg_selectors[selector_index]['value'] = []
-    toggleWidget(node, getWidgetByName(node, 'confidence'), method_value === 'selfie_multiclass_256x256' ? true : false)
-    node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 400]);
+    toggleWidget(node, getWidgetByName(node, 'confidence'), method_widget.value === 'selfie_multiclass_256x256' ? true : false)
+    node.setSize([300, method_widget.value === 'selfie_multiclass_256x256' ? 260 : 400]);
     store.setSegSelectors(_seg_selectors)
   }
 

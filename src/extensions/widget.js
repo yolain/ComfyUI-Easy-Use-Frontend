@@ -402,8 +402,8 @@ app.registerExtension({
                     // loop nodes
                     if(loop_nodes.includes(node_name)){
                         if (is_input_all_connected) {
-                            if (inputs.length >= 10) {
-                                toast.warn($t('The maximum number of inputs is 10'))
+                            if (inputs.length >= 20) {
+                                toast.warn($t('The maximum number of inputs is 20'))
                                 return
                             }
                             let input = inputs[inputs.length - 1]
@@ -430,8 +430,8 @@ app.registerExtension({
                     // index switch nodes
                     else if(index_switch_nodes.includes(node_name)){
                         if (is_input_all_connected) {
-                            if (inputs.length >= 10) {
-                                toast.warn($t('The maximum number of inputs is 10'))
+                            if (inputs.length >= 20) {
+                                toast.warn($t('The maximum number of inputs is 20'))
                                 return
                             }
                             let input_label = value_names[node_name] + (inputs.length)
@@ -450,8 +450,8 @@ app.registerExtension({
                     // loop nodes
                     if(loop_nodes.includes(node_name)) {
                         if (is_output_all_connected) {
-                            if (outputs.length >= 10) {
-                                toast.warn($t('The maximum number of inputs is 10'))
+                            if (outputs.length >= 20) {
+                                toast.warn($t('The maximum number of outputs is 20'))
                                 return
                             }
                             let output = outputs[outputs.length - 1]
@@ -481,8 +481,8 @@ app.registerExtension({
                     // inverse switch nodes
                     else if(inverse_switch_nodes.includes(node_name)){
                         if(is_output_all_connected) {
-                            if (outputs.length >= 10) {
-                                toast.warn($t('The maximum number of inputs is 10'))
+                            if (outputs.length >= 20) {
+                                toast.warn($t('The maximum number of outputs is 20'))
                                 return
                             }
                             let output_label = value_names[node_name] + (outputs.length)
