@@ -209,7 +209,8 @@ app.registerExtension({
 
             const onDrawBackground = nodeType.prototype.onDrawBackground;
             nodeType.prototype.onDrawBackground = function(ctx) {
-                additionalDrawBackground(this, ctx, this.imagey || 100);
+                console.log(this.imgey)
+                additionalDrawBackground(this, ctx, this.imagey || 0);
             }
 
             nodeType.prototype.imageClicked = function (imageIndex) {

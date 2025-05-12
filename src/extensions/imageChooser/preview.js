@@ -88,7 +88,13 @@ function additionalDrawBackground(node, ctx, shiftY=0) {
 
     const IMAGE_TEXT_SIZE_TEXT_HEIGHT = 15
     const dw = node.size[0]
-    const dh = node.size[1] - shiftY - IMAGE_TEXT_SIZE_TEXT_HEIGHT
+    let dh = node.size[1] - shiftY - IMAGE_TEXT_SIZE_TEXT_HEIGHT
+    if(dh < 200) {
+        dh = 200
+        requestAnimationFrame(_=>{
+            node.size[1] = shiftY + IMAGE_TEXT_SIZE_TEXT_HEIGHT + 200
+        })
+    }
     if(node.imageIndex == null){
         // calculate the size of the images
         let cellWidth

@@ -139,8 +139,8 @@ const createHumanSegmentation = async(node) => {
     }
   });
 
-  toggleWidget(node, getWidgetByName(node, 'confidence'), method_value === 'selfie_multiclass_256x256' ? true : false)
-  node.setSize([300, method_value === 'selfie_multiclass_256x256' ? 260 : 500]);
+  toggleWidget(node, getWidgetByName(node, 'confidence'), method_widget.value === 'selfie_multiclass_256x256' ? true : false)
+  node.setSize([300, method_widget.value === 'selfie_multiclass_256x256' ? 260 : 500]);
 
   // removed
   const onRemoved = node.onRemoved;
