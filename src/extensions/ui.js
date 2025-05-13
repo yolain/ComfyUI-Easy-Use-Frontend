@@ -733,8 +733,7 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                     ctx.rect(margin, y, widget_width - margin * 2, H);
                 ctx.fill();
                 if (show_text) {
-                    if (!w.disabled)
-                        ctx.stroke();
+                    if (!w.disabled) ctx.stroke();
                     ctx.save();
                     ctx.beginPath();
                     ctx.rect(margin, y, widget_width - margin * 2, H);
@@ -745,11 +744,36 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                     const label = w.label || w.name;
                     ctx.font = "10px Inter"
                     if (label != null) {
-                        ctx.fillText(label, margin * 2, y + H * 0.7);
+                        ctx.fillText(label, margin * 2 - 10, y + H * 0.7);
                     }
                     ctx.fillStyle = text_color;
                     ctx.textAlign = "right";
-                    ctx.fillText(String(w.value).substr(0, 30), widget_width - margin * 2, y + H * 0.7); //30 chars max
+                    let v = String(w.value);
+                    const labelWidth = ctx.measureText(w.label || w.name).width + margin * 2;
+                    const inputWidth = widget_width - margin * 4 + 20;
+                    const availableWidth = inputWidth - labelWidth;
+                    const textWidth = ctx.measureText(v).width;
+                    if (textWidth > availableWidth) {
+                        const ELLIPSIS = "\u2026";
+                        const ellipsisWidth = ctx.measureText(ELLIPSIS).width;
+                        const charWidthAvg = ctx.measureText("a").width;
+                        if (availableWidth <= ellipsisWidth) {
+                            v = "\u2024"; // 一个点领导符
+                        } else {
+                            const overflowWidth = (textWidth + ellipsisWidth) - availableWidth;
+                            // 只有前3个字符需要精确测量
+                            if (overflowWidth + charWidthAvg * 3 > availableWidth) {
+                                const preciseRange = availableWidth + charWidthAvg * 3;
+                                const preTruncateCt = Math.floor((preciseRange - ellipsisWidth) / charWidthAvg);
+                                v = v.substr(0, preTruncateCt);
+                            }
+                            while (ctx.measureText(v).width + ellipsisWidth > availableWidth) {
+                                v = v.substr(0, v.length - 1);
+                            }
+                            v += ELLIPSIS;
+                        }
+                    }
+                    ctx.fillText(v, widget_width - margin * 2 + 10, y + H * 0.7);
                     ctx.restore();
                 }
                 break;
