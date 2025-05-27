@@ -1,9 +1,9 @@
 let origProps = {};
 export const getWidgetByName = (node, name) => node.widgets.find((w) => w.name === name);
 export const doesInputWithNameExist = (node, name) => node.inputs ? node.inputs.some((input) => input.name === name) : false;
-export const doesInputWithNameLink = (node, name) => node.inputs ? node.inputs.some((input) => input.name === name && input.link) : false;
+export const doesInputWithNameLink = (node, name, show) => node.inputs ? node.inputs.some((input) => input.name === name && input.link && !show) : false;
 export const toggleWidget = (node, widget, show = false, suffix = "") => {
-	if (!widget || doesInputWithNameLink(node, widget.name)) return;
+	if (!widget || doesInputWithNameLink(node, widget.name, show)) return;
 	if (!origProps[widget.name]) {
 		origProps[widget.name] = { origType: widget.type, origComputeSize: widget.computeSize };
 	}

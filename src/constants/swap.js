@@ -377,5 +377,23 @@ export default {
             "视频输出":"图像输出",
             "保存路径":"保存路径",
         }
+    },
+    fast_loadImage:{
+        category: 'Fast LoadImage',
+        nodes:['fast loadImage', 'fast loadImageList'],
+        output:{
+            "图像":"图像",
+            "遮罩":"遮罩",
+            "文件名": "文件名",
+        },
+        widget:{
+            "模式":"模式",
+            "图像":"图像",
+            "路径":"路径",
+            "最大张数":"最大张数",
+            "开始索引":"开始索引",
+            "Base64":"Base64",
+            "链接":"链接",
+        }
     }
 }

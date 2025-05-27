@@ -1,4 +1,4 @@
-import { api, app, $el, registerExtension, ComfyUI } from '@/composable/comfyAPI'
+import { api, app, $el, registerExtension } from '@/composable/comfyAPI'
 import {$t} from "@/composable/i18n";
 import {addCss, addPreconnect} from "@/composable/head";
 import {getSetting, setSetting, addSetting} from "@/composable/settings";
@@ -758,10 +758,9 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                         const ellipsisWidth = ctx.measureText(ELLIPSIS).width;
                         const charWidthAvg = ctx.measureText("a").width;
                         if (availableWidth <= ellipsisWidth) {
-                            v = "\u2024"; // 一个点领导符
+                            v = "\u2024";
                         } else {
                             const overflowWidth = (textWidth + ellipsisWidth) - availableWidth;
-                            // 只有前3个字符需要精确测量
                             if (overflowWidth + charWidthAvg * 3 > availableWidth) {
                                 const preciseRange = availableWidth + charWidthAvg * 3;
                                 const preTruncateCt = Math.floor((preciseRange - ellipsisWidth) / charWidthAvg);

@@ -14,7 +14,15 @@ export const CUSTOM_LINK_TYPES_COLOR = {
 }
 export const MAX_SEED_NUM = 1125899906842624
 
-export const COMFYUI_NODE_BASIC_CATEGORY = ['loaders','latent','image','mask','sampling','_for_testing','advanced','utils','api']
+export const COMFYUI_NODE_BASIC_CATEGORY = [
+    'loaders','latent','image','mask','sampling','_for_testing','advanced','utils','api','api node',
+    '加载器', 'Latent', '图像', '遮罩', '采样', '_用于测试', '高级', '工具', 'API', 'api 节点',
+    'chargeurs', 'latent', 'image', 'masque', 'échantillonnage', '_pour_test', 'avancé', 'outils',  'nœud api',
+    'загрузчики', 'латентный', 'изображение', 'маска', 'выборка', '_для_тестирования', 'расширенный', 'инструменты', 'api', 'api узел',
+    '로더', '잠재', '이미지', '마스크', '샘플링', '_테스트용', '고급', '도구', 'api', 'api 노드',
+    'ローダー', '潜在', '画像', 'マスク', 'サンプリング', '_テスト用', '高度な', 'ツール', 'api', 'apiノード',
+    'cargadores', 'latente', 'imagen', 'máscara', 'muestreo', '_para_pruebas', 'avanzado', 'herramientas', 'api', 'nodo api',
+]
 
 export const NODE_MODE ={
     "ALWAYS": 0,

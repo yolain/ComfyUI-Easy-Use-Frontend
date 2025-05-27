@@ -326,9 +326,11 @@ app.registerExtension({
                 for (let i = 1; i <= 4; i++) {
                     if (measurementWidget.value === 'Pixels') {
                         a.widgets[i].options.step = 80;
+                        if(a.widgets[i].options.step2 !== undefined) a.widgets[i].options.step2 = 8;
                         a.widgets[i].options.max = 8192;
                     } else {
                         a.widgets[i].options.step = 10;
+                        if(a.widgets[i].options.step2 !== undefined) a.widgets[i].options.step2 = 1;
                         a.widgets[i].options.max = 99;
                     }
                 }
@@ -502,13 +504,12 @@ app.registerExtension({
                 onConnectionsChange ? onConnectionsChange.apply(this, []) : undefined;
                 const model = this.inputs.find(cate => cate.name === 'model_override')
                 const vae = this.inputs.find(cate => cate.name === 'vae_override')
-                let vae_name = getWidgetByName(this, 'vae_name')
                 let ckpt_name = getWidgetByName(this, 'ckpt_name')
-                if(!all_nodes) all_nodes = await api.getNodeDefs()
+                let vae_name = getWidgetByName(this, 'vae_name')
                 if(model?.link && input == 0){
-                    const ckpt_names = all_nodes?.['CheckpointLoaderSimple']?.['input']?.['required']?.['ckpt_name']?.[0]
+                    const ckpt_names = ckpt_name?.options.values || []
                     setTimeout(_ => {
-                        this.widgets[0].value = ckpt_names[0] || 'None'
+                        this.widgets[0].value = ckpt_names?.[0] || 'None'
                         toggleWidget(this, ckpt_name, model?.link ? false : true)
                     }, 1)
                 }
@@ -922,19 +923,21 @@ function toggleLogic(node, widget) {
             updateNodeHeight(node)
             break
         case 'scheduler':
-            if (['karrasADV', 'exponentialADV', 'polyExponential'].includes(v)) {
-                ['sigma_max', 'sigma_min'].map(name => toggleWidget(node, getWidgetByName(node, name), true));
-                ['denoise', 'beta_d', 'beta_min', 'eps_s', 'coeff'].map(name => toggleWidget(node, getWidgetByName(node, name)), false)
-                toggleWidget(node, getWidgetByName(node, 'rho'), v != 'exponentialADV' ? true : false)
-            } else if (v == 'vp') {
-                ['sigma_max', 'sigma_min', 'denoise', 'rho', 'coeff'].map(name => toggleWidget(node, getWidgetByName(node, name)));
-                ['beta_d', 'beta_min', 'eps_s'].map(name => toggleWidget(node, getWidgetByName(node, name), true))
-            } else {
-                ['sigma_max', 'sigma_min', 'beta_d', 'beta_min', 'eps_s', 'rho'].map(name => toggleWidget(node, getWidgetByName(node, name)))
-                toggleWidget(node, getWidgetByName(node, 'coeff'), v == 'gits' ? true : false);
-                toggleWidget(node, getWidgetByName(node, 'denoise',), true);
+            if(node_name == 'easy preSamplingCustom'){
+                if (['karrasADV', 'exponentialADV', 'polyExponential'].includes(v)) {
+                    ['sigma_max', 'sigma_min'].map(name => toggleWidget(node, getWidgetByName(node, name), true));
+                    ['denoise', 'beta_d', 'beta_min', 'eps_s', 'coeff'].map(name => toggleWidget(node, getWidgetByName(node, name)), false)
+                    toggleWidget(node, getWidgetByName(node, 'rho'), v != 'exponentialADV' ? true : false)
+                } else if (v == 'vp') {
+                    ['sigma_max', 'sigma_min', 'denoise', 'rho', 'coeff'].map(name => toggleWidget(node, getWidgetByName(node, name)));
+                    ['beta_d', 'beta_min', 'eps_s'].map(name => toggleWidget(node, getWidgetByName(node, name), true))
+                } else {
+                    ['sigma_max', 'sigma_min', 'beta_d', 'beta_min', 'eps_s', 'rho'].map(name => toggleWidget(node, getWidgetByName(node, name)))
+                    toggleWidget(node, getWidgetByName(node, 'coeff'), v == 'gits' ? true : false);
+                    toggleWidget(node, getWidgetByName(node, 'denoise',), true);
+                }
+                updateNodeHeight(node)
             }
-            updateNodeHeight(node)
             break
 
         // Pipe Edit
