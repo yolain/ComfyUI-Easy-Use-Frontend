@@ -265,6 +265,39 @@
   .dom-widget{
     padding:0 4px;
   }
+
+  .pi.pi-circle-fill{
+    &[data-testid='noColor'] {
+      color: rgb(0, 0, 0)!important;
+    }
+    &[data-testid='red'] {
+      color: #af3535!important;
+    }
+    &[data-testid='brown'] {
+      color:#38291f!important;
+    }
+    &[data-testid='green'] {
+      color: #346434!important;
+    }
+    &[data-testid='blue'] {
+      color: #1f1f48!important;
+    }
+    &[data-testid='pale_blue'] {
+      color: #006691!important;
+    }
+    &[data-testid='cyan'] {
+      color: #008181!important;
+    }
+    &[data-testid='purple'] {
+      color: #422342!important;
+    }
+    &[data-testid='yellow'] {
+      color: #c09430!important;
+    }
+    &[data-testid='black']{
+      color: rgba(0,0,0,.8)!important;
+    }
+  }
 }
 
 

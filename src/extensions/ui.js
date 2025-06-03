@@ -12,6 +12,7 @@ import {normalize, compareVersion} from "@/composable/util.js";
 import {toast} from "@/components/toast.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {drawSlot, strokeShape} from "@/composable/canvas.js";
+import {renderPreview} from "@/composable/widgets/imagePreviewWidget.js";
 
 /* Define Variable */
 let nodesStore = null
@@ -522,13 +523,6 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
         const y = w.y || posY
         const outline_color = w.advanced ? LiteGraph.WIDGET_ADVANCED_OUTLINE_COLOR : LiteGraph.WIDGET_OUTLINE_COLOR
 
-        // if (w === this.link_over_widget) {
-        //     ctx.fillStyle = this.default_connection_color_byType[this.link_over_widget_type] ||
-        //         this.default_connection_color.input_on
-        //     // Manually draw a slot next to the widget simulating an input
-        //     drawSlot(ctx, {}, [is_easyuse_theme ? 2 : 10, y + 10], {})
-        // }
-
         w.last_y = y;
         w.computedDisabled = w.disabled || (!excludeDiabledNodes.includes(node.type) && node.inputs?.find(slot => slot.link && slot.widget?.name === w?.name)?.link != null)
 
@@ -539,7 +533,6 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
         if (w.computedDisabled) ctx.globalAlpha *= 0.5
         let widget_width = w.width || width;
         let widget_height = w.height || height;
-
         switch (w.type) {
             case "button":
                 var size = w.options.size || 10
@@ -776,11 +769,24 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
                     ctx.restore();
                 }
                 break;
-            default:
-                if (w.draw) {
-                    w.draw(ctx, node, widget_width, y, H);
-                }
+            case "fastHidden":
+            case "easyHidden":
                 break;
+            default:
+                if(w.draw) w.draw?.(ctx, node, widget_width, y, H)
+                else{
+                    const draw = (
+                        ctx,
+                        node,
+                        widget_width,
+                        y,
+                        H
+                    ) => {
+                        renderPreview(ctx, node, y)
+                    }
+                    w.draw = draw
+                }
+                break
         }
         posY += (w.computeSize ? w.computeSize(widget_width)[1] : H) + 4;
         ctx.globalAlpha = this.editor_alpha;

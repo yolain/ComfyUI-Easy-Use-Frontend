@@ -44,7 +44,7 @@ export function calculateImageGrid(imgs, dw, dh) {
     return { cellWidth, cellHeight, cols, rows, shiftX }
 }
 
-const renderPreview = (
+export const renderPreview = (
     ctx,
     node,
     shiftY
