@@ -5,6 +5,7 @@ import { restart_from_here } from "./prompt.js";
 import { hud, FlowState } from "./state.js";
 import { send_cancel, send_message, send_onstart, skip_next_restart_message } from "./messaging.js";
 import { display_preview_images, additionalDrawBackground, click_is_in_image } from "./preview.js";
+import {useTryCatchCallback} from "@/composable/utils/useChainCallback.js";
 
 class chooserImageDialog extends ComfyDialog {
 
@@ -104,7 +105,6 @@ function disable_serialize(widget) {
 app.registerExtension({
     name:'Comfy.EasyUse.imageChooser',
     init() {
-        console.log(FlowState.paused())
         window.addEventListener("beforeunload", _=>{
             if (FlowState.paused()) {
                 send_cancel();
@@ -114,13 +114,13 @@ app.registerExtension({
     setup(app) {
 
         const draw = LGraphCanvas.prototype.draw;
-        LGraphCanvas.prototype.draw = function() {
+        const newDraw = function() {
             if (hud.update()) {
                 app.graph._nodes.forEach((node)=> { if (node.update) { node.update(); } })
             }
             draw.apply(this,arguments);
         }
-
+        LGraphCanvas.prototype.draw = useTryCatchCallback(draw, newDraw)
 
         function easyuseImageChooser(event) {
             const {node,image,isKSampler} = display_preview_images(event);

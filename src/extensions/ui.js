@@ -36,12 +36,10 @@ let monitor = null
 let prefix = '👽 '
 /* add settings */
 for(let i in settings) {
-    // const name =  getSetting('Comfy.UseNewMenu') == 'Disabled' ? prefix+normalize(settings[i].name) : normalize(settings[i].name)
-    // const tooltip = settings[i].tooltip ? normalize(settings[i].tooltip) : ''
-    // addSetting({...settings[i],...{name,tooltip}})
     addSetting(settings[i])
 }
 
+import {useTryCatchCallback} from "@/composable/utils/useChainCallback.js";
 /* Register Extension */
 registerExtension({
     name: 'Comfy.EasyUse.UI',
@@ -62,7 +60,6 @@ registerExtension({
             color_palettes.milk_white = milk_white.ColorPalette
             setSetting(id, color_palettes, storge_key)
         }
-
         // When color palette is obsidian or obsidian_dark or milk_white
         if (custom_themes.includes(color_palette)) {
             document.body.classList += ' comfyui-easyuse'
@@ -84,14 +81,15 @@ registerExtension({
             }
             NODE_COLOR_THEMES = LGraphCanvas.node_colors
             LiteGraph.NODE_TEXT_SIZE = 13
-            LGraphCanvas.prototype.drawNodeShape = drawNodeShape
-            LGraphCanvas.prototype.drawNodeWidgets = drawNodeWidgets
+
+            LGraphCanvas.prototype.drawNodeShape = useTryCatchCallback(LGraphCanvas.prototype.drawNodeShape, drawNodeShape)
+            LGraphCanvas.prototype.drawNodeWidgets = useTryCatchCallback(LGraphCanvas.prototype.drawNodeWidgets, drawNodeWidgets)
         }else{
             document.body.classList.remove('comfyui-easyuse')
         }
-        LGraphCanvas.onMenuNodeMode = onMenuNodeMode
-        LGraphCanvas.onMenuNodeColors = onMenuNodeColors
-        LGraphCanvas.onShowPropertyEditor = onShowPropertyEditor
+        LGraphCanvas.onMenuNodeMode = useTryCatchCallback(LGraphCanvas.onMenuNodeMode, onMenuNodeMode)
+        LGraphCanvas.onMenuNodeColors = useTryCatchCallback(LGraphCanvas.onMenuNodeColors, onMenuNodeColors)
+        LGraphCanvas.onShowPropertyEditor = useTryCatchCallback(LGraphCanvas.onShowPropertyEditor, onShowPropertyEditor)
     },
 
     async setup() {
@@ -129,24 +127,6 @@ registerExtension({
                 })
             }
         })
-        // api.addEventListener('graphChanged', () => {
-        //     const frontend_version = window?.__COMFYUI_FRONTEND_VERSION__ || '1.0.0'
-        //     if(compareVersion(frontend_version, '1.16.0') == -1){
-        //         const sortNodes = getSetting('Comfy.Workflow.SortNodeIdOnSave')
-        //         let workflow = app.graph.serialize({sortNodes})
-        //         let workflow_version = workflow?.extra?.frontendVersion
-        //         if(!workflow_version || compareVersion(workflow_version, '1.16.0') == -1){
-        //             return
-        //         }
-        //         let nodes = workflow?.nodes
-        //         if(nodes?.length>0){
-        //             toast.warn('[EasyUse] '+ $t('The workflow version is too high and has been fixed to an old version of the workflow for you'), 5000)
-        //             workflow.nodes = nodes.map(cate=> ({...cate, ...{inputs:cate.inputs.filter(cate=> !cate.widget)}}))
-        //             workflow.extra.frontendVersion = frontend_version
-        //             app.loadGraphData(workflow)
-        //         }
-        //     }
-        // })
     },
 
     async nodeCreated(node) {
@@ -512,8 +492,6 @@ function drawNodeWidgets(node, posY, ctx, active_widget) {
     let text_color = LiteGraph.WIDGET_TEXT_COLOR;
     let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
     let margin = 16;
-
-    const is_easyuse_theme = custom_themes?.includes(color_palette) || false
 
     const excludeDiabledNodes = ['fast llm']
     for (let i = 0; i < widgets.length; ++i) {

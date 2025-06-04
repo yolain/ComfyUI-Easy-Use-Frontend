@@ -3,7 +3,7 @@ import {chainNode, convertLinkToGetSetNode} from "@/composable/node";
 import {$t} from "@/composable/i18n.js";
 import {drawRoundedRect, drawText} from "@/composable/canvas.js";
 import {getSetting} from "@/composable/settings.js";
-
+import {useTryCatchCallback} from "@/composable/utils/useChainCallback.js";
 
 /* Register Extension */
 app.registerExtension({
@@ -23,7 +23,7 @@ app.registerExtension({
             convertLinkToGetSetNode(link);
             return false;
         };
-        LGraphCanvas.prototype.showLinkMenu = convertLinkIntoNodes;
+        LGraphCanvas.prototype.showLinkMenu = useTryCatchCallback(showLinkMenu, convertLinkIntoNodes);
     }
 })
 
