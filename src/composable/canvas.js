@@ -46,8 +46,9 @@ export function drawText(ctx, text, x, y, color = "#000", fontSize = 12, fontFam
 }
 
 
-
-
+const ELLIPSIS = "\u2026"
+const TWO_DOT_LEADER = "\u2025"
+const ONE_DOT_LEADER = "\u2024"
 export const RenderShape = {
     /** Rectangle with square corners */
     BOX:1,
@@ -276,4 +277,93 @@ export function strokeShape(
 
     // TODO: Store and reset value properly.  Callers currently expect this behaviour (e.g. muted nodes).
     ctx.globalAlpha = 1
+}
+
+/**
+ * Truncates text using binary search to fit within a given width, appending an ellipsis if needed.
+ * @param ctx The canvas rendering context.
+ * @param text The text to truncate.
+ * @param maxWidth The maximum width the text (plus ellipsis) can occupy.
+ * @returns The truncated text, or the original text if it fits.
+ */
+function truncateTextToWidth(ctx, text, maxWidth) {
+    if (!(maxWidth > 0)) return ""
+
+    // Text fits
+    const fullWidth = ctx.measureText(text).width
+    if (fullWidth <= maxWidth) return text
+
+    const ellipsisWidth = ctx.measureText(ELLIPSIS).width * 0.75
+
+    // Can't even fit ellipsis
+    if (ellipsisWidth > maxWidth) {
+        const twoDotsWidth = ctx.measureText(TWO_DOT_LEADER).width * 0.75
+        if (twoDotsWidth < maxWidth) return TWO_DOT_LEADER
+
+        const oneDotWidth = ctx.measureText(ONE_DOT_LEADER).width * 0.75
+        return oneDotWidth < maxWidth ? ONE_DOT_LEADER : ""
+    }
+
+    let min = 0
+    let max = text.length
+    let bestLen = 0
+
+    // Binary search for the longest substring that fits with the ellipsis
+    while (min <= max) {
+        const mid = Math.floor((min + max) * 0.5)
+
+        // Avoid measuring empty string + ellipsis
+        if (mid === 0) {
+            min = mid + 1
+            continue
+        }
+
+        const sub = text.substring(0, mid)
+        const currentWidth = ctx.measureText(sub).width + ellipsisWidth
+
+        if (currentWidth <= maxWidth) {
+            // This length fits, try potentially longer
+            bestLen = mid
+            min = mid + 1
+        } else {
+            // Too long, try shorter
+            max = mid - 1
+        }
+    }
+
+    return bestLen === 0
+        ? ELLIPSIS
+        : text.substring(0, bestLen) + ELLIPSIS
+}
+
+/**
+ * Draws text within an area, truncating it and adding an ellipsis if necessary.
+ */
+export function drawTextInArea({ ctx, text, area, align = "left" }) {
+    const { left, right, bottom, width, centreX } = area
+
+    // Text already fits
+    const fullWidth = ctx.measureText(text).width
+    if (fullWidth <= width) {
+        ctx.textAlign = align
+        const x = align === "left" ? left : (align === "right" ? right : centreX)
+        ctx.fillText(text, x, bottom)
+        return
+    }
+
+    // Need to truncate text
+    const truncated = truncateTextToWidth(ctx, text, width)
+    if (truncated.length === 0) return
+
+    // Draw text - left-aligned to prevent bouncing during resize
+    ctx.textAlign = "left"
+    ctx.fillText(truncated.slice(0, -1), left, bottom)
+    ctx.rect(left, bottom, width, 1)
+
+    // Draw the ellipsis, right-aligned to the button
+    ctx.textAlign = "right"
+    const ellipsis = truncated.at(-1)
+    if (ellipsis) {
+        ctx.fillText(ellipsis, right, bottom, ctx.measureText(ellipsis).width * 0.75);
+    }
 }

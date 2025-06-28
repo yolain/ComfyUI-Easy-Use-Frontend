@@ -525,7 +525,9 @@ app.registerExtension({
             }
         }
 
-        if(samplers_nodes.includes(node_name)){
+        if(samplers_nodes.includes(node_name) || (node_name.indexOf('workflow') !== -1)){
+            const input_required = nodeData?.input?.required || {}
+            if(!input_required['image_output'] && !input_required['图像输出'] && !input_required['视频输出']) return
             nodeType.prototype.onDrawBackground = function(ctx) {
                 try {
                     unsafeDrawBackground(this, ctx)
@@ -551,7 +553,9 @@ app.registerExtension({
                         set(newVal) {
                             if (newVal !== widgetValue) {
                                 widgetValue = newVal;
-                                toggleLogic(node, w)
+                                requestAnimationFrame(_=>{
+                                    toggleLogic(node, w)
+                                })
                             }
                         }
                     });
@@ -742,14 +746,10 @@ function toggleLogic(node, widget) {
             if (v === "自定义 x 自定义") {
                 widget.value = 'width x height (custom)'
             }
-            setTimeout(_ => {
-                ['empty_latent_width', 'empty_latent_height', 'width', 'height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'width x height (custom)' ? true : false))
-            },1)
+            ['empty_latent_width', 'empty_latent_height', 'width', 'height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'width x height (custom)' ? true : false))
             break
         case 'ratio':
-            setTimeout(_ => {
-                ['empty_latent_width', 'empty_latent_height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'custom' ? true : false))
-            },1)
+            ['empty_latent_width', 'empty_latent_height'].map(name => toggleWidget(node, getWidgetByName(node, name), v === 'custom' ? true : false))
             break
         case 'num_loras':
             var number_to_show = v + 1

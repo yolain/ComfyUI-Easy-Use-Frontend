@@ -39,8 +39,9 @@ for(let i in settings) {
     addSetting(settings[i])
 }
 
-import {useTryCatchCallback} from "@/composable/utils/useChainCallback.js";
+import {useChainCallback, useTryCatchCallback} from "@/composable/utils/useChainCallback.js";
 /* Register Extension */
+let OriginDrawNodeWidgets = null;
 registerExtension({
     name: 'Comfy.EasyUse.UI',
     init() {
@@ -81,12 +82,12 @@ registerExtension({
             }
             NODE_COLOR_THEMES = LGraphCanvas.node_colors
             LiteGraph.NODE_TEXT_SIZE = 13
-
             LGraphCanvas.prototype.drawNodeShape = useTryCatchCallback(LGraphCanvas.prototype.drawNodeShape, drawNodeShape)
-            LGraphCanvas.prototype.drawNodeWidgets = useTryCatchCallback(LGraphCanvas.prototype.drawNodeWidgets, drawNodeWidgets)
         }else{
             document.body.classList.remove('comfyui-easyuse')
         }
+        OriginDrawNodeWidgets = LGraphCanvas.prototype.drawNodeWidgets
+        LGraphCanvas.prototype.drawNodeWidgets = useTryCatchCallback(OriginDrawNodeWidgets, drawNodeWidgets)
         LGraphCanvas.onMenuNodeMode = useTryCatchCallback(LGraphCanvas.onMenuNodeMode, onMenuNodeMode)
         LGraphCanvas.onMenuNodeColors = useTryCatchCallback(LGraphCanvas.onMenuNodeColors, onMenuNodeColors)
         LGraphCanvas.onShowPropertyEditor = useTryCatchCallback(LGraphCanvas.onShowPropertyEditor, onShowPropertyEditor)
@@ -477,301 +478,63 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
 
 }
 
-function drawNodeWidgets(node, posY, ctx, active_widget) {
-    if (!node.widgets || !node.widgets.length) return 0;
-    let width = node.size[0];
-    let height = node.size[1];
-    let widgets = node.widgets;
-    posY += 2;
-    let H = LiteGraph.NODE_WIDGET_HEIGHT;
-    let show_text = this.ds.scale > 0.5;
-    ctx.save();
-    ctx.globalAlpha = this.editor_alpha;
-    let outline_color = LiteGraph.WIDGET_OUTLINE_COLOR;
-    let background_color = LiteGraph.WIDGET_BGCOLOR;
-    let text_color = LiteGraph.WIDGET_TEXT_COLOR;
-    let secondary_text_color = LiteGraph.WIDGET_SECONDARY_TEXT_COLOR;
-    let margin = 16;
-
-    const excludeDiabledNodes = ['fast llm']
-    for (let i = 0; i < widgets.length; ++i) {
-        let w = widgets[i];
-        if (w.hidden || (w.advanced && !node.showAdvanced)) continue
-
-        const y = w.y || posY
-        const outline_color = w.advanced ? LiteGraph.WIDGET_ADVANCED_OUTLINE_COLOR : LiteGraph.WIDGET_OUTLINE_COLOR
-
-        w.last_y = y;
-        w.computedDisabled = w.disabled || (!excludeDiabledNodes.includes(node.type) && node.inputs?.find(slot => slot.link && slot.widget?.name === w?.name)?.link != null)
-
-        ctx.strokeStyle = outline_color;
-        ctx.fillStyle = background_color;
-        ctx.textAlign = "left";
-        ctx.lineWidth = 1;
-        if (w.computedDisabled) ctx.globalAlpha *= 0.5
-        let widget_width = w.width || width;
-        let widget_height = w.height || height;
-        switch (w.type) {
-            case "button":
-                var size = w.options.size || 10
-                ctx.font = size + "px Inter"
-                ctx.fillStyle = w.options?.transparent ? 'transparent' : background_color;
-                if (w.clicked) {
-                    ctx.fillStyle = "#AAA";
-                    w.clicked = false;
-                    this.dirty_canvas = true;
-                }
-                ctx.beginPath();
-                ctx.roundRect(margin, y, widget_width - margin * 2, H, [H * 0.25]);
-                ctx.fill();
-                if (show_text && !w.disabled && !w.options?.transparent)
-                    ctx.stroke();
-                if (show_text) {
-                    ctx.textAlign = "center";
-                    ctx.fillStyle = text_color;
-                    ctx.fillText(w.label || w.name, widget_width * 0.5, y + H * 0.7);
-                }
-                break;
-            case "toggle":
-                ctx.font = "10px Inter"
-                ctx.textAlign = "left";
-                ctx.strokeStyle = outline_color;
-                ctx.fillStyle = background_color;
-                ctx.beginPath();
-                if (show_text)
-                    ctx.roundRect(margin, y, widget_width - margin * 2, H, [H * 0.25]);
-                else
-                    ctx.rect(margin, y, widget_width - margin * 2, H);
-                ctx.fill();
-                if (show_text && !w.disabled)
-                    ctx.stroke();
-                ctx.fillStyle = w.value ? THEME_COLOR : outline_color;
-                ctx.beginPath();
-                ctx.arc(widget_width - margin * 2 + 5, y + H * 0.5, H * 0.25, 0, Math.PI * 2);
-                ctx.fill();
-                if (show_text) {
-                    ctx.fillStyle = secondary_text_color;
-                    const label = w.label || w.name;
-                    if (label != null) {
-                        ctx.fillText(label, margin * 2 - 10, y + H * 0.7);
-                    }
-                    ctx.font = "10px Inter"
-                    ctx.fillStyle = w.value ? text_color : secondary_text_color;
-                    ctx.textAlign = "right";
-                    ctx.fillText(
-                        w.value
-                            ? w.options.on || "true"
-                            : w.options.off || "false",
-                        widget_width - 38,
-                        y + H * 0.7
-                    );
-                }
-                break;
-            case "slider":
-                ctx.font = "10px Inter"
-                ctx.fillStyle = background_color;
-                ctx.strokeStyle = outline_color;
-                ctx.beginPath();
-                ctx.roundRect(margin, y, widget_width - margin * 2, H, [H * 0.25]);
-                ctx.fill();
-                ctx.stroke()
-                let range = w.options.max - w.options.min;
-                let nvalue = (w.value - w.options.min) / range;
-                if (nvalue < 0.0) nvalue = 0.0;
-                if (nvalue > 1.0) nvalue = 1.0;
-                ctx.fillStyle = w.options.hasOwnProperty("slider_color") ? w.options.slider_color : (active_widget == w ? outline_color : THEME_COLOR);
-                ctx.beginPath();
-                ctx.roundRect(margin, y, nvalue * (widget_width - margin * 2), H, [H * 0.25]);
-                ctx.fill();
-                if (w.marker) {
-                    let marker_nvalue = (w.marker - w.options.min) / range;
-                    if (marker_nvalue < 0.0) marker_nvalue = 0.0;
-                    if (marker_nvalue > 1.0) marker_nvalue = 1.0;
-                    ctx.fillStyle = w.options.hasOwnProperty("marker_color") ? w.options.marker_color : "#AA9";
-                    ctx.roundRect(margin + marker_nvalue * (widget_width - margin * 2), y, 2, H, [H * 0.25]);
-                }
-                if (show_text) {
-                    ctx.textAlign = "center";
-                    ctx.fillStyle = text_color;
-                    let text = (w.label || w.name) + " : " + Number(w.value).toFixed(
-                        w.options.precision != null
-                            ? w.options.precision
-                            : 3
-                    );
-                    ctx.fillText(
-                        text,
-                        widget_width * 0.5,
-                        y + H * 0.7
-                    );
-
-                }
-                break;
-            case "number":
-            case "combo":
-                ctx.textAlign = "left";
-                ctx.strokeStyle = outline_color;
-                ctx.fillStyle = background_color;
-                ctx.beginPath();
-                if (show_text)
-                    ctx.roundRect(margin, y, widget_width - margin * 2, H, [H * 0.25]);
-                else
-                    ctx.rect(margin, y, widget_width - margin * 2, H);
-                ctx.fill();
-                if (show_text) {
-                    if (!w.disabled)
-                        ctx.stroke();
-                    ctx.fillStyle = text_color;
-                    if (!w.disabled) {
-                        ctx.beginPath();
-                        ctx.moveTo(margin + 12, y + 6.5);
-                        ctx.lineTo(margin + 6, y + H * 0.5);
-                        ctx.lineTo(margin + 12, y + H - 6.5);
-                        ctx.fill();
-                        ctx.beginPath();
-                        ctx.moveTo(widget_width - margin - 12, y + 6.5);
-                        ctx.lineTo(widget_width - margin - 6, y + H * 0.5);
-                        ctx.lineTo(widget_width - margin - 12, y + H - 6.5);
-                        ctx.fill();
-                    }
-                    ctx.fillStyle = secondary_text_color;
-                    ctx.font = "10px Inter"
-                    ctx.fillText(w.label || w.name, margin * 2, y + H * 0.7);
-                    ctx.fillStyle = text_color;
-                    ctx.textAlign = "right";
-                    let rightDistance = 2
-                    if (w.type == "number") {
-                        ctx.font = "10px Inter"
-                        ctx.fillText(
-                            Number(w.value).toFixed(
-                                w.options.precision !== undefined
-                                    ? w.options.precision
-                                    : 3
-                            ),
-                            widget_width - margin * 2 - rightDistance,
-                            y + H * 0.7
-                        );
-                    } else {
-                        let v = w.value;
-                        if (w.options.values) {
-                            let values = w.options.values;
-                            if (values.constructor === Function)
-                                values = values();
-                            if (values && values.constructor !== Array)
-                                v = values[w.value];
-                        }
-                        const labelWidth = ctx.measureText(w.label || w.name).width + margin * 2;
-                        const inputWidth = widget_width - margin * 4;
-                        const availableWidth = inputWidth - labelWidth;
-                        const textWidth = ctx.measureText(v).width;
-                        if (textWidth > availableWidth) {
-                            const ELLIPSIS = "\u2026";
-                            const ellipsisWidth = ctx.measureText(ELLIPSIS).width;
-                            const charWidthAvg = ctx.measureText("a").width;
-                            if (availableWidth <= ellipsisWidth) {
-                                v = "\u2024"; // One dot leader
-                            } else {
-                                v = `${v}`
-                                const overflowWidth = (textWidth + ellipsisWidth) - availableWidth;
-                                // Only first 3 characters need to be measured precisely
-                                if (overflowWidth + charWidthAvg * 3 > availableWidth) {
-                                    const preciseRange = availableWidth + charWidthAvg * 3;
-                                    const preTruncateCt = Math.floor((preciseRange - ellipsisWidth) / charWidthAvg);
-                                    v = v.substr(0, preTruncateCt);
-                                }
-                                while (ctx.measureText(v).width + ellipsisWidth > availableWidth) {
-                                    v = v.substr(0, v.length - 1);
-                                }
-                                v += ELLIPSIS;
-                            }
-                        }
-                        ctx.fillText(
-                            v,
-                            widget_width - margin * 2 - rightDistance,
-                            y + H * 0.7
-                        );
-                    }
-                }
-                break;
-            case "string":
-            case "text":
-                ctx.textAlign = "left";
-                ctx.strokeStyle = outline_color;
-                ctx.fillStyle = background_color;
-                ctx.beginPath();
-                if (show_text)
-                    ctx.roundRect(margin, y, widget_width - margin * 2, H, [H * 0.25]);
-                else
-                    ctx.rect(margin, y, widget_width - margin * 2, H);
-                ctx.fill();
-                if (show_text) {
-                    if (!w.disabled) ctx.stroke();
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.rect(margin, y, widget_width - margin * 2, H);
-                    ctx.clip();
-
-                    //ctx.stroke();
-                    ctx.fillStyle = secondary_text_color;
-                    const label = w.label || w.name;
-                    ctx.font = "10px Inter"
-                    if (label != null) {
-                        ctx.fillText(label, margin * 2 - 10, y + H * 0.7);
-                    }
-                    ctx.fillStyle = text_color;
-                    ctx.textAlign = "right";
-                    let v = String(w.value);
-                    const labelWidth = ctx.measureText(w.label || w.name).width + margin * 2;
-                    const inputWidth = widget_width - margin * 4 + 20;
-                    const availableWidth = inputWidth - labelWidth;
-                    const textWidth = ctx.measureText(v).width;
-                    if (textWidth > availableWidth) {
-                        const ELLIPSIS = "\u2026";
-                        const ellipsisWidth = ctx.measureText(ELLIPSIS).width;
-                        const charWidthAvg = ctx.measureText("a").width;
-                        if (availableWidth <= ellipsisWidth) {
-                            v = "\u2024";
-                        } else {
-                            const overflowWidth = (textWidth + ellipsisWidth) - availableWidth;
-                            if (overflowWidth + charWidthAvg * 3 > availableWidth) {
-                                const preciseRange = availableWidth + charWidthAvg * 3;
-                                const preTruncateCt = Math.floor((preciseRange - ellipsisWidth) / charWidthAvg);
-                                v = v.substr(0, preTruncateCt);
-                            }
-                            while (ctx.measureText(v).width + ellipsisWidth > availableWidth) {
-                                v = v.substr(0, v.length - 1);
-                            }
-                            v += ELLIPSIS;
-                        }
-                    }
-                    ctx.fillText(v, widget_width - margin * 2 + 10, y + H * 0.7);
-                    ctx.restore();
-                }
-                break;
-            case "fastHidden":
-            case "easyHidden":
-                break;
-            default:
-                if(w.draw) w.draw?.(ctx, node, widget_width, y, H)
-                else{
-                    const draw = (
-                        ctx,
-                        node,
-                        widget_width,
-                        y,
-                        H
-                    ) => {
-                        renderPreview(ctx, node, y)
-                    }
-                    w.draw = draw
-                }
-                break
-        }
-        posY += (w.computeSize ? w.computeSize(widget_width)[1] : H) + 4;
-        ctx.globalAlpha = this.editor_alpha;
-
+import {toConcreteWidget} from "@/composable/widgets/widgetMap.js";
+function drawNodeWidgets(node, posY, ctx) {
+    if (!node.widgets) return;
+    // 默认主题下，非EasyUse、FastUse节点执行官方绘制
+    const hasHiddenWidgets = node.widgets.some(w=> ['easyHidden','fastHidden'].includes(w.type))
+    const isEasyUseTheme = custom_themes.includes(color_palette)
+    if(!hasHiddenWidgets && !isEasyUseTheme){
+        OriginDrawNodeWidgets ? OriginDrawNodeWidgets?.apply(this, arguments) : undefined;
+        return
     }
-    ctx.restore();
-    ctx.textAlign = "left";
+
+    let lowQuality = this.low_quality || false;
+    let editorAlpha = this.editor_alpha || 1.0;
+
+    const nodeWidth = node.size[0]
+    const { widgets } = node
+    const H = LiteGraph.NODE_WIDGET_HEIGHT
+    const showText = !lowQuality
+    ctx.save()
+    ctx.globalAlpha = editorAlpha
+
+    for (const widget of widgets) {
+        if (!node.isWidgetVisible(widget)) continue
+
+        const { y } = widget
+        const outlineColour = widget.advanced ? LiteGraph.WIDGET_ADVANCED_OUTLINE_COLOR : LiteGraph.WIDGET_OUTLINE_COLOR
+
+        widget.last_y = y
+        // Disable widget if it is disabled or if the value is passed from socket connection.
+        widget.computedDisabled = widget.disabled || node.getSlotFromWidget(widget)?.link != null
+
+        ctx.strokeStyle = outlineColour
+        ctx.fillStyle = "#222"
+        ctx.textAlign = "left"
+        if (widget.computedDisabled) ctx.globalAlpha *= 0.5
+        const width = widget.width || nodeWidth
+
+        if (typeof widget.draw === "function") {
+            widget.draw(ctx, node, width, y, H, lowQuality)
+        }
+        else if (widget.name == '$$canvas-image-preview'){
+            const draw = (
+                ctx,
+                node,
+                widget_width,
+                y
+            ) => {
+                renderPreview(ctx, node, y)
+            }
+            widget.draw = draw
+        }
+        else {
+            toConcreteWidget(widget, node, false)?.drawWidget(ctx, { width, showText, isEasyUseTheme })
+        }
+        ctx.globalAlpha = editorAlpha
+    }
+    ctx.restore()
 }
 
 function onMenuNodeMode(value, options, e, menu, node) {
