@@ -9,7 +9,9 @@ app.registerExtension({
     name: 'Comfy.EasyUse.CustomWidget',
     getCustomWidgets: _ => ({
         EASY_PROMPT_AWAIT_BAR: (node, inputName, inputData, app) => {
-            const widgetValue = ref( {})
+            const widgetValue = ref( {
+                select: 'new'
+            })
             const inputSpec = {
                 type: 'custom',
                 name: inputName
