@@ -148,4 +148,9 @@ export default {
     // for loop
     "The maximum number of inputs is 20": "输入数量最大20个",
     "The maximum number of outputs is 20": "输出数量最大20个",
+    // prompt await
+    "Stop recording": "停止录音",
+    "Voice input": "语音输入",
+    "Continue": "继续",
+    "Stop": "停止",
 }
