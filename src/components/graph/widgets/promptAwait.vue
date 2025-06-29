@@ -3,7 +3,7 @@
     <div class="flex justify-start items-center flex-1 gap-2">
       <Button :disabled="!Boolean(isAwait)" :label="$t('Continue')" size="small" style="height:20px;font-size:12px;white-space: nowrap;padding: 0 8px;" @click="send_message(1)"/>
       <Button :disabled="!Boolean(isAwait)" :label="$t('Stop')" severity="danger" size="small" style="height:20px;font-size:12px;white-space: nowrap;padding: 0 8px;" @click="send_message(-1)"/>
-      <Select class="easyuse-prompt-await-select" v-model="widget.value.select" :options="[{name:$t('now'),value:'now'},{name:$t('prev'),value:'prev'}]" optionLabel="name" optionValue="value" size="small" style="flex:1;height:24px;line-height:10px;min-width:70px"></Select>
+      <Select class="easyuse-prompt-await-select" v-model="widget.value.select" :options="[{name:$t('now'),value:'now'},{name:$t('prev'),value:'prev'}]" optionLabel="name" optionValue="value" size="small" style="flex:1;height:24px;line-height:10px;min-width:70px;max-width:100px"></Select>
     </div>
     <div class="flex justify-end items-center tool ml-2 position-relative">
       <Button v-if="isRecording" size="small" icon="pi pi-pause-circle" severity="info"  variant="outlined"  @click="stopRecord" rounded v-tooltip:top="{ value: $t('Stop Recording'), class:'jm-tooltip' }" />
