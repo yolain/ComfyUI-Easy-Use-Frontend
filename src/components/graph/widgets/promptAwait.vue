@@ -1,8 +1,8 @@
 <template>
   <div class="w-full flex justify-between items-center">
     <div class="flex justify-start items-center flex-1 gap-2">
-      <Button :label="$t('Continue')" size="small" style="height:20px" @click="send_message(1)"/>
-      <Button :label="$t('Stop')" severity="danger" size="small" style="height:20px" @click="send_message(-1)"/>
+      <Button :disabled="!Boolean(isAwait)" :label="$t('Continue')" size="small" style="height:20px" @click="send_message(1)"/>
+      <Button :disabled="!Boolean(isAwait)" :label="$t('Stop')" severity="danger" size="small" style="height:20px" @click="send_message(-1)"/>
     </div>
     <div class="flex justify-end items-center tool ml-2 position-relative">
       <Button v-if="isRecording" size="small" icon="pi pi-pause-circle" severity="info"  variant="outlined"  @click="stopRecord" rounded v-tooltip:top="{ value: $t('Stop Recording'), class:'jm-tooltip' }" />
@@ -72,7 +72,7 @@ onMounted(_=>{
   const original_api_interrupt = api.interrupt;
   api.interrupt = function () {
     if(isAwait.value || !app.runningNodeId) {
-      send_message(-1, true);
+      send_message( JSON.stringify({result:-1}), true);
       isAwait.value = false;
     }
     original_api_interrupt.apply(this, arguments);
@@ -82,7 +82,9 @@ onMounted(_=>{
 const send_message = (value, force) => {
   if(!isAwait.value && !force) return;
   const body = new FormData();
-  body.append('message', value);
+  const node = props.widget.node;
+  const prompt = getWidgetByName(node, 'prompt')?.value || '';
+  body.append('message', JSON.stringify({result:value, prompt}));
   body.append('id', props.widget.node.id);
   isAwait.value = false;
   api.fetchApi("/easyuse/message_callback", { method: "POST", body, });
