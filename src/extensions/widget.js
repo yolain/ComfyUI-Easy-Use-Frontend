@@ -355,9 +355,12 @@ app.registerExtension({
             const getStartInputIndex = _=>{
                 switch (node_name){
                     case 'easy forLoopStart':
+                    case 'easy whileLoopStart':
                         return 0
                     case 'easy forLoopEnd':
+                    case 'easy whileLoopEnd':
                         return 1
+
                 }
             }
 
@@ -366,8 +369,11 @@ app.registerExtension({
                     case 'easy forLoopStart':
                         return 2
                     case 'easy forLoopEnd':
+                    case 'easy whileLoopEnd':
                         return 0
-                    }
+                    case 'easy whileLoopStart':
+                        return 1
+                }
             }
 
             nodeType.prototype.onNodeCreated = async function () {
@@ -379,7 +385,7 @@ app.registerExtension({
                     if (flow_intput_index !== -1) this.inputs[flow_intput_index]['shape'] = 5
                     if (flow_output_index !== -1) this.outputs[flow_output_index]['shape'] = 5
                     // await sleep(1)
-                    if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
+                    // if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
                     this.inputs = this.inputs.filter((cate,index) => index <= getStartInputIndex() || cate.widget)
                     this.outputs = this.outputs.filter((cate,index) => index <= getStartOutputIndex())
                     updateNodeHeight(this)
@@ -395,7 +401,7 @@ app.registerExtension({
                 return onNodeCreated?.apply(this, arguments)
             }
             nodeType.prototype.onConnectionsChange = function (type, index, connected, link_info) {
-                if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
+                // if(node_name == 'easy whileLoopStart' || node_name == 'easy whileLoopEnd') return
                 if (!link_info) return
                 // input
                 if (type == 1) {
