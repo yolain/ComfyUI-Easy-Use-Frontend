@@ -5,12 +5,16 @@ import {useDomWidgetStore} from "@/stores/domWidgetStore.js";
 
 import {ComponentWidgetImpl} from "@/composable/widgets/domWidget.js";
 import promptAwaitBar from "@/components/graph/widgets/promptAwait.vue";
+import {MAX_SEED_NUM} from "@/constants/index.js";
 app.registerExtension({
     name: 'Comfy.EasyUse.CustomWidget',
     getCustomWidgets: _ => ({
         EASY_PROMPT_AWAIT_BAR: (node, inputName, inputData, app) => {
             const widgetValue = ref( {
-                select: 'now'
+                select: 'now',
+                unlock: true,
+                last_seed:0,
+                seed:0,
             })
             const inputSpec = {
                 type: 'custom',
@@ -41,6 +45,6 @@ app.registerExtension({
             })
             useDomWidgetStore().registerWidget(widget)
             return widget
-        }
+        },
     })
 })

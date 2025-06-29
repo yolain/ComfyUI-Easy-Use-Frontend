@@ -6,6 +6,7 @@
       <Select class="easyuse-prompt-await-select" v-model="widget.value.select" :options="[{name:$t('now'),value:'now'},{name:$t('prev'),value:'prev'}]" optionLabel="name" optionValue="value" size="small" style="flex:1;height:24px;line-height:10px;min-width:70px;max-width:100px"></Select>
     </div>
     <div class="flex justify-end items-center tool ml-2 position-relative">
+      <Button style="--p-button-sm-font-size:11px" size="small" :icon="widget.value.unlock ? 'pi pi-unlock' : 'pi pi-lock'" :severity="widget.value.unlock ? 'contrast' : 'warn'"  variant="text"  @click="widget.value.unlock  = !widget.value.unlock " rounded v-tooltip:top="{ value: widget.value.unlock ? '随机种子' : '锁定种子值', class:'jm-tooltip' }" />
       <Button v-if="isRecording" size="small" icon="pi pi-pause-circle" severity="info"  variant="outlined"  @click="stopRecord" rounded v-tooltip:top="{ value: $t('Stop Recording'), class:'jm-tooltip' }" />
       <Button v-else size="small" icon="pi pi-microphone" severity="contrast" variant="text" @click="startRecord" rounded v-tooltip:top="{ value: $t('Voice input'), class:'jm-tooltip' }" />
     </div>
@@ -21,6 +22,7 @@ import { getWidgetByName } from '@/composable/node.js'
 import Button from 'primevue/button'
 import Select from 'primevue/select';
 import vTooltip from 'primevue/tooltip';
+import {MAX_SEED_NUM} from "@/constants/index.js";
 
 const widget = defineModel('widget', {
   required: true
@@ -72,6 +74,8 @@ onMounted(_=>{
     const node_id = (widget.value?.node.id).toString().indexOf(':')!== -1 ? (widget.value?.node.id).toString().split(':')[0] : widget.value?.node.id;
     if(parseInt(current_id) !== parseInt(node_id)) return;
     isAwait.value = true
+    updateNestedValue('last_seed', widget.value.value?.seed || 0);
+    updateNestedValue('seed', Math.floor(Math.random() * MAX_SEED_NUM))
   });
   const original_api_interrupt = api.interrupt;
   api.interrupt = function () {
@@ -90,7 +94,10 @@ const send_message = (value, force) => {
   const node_id = (widget.value?.node.id).toString().indexOf(':')!== -1 ? (widget.value?.node.id).toString().split(':')[0] : widget.value?.node.id;
   const prompt = getWidgetByName(node, 'prompt')?.value || '';
   let select = widget.value.value?.select;
-  body.append('message', JSON.stringify({result:value, prompt, select}));
+  let last_seed = widget.value.value?.last_seed || 0;
+  let seed = widget.value.value?.seed || 0;
+  let unlock = widget.value.value?.unlock || false;
+  body.append('message', JSON.stringify({result:value, prompt, select, last_seed, seed, unlock}));
   body.append('id', node_id);
   isAwait.value = false;
   api.fetchApi("/easyuse/message_callback", { method: "POST", body, }).then(_=>{
