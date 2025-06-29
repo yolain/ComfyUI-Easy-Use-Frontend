@@ -153,4 +153,6 @@ export default {
     "Voice input": "语音输入",
     "Continue": "继续",
     "Stop": "停止",
+    "now": "当前",
+    "prev": "上一步",
 }

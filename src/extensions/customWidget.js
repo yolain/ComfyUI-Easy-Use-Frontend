@@ -10,7 +10,7 @@ app.registerExtension({
     getCustomWidgets: _ => ({
         EASY_PROMPT_AWAIT_BAR: (node, inputName, inputData, app) => {
             const widgetValue = ref( {
-                select: 'new'
+                select: 'now'
             })
             const inputSpec = {
                 type: 'custom',

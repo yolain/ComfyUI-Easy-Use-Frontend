@@ -1,9 +1,9 @@
 <template>
   <div class="w-full flex justify-between items-center">
     <div class="flex justify-start items-center flex-1 gap-2">
-      <Button :disabled="!Boolean(isAwait)" :label="$t('Continue')" size="small" style="height:20px" @click="send_message(1)"/>
-      <Button :disabled="!Boolean(isAwait)" :label="$t('Stop')" severity="danger" size="small" style="height:20px" @click="send_message(-1)"/>
-      <Select v-model="widget.value.select" :options="['new','prev']" size="small" style="height:24px;line-height:10px;width:90px"></Select>
+      <Button :disabled="!Boolean(isAwait)" :label="$t('Continue')" size="small" style="height:20px;font-size:12px;white-space: nowrap;padding: 0 8px;" @click="send_message(1)"/>
+      <Button :disabled="!Boolean(isAwait)" :label="$t('Stop')" severity="danger" size="small" style="height:20px;font-size:12px;white-space: nowrap;padding: 0 8px;" @click="send_message(-1)"/>
+      <Select class="easyuse-prompt-await-select" v-model="widget.value.select" :options="[{name:$t('now'),value:'now'},{name:$t('prev'),value:'prev'}]" optionLabel="name" optionValue="value" size="small" style="flex:1;height:24px;line-height:10px;min-width:70px"></Select>
     </div>
     <div class="flex justify-end items-center tool ml-2 position-relative">
       <Button v-if="isRecording" size="small" icon="pi pi-pause-circle" severity="info"  variant="outlined"  @click="stopRecord" rounded v-tooltip:top="{ value: $t('Stop Recording'), class:'jm-tooltip' }" />
@@ -76,7 +76,7 @@ onMounted(_=>{
   const original_api_interrupt = api.interrupt;
   api.interrupt = function () {
     if(isAwait.value || !app.runningNodeId) {
-      send_message( JSON.stringify({result:-1, prompt:'', select:'new'}), true);
+      send_message( JSON.stringify({result:-1, prompt:'', select:'now'}), true);
       isAwait.value = false;
     }
     original_api_interrupt.apply(this, arguments);
@@ -94,7 +94,7 @@ const send_message = (value, force) => {
   body.append('id', node_id);
   isAwait.value = false;
   api.fetchApi("/easyuse/message_callback", { method: "POST", body, }).then(_=>{
-    updateNestedValue('select', 'new');
+    updateNestedValue('select', 'now');
   })
 }
 
@@ -106,3 +106,15 @@ const updateNestedValue = (key, value) => {
   widget.value.value[key] = value;
 }
 </script>
+<style>
+.easyuse-prompt-await-select .p-select-label{
+  font-size: 12px!important;
+}
+.easyuse-prompt-await-select .p-select-dropdown{
+  width:1.5rem!important;
+}
+.easyuse-prompt-await-select .p-select-dropdown svg{
+  width:12px!important;
+  height: 12px!important;
+}
+</style>
