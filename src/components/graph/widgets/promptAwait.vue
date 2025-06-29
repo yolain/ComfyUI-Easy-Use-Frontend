@@ -84,7 +84,8 @@ const send_message = (value, force) => {
   const body = new FormData();
   const node = props.widget.node;
   const prompt = getWidgetByName(node, 'prompt')?.value || '';
-  body.append('message', JSON.stringify({result:value, prompt}));
+  const select = getWidgetByName(node, 'select')?.value || 'input_1';
+  body.append('message', JSON.stringify({result:value, prompt, select}));
   body.append('id', props.widget.node.id);
   isAwait.value = false;
   api.fetchApi("/easyuse/message_callback", { method: "POST", body, });
