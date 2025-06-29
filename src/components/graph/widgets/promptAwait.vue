@@ -68,13 +68,15 @@ const stopRecord = () => {
 
 onMounted(_=>{
   api.addEventListener("easyuse_prompt_await", e =>{
-    if(parseInt(e.detail.id) !== widget.value?.node.id) return;
+    const current_id = e.detail.id;
+    const node_id = (widget.value?.node.id).toString().indexOf(':')!== -1 ? (widget.value?.node.id).toString().split(':')[0] : widget.value?.node.id;
+    if(parseInt(current_id) !== parseInt(node_id)) return;
     isAwait.value = true
   });
   const original_api_interrupt = api.interrupt;
   api.interrupt = function () {
     if(isAwait.value || !app.runningNodeId) {
-      send_message( JSON.stringify({result:-1}), true);
+      send_message( JSON.stringify({result:-1, prompt:'', select:'new'}), true);
       isAwait.value = false;
     }
     original_api_interrupt.apply(this, arguments);
@@ -85,10 +87,11 @@ const send_message = (value, force) => {
   if(!isAwait.value && !force) return;
   const body = new FormData();
   const node = widget.value?.node;
+  const node_id = (widget.value?.node.id).toString().indexOf(':')!== -1 ? (widget.value?.node.id).toString().split(':')[0] : widget.value?.node.id;
   const prompt = getWidgetByName(node, 'prompt')?.value || '';
   let select = widget.value.value?.select;
   body.append('message', JSON.stringify({result:value, prompt, select}));
-  body.append('id', widget.value?.node.id);
+  body.append('id', node_id);
   isAwait.value = false;
   api.fetchApi("/easyuse/message_callback", { method: "POST", body, }).then(_=>{
     updateNestedValue('select', 'new');
