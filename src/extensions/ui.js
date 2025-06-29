@@ -26,6 +26,8 @@ const NODE_CUSTOM_COLORS = {
     "easy promptReplace": "cyan",
     "easy forLoopStart": "blue",
     "easy forLoopEnd": "blue",
+    "easy whileLoopStart": "blue",
+    "easy whileLoopEnd": "blue",
     "easy loadImagesForLoop": "blue",
 }
 let NODE_COLOR_THEMES = LGraphCanvas.node_colors
@@ -136,8 +138,8 @@ registerExtension({
             const colorKey = NODE_CUSTOM_COLORS[node.comfyClass]
             const theme = NODE_COLOR_THEMES[colorKey];
             if (!theme) return;
-            if (theme.bgcolor) node.bgcolor = theme.bgcolor;
-            if (theme.color) node.color = theme.color;
+            if (!node.bgcolor && theme.bgcolor) node.bgcolor = theme.bgcolor;
+            if (!node.color && theme.color) node.color = theme.color;
         }
     }
 })
