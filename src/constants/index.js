@@ -24,6 +24,14 @@ export const COMFYUI_NODE_BASIC_CATEGORY = [
     'cargadores', 'latente', 'imagen', 'máscara', 'muestreo', '_para_pruebas', 'avanzado', 'herramientas', 'api', 'nodo api',
 ]
 
+export const HUMAN_SEGMENTATION = {
+    "selfie_multiclass_256x256": ["Background", "Hair", "Body", "Face", "Clothes", "Others"],
+    "human_parsing_lip": ["Background","Hat","Hair","Glove","Sunglasses","Upper-clothes","Dress","Coat","Socks","Pants","Jumpsuits","Scarf","Skirt","Face","Left-arm","Right-arm","Left-leg","Right-leg","Left-shoe","Right-shoe"],
+    "human_parts (deeplabv3p)": ["Background","Face", "Hair", "Glasses", "Top-clothes", "Bottom-clothes", "Torso-skin", "Left-arm", "Right-arm", "Left-leg", "Right-leg", "Left-foot", "Right-foot"],
+    "segformer_b3_clothes": ["Hat", "Hair", "Face", "Sunglasses", "Upper-clothes", "Skirt", "Dress", "Belt", "Pants", "Left-arm", "Right-arm", "Left-leg", "Right-leg", "Bag", "Scarf", "Left-shoe", "Right-shoe","Background"],
+    "segformer_b3_fashion": ["coat", "jacket", "cardigan", "vest", "sweater", "hood", "shirt, blouse", "top, t-shirt, sweatshirt", "sleeve", "dress", "jumpsuit", "cape", "pants", "shorts", "skirt", "tights, stockings", "sock", "shoe"]
+}
+
 export const NODE_MODE ={
     "ALWAYS": 0,
     "NEVER": 2,

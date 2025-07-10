@@ -16,7 +16,7 @@ const allow_widgets = [
     'num_loras', 'num_controlnet', 'mode', 'toggle', 'resolution', 'ratio', 'target_parameter',
     'input_count', 'replace_count', 'downscale_mode', 'range_mode', 'text_combine_mode', 'input_mode',
     'lora_count', 'ckpt_count', 'conditioning_mode', 'preset', 'use_tiled', 'use_batch', 'num_embeds',
-    "easing_mode", "guider", "scheduler", "inpaint_mode", 't5_type', 'rem_mode', 'encode'
+    "easing_mode", "guider", "scheduler", "inpaint_mode", 't5_type', 'rem_mode', 'encode', 'method'
 ]
 // About ipadapter
 const ipa_presets = [
@@ -50,6 +50,8 @@ const index_switch_nodes = ['easy anythingIndexSwitch', 'easy imageIndexSwitch',
 const inverse_switch_nodes = ['easy anythingInversedSwitch']
 const change_slots_nodes = [...['easy loadImagesForLoop'],...loop_nodes,...index_switch_nodes,...inverse_switch_nodes]
 const value_names = {'easy anythingInversedSwitch':'out', 'easy anythingIndexSwitch':'value', 'easy imageIndexSwitch':'image', 'easy textIndexSwitch':'text', 'easy conditioningIndexSwitch':'cond'}
+
+
 
 let all_nodes = null
 /* Register Extension */
