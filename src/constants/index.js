@@ -24,6 +24,32 @@ export const COMFYUI_NODE_BASIC_CATEGORY = [
     'cargadores', 'latente', 'imagen', 'máscara', 'muestreo', '_para_pruebas', 'avanzado', 'herramientas', 'api', 'nodo api',
 ]
 
+export const HUMAN_SEGMENTATION = {
+    "selfie_multiclass_256x256": ["Background", "Hair", "Body", "Face", "Clothes", "Others"],
+    "human_parsing_lip": ["Background","Hat","Hair","Glove","Sunglasses","Upper-clothes","Dress","Coat","Socks","Pants","Jumpsuits","Scarf","Skirt","Face","Left-arm","Right-arm","Left-leg","Right-leg","Left-shoe","Right-shoe"],
+    "human_parts (deeplabv3p)": ["Background","Face", "Hair", "Glasses", "Top-clothes", "Bottom-clothes", "Torso-skin", "Left-arm", "Right-arm", "Left-leg", "Right-leg", "Left-foot", "Right-foot"],
+    "segformer_b3_clothes": {
+        "Background": 0, "Hat": 1, "Hair": 2, "Sunglasses": 3,
+        "Upper-clothes": 4, "Skirt": 5, "Pants": 6, "Dress": 7,
+        "Belt": 8, "Left-shoe": 9, "Right-shoe": 10, "Face": 11,
+        "Left-leg": 12, "Right-leg": 13, "Left-arm": 14, "Right-arm": 15,
+        "Bag": 16, "Scarf": 17
+    },
+    "segformer_b3_fashion": {
+        "Unlabelled": 0, "shirt, blouse": 1, "top, t-shirt, sweatshirt": 2, "sweater": 3,
+        "cardigan": 4, "jacket": 5, "vest": 6, "pants": 7, "shorts": 8, "skirt": 9, "coat": 10,
+        "dress": 11, "jumpsuit": 12, "cape": 13,
+        "glasses": 14, "hat": 15, "headband, head covering, hair accessory": 16, "tie": 17, "glove": 18,
+        "watch": 19, "belt": 20, "leg warmer": 21, "tights, stockings": 22,
+        "sock": 23, "shoe": 24, "bag, wallet": 25, "scarf": 26, "umbrella": 27,
+        "hood": 28, "collar": 29, "lapel": 30, "epaulette": 31, "sleeve": 32,
+        "pocket": 33, "neckline": 34, "buckle": 35, "zipper": 36, "applique": 37,
+        "bead": 38, "bow": 39, "flower": 40, "fringe": 41, "ribbon": 42,
+        "rivet": 43, "ruffle": 44, "sequin": 45, "tassel": 46
+    },
+    "face_parsing":["background", "skin", "nose", "eyeglasses", "left_eye", 'right_eye', 'left_eyebrow', 'right_eyebrow', 'left_ear', 'right_ear', 'mouth', 'upper_lip', 'lower_lip', 'hair', 'hat', 'earring', 'necklace', 'neck', 'clothing']
+}
+
 export const NODE_MODE ={
     "ALWAYS": 0,
     "NEVER": 2,

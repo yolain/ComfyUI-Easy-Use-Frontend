@@ -1,6 +1,6 @@
 <template lang="pug">
 stylesSelector(:ref="e=>{if(e) selectorsRef[item.id] = e}" :type="item.type" v-for="(item,index) in selectors" :key="index" :id="item.id" :show="item.show" :selectedStyles="item.value" @chooseStyle="styles=>chooseStyle(styles,index)")
-segSelector(:ref="e=>{if(e) segsRef[item.id] = e}" :type="item.type" v-for="(item,index) in seg_selectors" :key="index" :id="item.id" :show="item.show" :selected="item.value" @select="segs=>selectSegs(segs,index)")
+//segSelector(:ref="e=>{if(e) segsRef[item.id] = e}" :type="item.type" v-for="(item,index) in seg_selectors" :key="index" :id="item.id" :show="item.show" :selected="item.value" @select="segs=>selectSegs(segs,index)")
 sliderControl(:ref="e=>{if(e) slidersRef[item.id] = e}" :type="item.type"  v-for="(item,index) in slider_controls" :key="index" :id="item.id" :show="item.show" :mode="item.mode" :values="item.value" @changeValues="val=>changeSlider(val,index)" @showSlider="showSlider(index)")
 </template>
 
