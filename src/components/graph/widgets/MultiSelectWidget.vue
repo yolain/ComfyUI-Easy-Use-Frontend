@@ -22,10 +22,19 @@ import {computed, onMounted, watch, ref} from "vue";
 import {getWidgetByName} from "@/composable/node.js";
 import {HUMAN_SEGMENTATION} from "@/constants/index.js";
 const human_segmentation = Object.keys(HUMAN_SEGMENTATION).reduce((acc, key) => {
-  acc[key] = HUMAN_SEGMENTATION[key].map((item, index) => ({
-    label: item,
-    value: index
-  }));
+  if (Array.isArray(HUMAN_SEGMENTATION[key])) {
+    acc[key] = HUMAN_SEGMENTATION[key].map((item, index) => ({
+      label: item,
+      value: index
+    }));
+  } else if (typeof HUMAN_SEGMENTATION[key] === 'object') {
+    acc[key] = Object.entries(HUMAN_SEGMENTATION[key]).map(([key, value]) => ({
+      label: key,
+      value: value
+    }));
+  } else {
+    acc[key] = [];
+  }
   return acc;
 }, {});
 
