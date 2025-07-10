@@ -46,7 +46,8 @@ export const HUMAN_SEGMENTATION = {
         "pocket": 33, "neckline": 34, "buckle": 35, "zipper": 36, "applique": 37,
         "bead": 38, "bow": 39, "flower": 40, "fringe": 41, "ribbon": 42,
         "rivet": 43, "ruffle": 44, "sequin": 45, "tassel": 46
-    }
+    },
+    "face_parsing":["background", "skin", "nose", "eyeglasses", "left_eye", 'right_eye', 'left_eyebrow', 'right_eyebrow', 'left_ear', 'right_ear', 'mouth', 'upper_lip', 'lower_lip', 'hair', 'hat', 'earring', 'necklace', 'neck', 'clothing']
 }
 
 export const NODE_MODE ={
