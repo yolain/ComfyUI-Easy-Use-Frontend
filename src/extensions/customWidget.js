@@ -5,7 +5,8 @@ import {useDomWidgetStore} from "@/stores/domWidgetStore.js";
 
 import {ComponentWidgetImpl} from "@/composable/widgets/domWidget.js";
 import promptAwaitBar from "@/components/graph/widgets/promptAwait.vue";
-import MultiSelectWidget from "@/components/graph/widgets/multiSelectWidget.vue";
+import multiSelectWidget from "@/components/graph/widgets/multiSelectWidget.vue";
+import stylesSelector from '@/components/graph/widgets/stylesSelector.vue';
 import {getSetting} from "@/composable/settings.js";
 
 app.registerExtension({
@@ -61,7 +62,7 @@ app.registerExtension({
             const widget = new ComponentWidgetImpl({
                 node,
                 name: inputName,
-                component: MultiSelectWidget,
+                component: multiSelectWidget,
                 inputSpec,
                 options: {
                     margin: 0,
@@ -73,6 +74,44 @@ app.registerExtension({
                             console.log('setValue:', value)
                             if(!Array.isArray(value)) {
                                 widgetValue.value = value.split(',').map(v => parseInt(v))
+                            }
+                            else widgetValue.value = value
+                        }
+                    }
+                },
+            })
+            node.addCustomWidget(widget)
+            node.onRemoved = useChainCallback(node.onRemoved, () => {
+                widget.onRemove?.()
+            })
+            node.onResize = useChainCallback(node.onResize, () => {
+                widget.options.beforeResize?.call(widget, node)
+                widget.options.afterResize?.call(widget, node)
+            })
+            useDomWidgetStore().registerWidget(widget)
+            return widget
+        },
+        EASY_PROMPT_STYLES: (node, inputName, inputData, app) => {
+            const widgetValue = ref([])
+            const inputSpec = {
+                type: 'custom',
+                name: inputName,
+            }
+            const widget = new ComponentWidgetImpl({
+                node,
+                name: inputName,
+                component: stylesSelector,
+                inputSpec,
+                options: {
+                    margin: 0,
+                    getMinHeight: () => 180,
+                    getMaxHeight: () => node.size[1] - 75,
+                    getValue: () => widgetValue.value,
+                    setValue: (value) => {
+                        if (value) {
+                            console.log('setValue:', value)
+                            if(!Array.isArray(value)) {
+                                widgetValue.value = value.split(',')
                             }
                             else widgetValue.value = value
                         }

@@ -111,5 +111,13 @@ export default {
         tooltip: 'You need to refresh the page to update successfully',
         type: 'boolean',
         defaultValue: true,
+    },
+    stylesSelectorDisplay:{
+        id: 'EasyUse.StylesSelector.DisplayType',
+        name: 'Styles Selector Display Type',
+        tooltip: "Styles Selector Display Type, if set to 'Gird', it will display as a gird, if set to 'List', it will display as a list",
+        type: 'combo',
+        options: ['Gird', 'List'],
+        defaultValue: 'Gird',
     }
 }
