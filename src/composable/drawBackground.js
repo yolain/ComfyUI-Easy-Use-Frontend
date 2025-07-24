@@ -264,8 +264,7 @@ export function unsafeDrawBackground(_this, ctx) {
     }
 
     // 二次渲染
-    if(_this.id != app.runningNodeId && !_this.isTwiceRendered){
-        if(!_this.isOutputFinal) return
+    if(_this.id != app.runningNodeId && !_this.isTwiceRendered && _this.isOutputFinal){
         if(_this.videos) useNodeVideo(_this.videos)
         else useNodeImage(_this).showPreview()
         _this.isTwiceRendered = true
