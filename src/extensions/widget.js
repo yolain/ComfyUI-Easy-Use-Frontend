@@ -761,16 +761,18 @@ function toggleLogic(node, widget) {
             break
         case 'num_loras':
             var number_to_show = v + 1
-            var mode = getWidgetByName(node, 'mode').value
-            for (let i = 0; i < number_to_show; i++) {
-                toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_name'), true);
-                toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_strength'), mode === "simple" ? true : false);
-                ['lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), mode === "simple" ? false : true))
-            }
-            for (let i = number_to_show; i < 21; i++) {
-                ['lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
-            }
-            updateNodeHeight(node)
+            var mode = getWidgetByName(node, 'mode')?.value
+            requestAnimationFrame(_=>{
+                for (let i = 0; i < number_to_show; i++) {
+                    toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_name'), true);
+                    toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_strength'), mode === "simple" ? true : false);
+                    ['lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), mode === "simple" ? false : true))
+                }
+                for (let i = number_to_show; i < 99; i++) {
+                    ['lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
+                }
+                updateNodeHeight(node)
+            })
             break
         case 'num_controlnet':
             var number_to_show = v + 1

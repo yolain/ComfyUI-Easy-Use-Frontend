@@ -1,7 +1,19 @@
 <template>
   <div ref="containerRef" class="lazy-image-container">
+    <div
+        v-if="hasError"
+        :class="[
+        'lazy-image-error',
+        'w-full h-full flex items-center justify-center bg-surface-100 dark:bg-surface-800',
+        errorClass
+      ]"
+    >
+      <slot name="error">
+        <i class="pi pi-exclamation-triangle text-2xl text-surface-400"></i>
+      </slot>
+    </div>
     <img
-      v-if="shouldLoad && imageSrc"
+      v-else-if="shouldLoad && imageSrc"
       :src="imageSrc"
       :alt="alt"
       :class="imageClass"
@@ -20,18 +32,6 @@
     >
       <slot name="placeholder">
         <i class="pi pi-image text-2xl text-surface-400"></i>
-      </slot>
-    </div>
-    <div 
-      v-else-if="hasError"
-      :class="[
-        'lazy-image-error',
-        'w-full h-full flex items-center justify-center bg-surface-100 dark:bg-surface-800',
-        errorClass
-      ]"
-    >
-      <slot name="error">
-        <i class="pi pi-exclamation-triangle text-2xl text-surface-400"></i>
       </slot>
     </div>
   </div>

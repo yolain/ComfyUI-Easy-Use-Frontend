@@ -23,6 +23,7 @@
               item.mediaType === 'video' ||
               item.mediaSubtype === 'webp'
             "
+            class="card-image"
           />
         </template>
         <template v-else>

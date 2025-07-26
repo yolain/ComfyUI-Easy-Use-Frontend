@@ -209,7 +209,6 @@ app.registerExtension({
 
             const onDrawBackground = nodeType.prototype.onDrawBackground;
             nodeType.prototype.onDrawBackground = function(ctx) {
-                console.log(this.imgey)
                 additionalDrawBackground(this, ctx, this.imagey || 0);
             }
 

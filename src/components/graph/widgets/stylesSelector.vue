@@ -168,7 +168,7 @@ const getStylesList = async(name) =>{
 // 显示预览
 const displayImage = (item) =>{
   preview.name = locale.value == 'zh' && item.name_cn ? item.name_cn : item.name
-  preview.src = (!item.thumbnailVariant || item.thumbnailVariant== 'default') ? item.thumbnail : item.thumbnail[0] 
+  preview.src = (!item.thumbnailVariant || item.thumbnailVariant== 'default') ? item.thumbnail : (item.thumbnail?.[1] || item.thumbnail?.[0])
   preview.positive = item.prompt
   preview.negative = item.negative_prompt
 }
@@ -242,8 +242,8 @@ onMounted(_=> {
 <style lang="scss">
 .easyuse-styles-selector{
   position: relative;
-  padding: 6px 10px;
-  height: calc(100% - 12px);
+  //padding: 6px 10px;
+  height: calc(100% - 10px);
   --p-inputtext-padding-y: 4px;
   --p-form-field-padding-x: 6px;
   --p-button-sm-padding-y: 0px;
@@ -300,6 +300,7 @@ onMounted(_=> {
     
     &__text{
       color:var(--input-text);
+      word-wrap: break-word;
       .title{
         line-height: 1;
         font-size: 10px;
@@ -308,7 +309,7 @@ onMounted(_=> {
         line-height: 1;
         font-size: 8px;
         margin: 8px 0;
-        
+        white-space: wrap;
         .comfyui-easyuse-success {
           color: #22c55e;
           font-weight: 600;

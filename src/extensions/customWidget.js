@@ -103,7 +103,7 @@ app.registerExtension({
                 component: stylesSelector,
                 inputSpec,
                 options: {
-                    margin: 0,
+                    margin: 10,
                     getMinHeight: () => 180,
                     getMaxHeight: () => node.size[1] - 75,
                     getValue: () => widgetValue.value,
