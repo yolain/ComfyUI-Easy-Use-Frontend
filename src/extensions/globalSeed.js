@@ -28,7 +28,7 @@ function globalSeedHandler(event) {
 api.addEventListener("easyuse-global-seed", globalSeedHandler);
 
 const original_queuePrompt = api.queuePrompt;
-async function queuePrompt_with_seed(number, { output, workflow }) {
+async function queuePrompt_with_seed(number, { output, workflow }, options = {}) {
     workflow.seed_widgets = {};
     for(let i in app.graph._nodes_by_id) {
         let widgets = app.graph._nodes_by_id[i].widgets;
@@ -39,7 +39,7 @@ async function queuePrompt_with_seed(number, { output, workflow }) {
             }
         }
     }
-    return await original_queuePrompt.call(api, number, { output, workflow });
+    return await original_queuePrompt.call(api, number, { output, workflow }, options);
 }
 
 api.queuePrompt = queuePrompt_with_seed;
