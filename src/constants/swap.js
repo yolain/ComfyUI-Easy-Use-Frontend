@@ -207,7 +207,7 @@ export default {
     // showAnything
     showAny:{
         category: 'Show Anything',
-        nodes:['easy showAnything', 'easy showAnythingLazy'],
+        nodes:['easy showAnything', 'Preview Any'],
         input:{
             "anything":"anything",
         },
@@ -217,7 +217,7 @@ export default {
     },
     saveText:{
         category: 'Save Text',
-        nodes:['easy saveText', 'easy saveTextLazy'],
+        nodes:['easy saveText',],
         input:{
             "image":"image",
             "text": "text",
@@ -331,7 +331,7 @@ export default {
     },
     fast_inputs:{
         category: 'Fast Inputs',
-        nodes:['fast sdInput', 'fast fluxInput', 'fast hiDreamInput', 'fast videoInput'],
+        nodes:['fast sdInput', 'fast fluxInput', 'fast hiDreamInput', 'fast videoInput', 'fast qwenImageInput'],
         input:{
             "模型加载器": "模型加载器",
             "更多Controlnet": "更多Controlnet",
@@ -357,7 +357,7 @@ export default {
     },
     fast_outputResult:{
         category: 'Fast Outputs',
-        nodes:['fast outputResult', 'fast outputResultVideo'],
+        nodes:['fast outputResult', 'fast outputResultVideo', 'fast outputLatent'],
         input:{
             "采样":"采样",
             "噪声":"噪声",
