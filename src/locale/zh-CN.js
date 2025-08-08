@@ -105,8 +105,18 @@ export default {
     "Add Account": "添加账号",
     "Getting Your APIKEY": "获取您的APIKEY",
     // choosers
+    "Canceling": "正在取消",
+    "Cancel current run": "取消当前运行",
+    "Waiting for selection...": "等待选择中...",
+    "Using last selection": "使用上次选择",
+    "Pass Through": "跳过选择",
+    "Unknown Mode": "未知模式",
     "Choose Selected Images": "选择选中的图片",
     "Choose images to continue": "选择图片以继续",
+    "Please run first": "请先运行队列",
+    "Progress selected": "处理选中的图片",
+    "Progress selected image": "处理选中的图片",
+    "Please select images to continue": "请选择图片以继续",
     // seg
     "Background": "背景",
     "Hat": "帽子",
