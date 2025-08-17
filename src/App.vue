@@ -29,8 +29,8 @@ const init = async()=>{
     app.extensionManager.registerSidebarTab({
       id: NODES_MAP_ID,
       icon: 'pi pi-sitemap',
-      title: $t("Nodes Map (shift + m)", true),
-      tooltip: $t("Nodes Map (shift + m)", true),
+      title: $t("NodesMap", true),
+      tooltip: $t("NodesMap", true),
       type: 'custom',
       render: el => {
         el.style.height = '100%'

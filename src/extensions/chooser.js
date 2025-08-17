@@ -181,28 +181,6 @@ app.registerExtension({
                 this.currentMode = data.currentMode || "Always Pause";
                 this.imgs = [];
                 
-                
-                // 如果将图片重新展示，重启后由于图片被清除会导致报错，所以注释掉
-                // if (data.imageData?.length && this.imgs?.length === 0) {
-                //     this.imageData = data.imageData;
-                //     this.imgs = [];
-                //     this.imageData.forEach(u => {
-                //         const img = new Image();
-                //         img.onload = () => { 
-                //             app.graph.setDirtyCanvas(true); 
-                //         };
-                //         img.src =  api.apiURL(`/view?filename=${encodeURIComponent(u.filename)}${getPreviewFormatParam(u)}`)
-                //         this.imgs.push(img);
-                //     })
-                // }
-                
-                // if (data.selected_images && Array.isArray(data.selected_images)) {
-                //     this.selected_images.clear();
-                //     data.selected_images.forEach(index => {
-                //         this.selected_images.add(index);
-                //     });
-                // }
-                
                 this.updateWidgets();
             };
 
