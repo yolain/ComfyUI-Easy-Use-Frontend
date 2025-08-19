@@ -75,7 +75,11 @@ onMounted(_=>{
     if(parseInt(current_id) !== parseInt(node_id)) return;
     isAwait.value = true
     updateNestedValue('last_seed', widget.value.value?.seed || 0);
-    updateNestedValue('seed', Math.floor(Math.random() * MAX_SEED_NUM))
+    if(widget.value.value?.unlock){
+      updateNestedValue('seed', Math.floor(Math.random() * MAX_SEED_NUM))
+    }else{
+      updateNestedValue('seed', widget.value.value?.last_seed || 0);
+    }
   });
   const original_api_interrupt = api.interrupt;
   api.interrupt = function () {
