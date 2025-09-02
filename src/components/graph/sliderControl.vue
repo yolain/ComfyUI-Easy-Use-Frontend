@@ -110,10 +110,10 @@ const mousedown = (e, item, index)=>{
     else if(top > _scroll.offsetHeight - _bar.offsetHeight){
       top = _scroll.offsetHeight - _bar.offsetHeight;
     }
-    // top到最近的girdHeight值
-    let girdTotal = (item.max - item.min) / item.step
-    let girdHeight = (_scroll.offsetHeight - _bar.offsetHeight)/ girdTotal
-    top = Math.round(top / girdHeight) * girdHeight;
+    // top到最近的GridHeight值
+    let GridTotal = (item.max - item.min) / item.step
+    let GridHeight = (_scroll.offsetHeight - _bar.offsetHeight)/ GridTotal
+    top = Math.round(top / GridHeight) * GridHeight;
     const _top = Math.floor(top/(_scroll.offsetHeight - _bar.offsetHeight)* 100) + '%';
     const _height = Math.floor((_scroll.offsetHeight - _bar.offsetHeight - top)/(_scroll.offsetHeight - _bar.offsetHeight)* 100) + '%';
     const _value = parseFloat(parseFloat(item.max - (item.max-item.min) * (top/(_scroll.offsetHeight - _bar.offsetHeight))).toFixed(2))

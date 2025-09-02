@@ -81,7 +81,7 @@ export default {
     "Enable Shift+Ctrl+Left key to normalize width and Shift+Ctrl+Right key to normalize height": "启用 Shift+Ctrl+左 键规范化宽度和 Shift+Ctrl+右 键规范化高度",
     "After v1.2.39, Ctrl+g can be used instead of it":"从v1.2.39开始，可以使用Ctrl+g代替",
     "Styles Selector Display Type": "样式选择器显示类型",
-    "Styles Selector Display Type, if set to 'Gird', it will display as a gird, if set to 'List', it will display as a list": "样式选择器显示类型，如果设置为“网格”，则显示为网格，如果设置为“列表”，则显示为列表",
+    "Styles Selector Display Type, if set to 'Grid', it will display as a Grid, if set to 'List', it will display as a list": "样式选择器显示类型，如果设置为“网格”，则显示为网格，如果设置为“列表”，则显示为列表",
     "Use three shortcut buttons in the right-click menu": "在右键菜单中使用三个快捷按钮",
     "Enable Nodes Map": "启用节点组管理",
     "Display Groups Only": "仅显示组",

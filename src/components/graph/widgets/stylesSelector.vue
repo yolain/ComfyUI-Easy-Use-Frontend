@@ -17,7 +17,7 @@
         </div>
         <SelectButton
           v-model="layout"
-          :options="['Gird', 'List']"
+          :options="['Grid', 'List']"
           :allow-empty="false"
         >
           <template #option="{ option }">
@@ -27,7 +27,7 @@
     </div>
     <div class="easyuse-styles-selector-content" @mouseleave="e=>sortStyles(widget.node.name)">
         <!-- 网格布局 -->
-        <div v-if="layout === 'Gird'" class="grid-container gap-2">
+        <div v-if="layout === 'Grid'" class="grid-container gap-2">
           <SelectorCard 
             v-for="(item, index) in filteredStyles" 
             :key="`${item.name}-${index}`"
@@ -105,7 +105,11 @@ const inputSpec = widget.inputSpec
 
 const locale = computed(_=> getSetting('Comfy.Locale') || 'en')
 
-const layout = ref(getSetting('EasyUse.StylesSelector.DisplayType') || 'Gird')
+const layout = ref(getSetting('EasyUse.StylesSelector.DisplayType') || 'Grid')
+if(layout.value == 'Gird'){
+  layout.value = 'Grid'
+  setSetting('EasyUse.StylesSelector.DisplayType', 'Grid')
+}
 const styles = ref([])
 const searchText = ref('')
 
