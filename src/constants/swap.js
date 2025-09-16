@@ -315,6 +315,37 @@ export default {
             "MASKS":"MASKS",
         },
     },
+    // Easy IndexTTS2
+    indextts_emotions:{
+       category:'IndexTTS Emotions',
+       nodes:['easy indexTTSEmotionVector', 'easy indexTTSEmotionText', 'easy indexTTSEmotionAudio'],
+       input:{
+          "reference_audio": "reference_audio"
+       },
+        output:{
+          "emotions": "emotions"
+        }
+    },
+    indextts_generate:{
+        category:'IndexTTS Generate',
+        nodes:['easy indexTTSGenerate', 'easy indexTTSGenerateSimple'],
+        input:{
+            "indextts_model": "indextts_model",
+            "reference_audio": "reference_audio",
+            "reference_audios": "reference_audios",
+            "emotions": "emotions",
+        },
+        output:{
+            "audio": "audio",
+            "seed": "seed",
+            "subtitle": "subtitle"
+        },
+        widget:{
+            "text": "text",
+            "unload_model": "unload_model",
+            "seed": "seed"
+        }
+    },
     // FastUse
     fast_loaders:{
       category:'Fast Loaders',
