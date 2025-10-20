@@ -247,7 +247,7 @@
     background: var(--comfy-menu-bg);
     border-bottom: 1px solid var(--bg-color);
   }
-  .side-tool-bar-container{
+  .side-tool-bar-container:not(.bg-transparent){
     background: var(--comfy-menu-bg);
     border-right: 1px solid var(--bg-color);
   }
