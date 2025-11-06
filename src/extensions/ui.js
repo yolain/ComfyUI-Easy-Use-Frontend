@@ -95,8 +95,8 @@ registerExtension({
         }else{
             document.body.classList.remove('comfyui-easyuse')
         }
-        OriginDrawNodeWidgets = LGraphCanvas.prototype.drawNodeWidgets
-        LGraphCanvas.prototype.drawNodeWidgets = useTryCatchCallback(OriginDrawNodeWidgets, drawNodeWidgets)
+        // OriginDrawNodeWidgets = LGraphCanvas.prototype.drawNodeWidgets
+        // LGraphCanvas.prototype.drawNodeWidgets = useTryCatchCallback(OriginDrawNodeWidgets, drawNodeWidgets)
         LGraphCanvas.onMenuNodeMode = useTryCatchCallback(LGraphCanvas.onMenuNodeMode, onMenuNodeMode)
         LGraphCanvas.onMenuNodeColors = useTryCatchCallback(LGraphCanvas.onMenuNodeColors, onMenuNodeColors)
         LGraphCanvas.onShowPropertyEditor = useTryCatchCallback(LGraphCanvas.onShowPropertyEditor, onShowPropertyEditor)
@@ -522,17 +522,18 @@ function drawNodeWidgets(node, posY, ctx) {
         if (typeof widget.draw === "function") {
             widget.draw(ctx, node, width, y, H, lowQuality)
         }
-        else if (widget.name == '$$canvas-image-preview'){
-            const draw = (
-                ctx,
-                node,
-                widget_width,
-                y
-            ) => {
-                renderPreview(ctx, node, y)
-            }
-            widget.draw = draw
-        }
+        // else if (widget.name == '$$canvas-image-preview'){
+        //     const widget_id = widget.name.includes(':') ? parseInt(widget.name.split(':')[0]) : 0
+        //     const draw = (
+        //         ctx,
+        //         node,
+        //         widget_width,
+        //         y
+        //     ) => {
+        //         renderPreview(ctx, node, y, widget_id)
+        //     }
+        //     widget.draw = draw
+        // }
         else {
             toConcreteWidget(widget, node, false)?.drawWidget(ctx, { width, showText, isEasyUseTheme })
         }

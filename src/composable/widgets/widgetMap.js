@@ -7,16 +7,12 @@ import { ComboWidget } from "./ComboWidget.js";
 import { NumberWidget } from "./NumberWidget.js";
 import { TextWidget } from "./TextWidget.js";
 import { LegacyWidget } from "./LegacyWidget.js";
-
 export function toClass(cls, ...args) {
     return args[0] instanceof cls ? args[0] : new cls(...args);
 }
 
 export function toConcreteWidget(widget, node, wrapLegacyWidgets = true) {
     if (widget instanceof BaseWidget) return widget
-
-    // 去除TypeScript类型相关代码
-    // 因为JavaScript没有类型系统，所以直接使用原始widget对象
     const narrowedWidget = widget
 
     switch (narrowedWidget.type) {
