@@ -13,9 +13,13 @@ import {toast} from "@/components/toast.js";
 import {useNodesStore} from "@/stores/nodes.js";
 import {drawSlot, strokeShape} from "@/composable/canvas.js";
 import {renderPreview} from "@/composable/widgets/imagePreviewWidget.js";
+import {Rectangle} from "@/composable/infrastructure/Rectangle.js";
 
 /* Define Variable */
 let nodesStore = null
+const workflowSvg = new Image();
+workflowSvg.src =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16'%3E%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3E%3Cpath stroke='white' stroke-linecap='round' stroke-width='1.3' d='M9.18613 3.09999H6.81377M9.18613 12.9H7.55288c-3.08678 0-5.35171-2.99581-4.60305-6.08843l.3054-1.26158M14.7486 2.1721l-.5931 2.45c-.132.54533-.6065.92789-1.1508.92789h-2.2993c-.77173 0-1.33797-.74895-1.1508-1.5221l.5931-2.45c.132-.54533.6065-.9279 1.1508-.9279h2.2993c.7717 0 1.3379.74896 1.1508 1.52211Zm-8.3033 0-.59309 2.45c-.13201.54533-.60646.92789-1.15076.92789H2.4021c-.7717 0-1.33793-.74895-1.15077-1.5221l.59309-2.45c.13201-.54533.60647-.9279 1.15077-.9279h2.29935c.77169 0 1.33792.74896 1.15076 1.52211Zm8.3033 9.8-.5931 2.45c-.132.5453-.6065.9279-1.1508.9279h-2.2993c-.77173 0-1.33797-.749-1.1508-1.5221l.5931-2.45c.132-.5453.6065-.9279 1.1508-.9279h2.2993c.7717 0 1.3379.7489 1.1508 1.5221Z'/%3E%3C/svg%3E %3C/svg%3E";
 const custom_themes = ["custom_obsidian", "custom_obsidian_dark", "custom_milk_white", 'obsidian_dark', 'obsidian', 'milk_white']
 const NODE_CUSTOM_COLORS = {
     "easy positive": "green",
@@ -36,6 +40,9 @@ let color_palettes = null
 let color_palette = null
 let monitor = null
 let prefix = '👽 '
+let tmp_area = new Rectangle();
+
+
 /* add settings */
 for(let i in settings) {
     addSetting(settings[i])
@@ -166,7 +173,7 @@ function updateControlWidgetLabel(widget, controlValueRunBefore = false) {
     widget.name = widget.label;
 }
 
-function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
+function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected) {
     //bg rect
     ctx.strokeStyle = fgcolor;
     ctx.fillStyle = bgcolor;
@@ -179,12 +186,19 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     const shape = node.renderingShape;
     const {title_mode} = node.constructor;
 
-    const  render_title =  title_mode == LiteGraph.TRANSPARENT_TITLE || title_mode == LiteGraph.NO_TITLE ? false : true;
+    const  render_title =  
+        title_mode == LiteGraph.TRANSPARENT_TITLE 
+        || title_mode == LiteGraph.NO_TITLE 
+            ? false 
+            : true;
 
-    let area = new Float32Array(4);
-    area = [0, render_title ? -title_height : 0, size[0] + 1, render_title ? size[1] + title_height : size[1]]; // [x,y,w,h]
+    const area = tmp_area
+    area.set(node.boundingRect)
+    area[0] -= node.pos[0]
+    area[1] -= node.pos[1]
 
     let old_alpha = ctx.globalAlpha;
+
     ctx.lineWidth = 1;
     ctx.beginPath();
     if (shape == LiteGraph.BOX_SHAPE || low_quality) {
@@ -242,39 +256,12 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
     //title bg (remember, it is rendered ABOVE the node)
     if (render_title || title_mode == LiteGraph.TRANSPARENT_TITLE) {
         const nodeColorIsDark = isColorDarkOrLight(node?.color || '#ffffff') == 'dark'
-        //title bar
-        // const scale = this.ds.scale
-        // if (node.onDrawTitleBar) {
-        //     node.onDrawTitleBar(ctx, title_height, size, scale, fgcolor);
-        // }
-        // else if(title_mode !== LiteGraph.TRANSPARENT_TITLE){
-        //     if (node.flags.collapsed) {
-        //         ctx.shadowColor = LiteGraph.DEFAULT_SHADOW_COLOR;
-        //     }
-        //
-        //     ctx.fillStyle = node.constructor.title_color || fgcolor
-        //     ctx.beginPath()
-        //     if (shape == LiteGraph.BOX_SHAPE || low_quality) {
-        //         ctx.rect(0, -title_height, size[0] + 1, title_height);
-        //     } else if (shape == LiteGraph.ROUND_SHAPE || shape == LiteGraph.CARD_SHAPE) {
-        //         ctx.roundRect(
-        //             0,
-        //             -title_height,
-        //             size[0] + 1,
-        //             title_height,
-        //             node.flags.collapsed ? [this.round_radius] : [this.round_radius, this.round_radius, 0, 0]
-        //         );
-        //     }
-        //     ctx.fill();
-        //     ctx.shadowColor = "transparent";
-        // }
+
         node.drawTitleBarBackground(ctx, {
             scale: this.ds.scale,
             low_quality,
         })
-        ctx.globalAlpha = old_alpha
-
-
+        
         let colState = false;
         if (LiteGraph.node_box_coloured_by_mode) {
             if (LiteGraph.NODE_MODES_COLORS[node.mode]) {
@@ -284,47 +271,59 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
         if (LiteGraph.node_box_coloured_when_on) {
             colState = node.action_triggered ? "#FFF" : (node.execute_triggered ? "#AAA" : colState);
         }
-
+        
         //title box
         let box_size = 10;
         if (node.onDrawTitleBox) {
             node.onDrawTitleBox(ctx, title_height, size, this.ds.scale);
+            
         } else if (
-            shape == LiteGraph.ROUND_SHAPE ||
-            shape == LiteGraph.CIRCLE_SHAPE ||
-            shape == LiteGraph.CARD_SHAPE
+            [LiteGraph.ROUND_SHAPE, LiteGraph.CIRCLE_SHAPE,  LiteGraph.CARD_SHAPE].includes(shape)
         ) {
             if (low_quality) {
-                // ctx.fillStyle = "black";
-                // ctx.beginPath();
-                // ctx.arc(
-                //     title_height * 0.5,
-                //     title_height * -0.5,
-                //     box_size * 0.5 + 1,
-                //     0,
-                //     Math.PI * 2
-                // );
-                // ctx.fill();
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(
+                    title_height * 0.5,
+                    title_height * -0.5,
+                    box_size * 0.5 + 1,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
             }
 
             // BOX_TITLE_ICON
-            const selected_color = nodeColorIsDark ? '#ffffff' : LiteGraph.NODE_SELECTED_TITLE_COLOR
-            const default_color = nodeColorIsDark ? '#eeeeee' : (node.boxcolor || colState || LiteGraph.NODE_DEFAULT_BOXCOLOR)
-            ctx.fillStyle = selected ? selected_color : default_color;
-            ctx.beginPath();
-            ctx.fillRect(10, 0 - box_size * 1.05 - 1, box_size * 1.1, box_size * 0.125);
-            ctx.fillRect(10, 0 - box_size * 1.45 - 1, box_size * 1.1, box_size * 0.125);
-            ctx.fillRect(10, 0 - box_size * 1.85 - 1, box_size * 1.1, box_size * 0.125);
-
+            if(node.subgraph && !node.skip_subgraph_button){
+                ctx.save()
+                ctx.fillStyle = '#3b82f6'
+                ctx.beginPath()
+                ctx.roundRect(6, -24.5, 22, 20, 5)
+                ctx.fill()
+                if (!low_quality) {
+                ctx.translate(25, 23)
+                ctx.scale(-1.5, 1.5)
+                ctx.drawImage(workflowSvg, 0, -title_height, box_size, box_size)}
+                ctx.restore()
+            }
+            else{
+                const selected_color = nodeColorIsDark ? '#ffffff' : LiteGraph.NODE_SELECTED_TITLE_COLOR
+                const default_color = nodeColorIsDark ? '#eeeeee' : (node.boxcolor || colState || LiteGraph.NODE_DEFAULT_BOXCOLOR)
+                ctx.fillStyle = selected ? selected_color : default_color;
+                ctx.beginPath();
+                ctx.fillRect(10, 0 - box_size * 1.05 - 1, box_size * 1.1, box_size * 0.125);
+                ctx.fillRect(10, 0 - box_size * 1.45 - 1, box_size * 1.1, box_size * 0.125);
+                ctx.fillRect(10, 0 - box_size * 1.85 - 1, box_size * 1.1, box_size * 0.125);
+            }
         } else {
             if (low_quality) {
-                // ctx.fillStyle = "black";
-                // ctx.fillRect(
-                //     (title_height - box_size) * 0.5 - 1,
-                //     (title_height + box_size) * -0.5 - 1,
-                //     box_size + 2,
-                //     box_size + 2
-                // );
+                ctx.fillStyle = "black";
+                ctx.fillRect(
+                    (title_height - box_size) * 0.5 - 1,
+                    (title_height + box_size) * -0.5 - 1,
+                    box_size + 2,
+                    box_size + 2
+                );
             }
             ctx.fillStyle = node.renderingBoxColor;
             ctx.fillRect(
@@ -334,6 +333,7 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
                 box_size
             );
         }
+        
         ctx.globalAlpha = old_alpha;
 
         //title text
@@ -378,25 +378,25 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
         }
 
         //subgraph box
-        if (!collapsed && node.subgraph && !node.skip_subgraph_button) {
-            let w = LiteGraph.NODE_TITLE_HEIGHT;
-            let x = node.size[0] - w;
-            let over = LiteGraph.isInsideRectangle(this.graph_mouse[0] - node.pos[0], this.graph_mouse[1] - node.pos[1], x + 2, -w + 2, w - 4, w - 4);
-            ctx.fillStyle = over ? "#888" : "#555";
-            if (shape == LiteGraph.BOX_SHAPE || low_quality)
-                ctx.fillRect(x + 2, -w + 2, w - 4, w - 4);
-            else {
-                ctx.beginPath();
-                ctx.roundRect(x + 2, -w + 2, w - 4, w - 4, [4]);
-                ctx.fill();
-            }
-            ctx.fillStyle = "#333";
-            ctx.beginPath();
-            ctx.moveTo(x + w * 0.2, -w * 0.6);
-            ctx.lineTo(x + w * 0.8, -w * 0.6);
-            ctx.lineTo(x + w * 0.5, -w * 0.3);
-            ctx.fill();
-        }
+        // if (!collapsed && node.subgraph && !node.skip_subgraph_button) {
+        //     let w = LiteGraph.NODE_TITLE_HEIGHT;
+        //     let x = node.size[0] - w;
+        //     let over = LiteGraph.isInsideRectangle(this.graph_mouse[0] - node.pos[0], this.graph_mouse[1] - node.pos[1], x + 2, -w + 2, w - 4, w - 4);
+        //     ctx.fillStyle = over ? "#888" : "#555";
+        //     if (shape == LiteGraph.BOX_SHAPE || low_quality)
+        //         ctx.fillRect(x + 2, -w + 2, w - 4, w - 4);
+        //     else {
+        //         ctx.beginPath();
+        //         ctx.roundRect(x + 2, -w + 2, w - 4, w - 4, [4]);
+        //         ctx.fill();
+        //     }
+        //     ctx.fillStyle = "#333";
+        //     ctx.beginPath();
+        //     ctx.moveTo(x + w * 0.2, -w * 0.6);
+        //     ctx.lineTo(x + w * 0.8, -w * 0.6);
+        //     ctx.lineTo(x + w * 0.5, -w * 0.3);
+        //     ctx.fill();
+        // }
 
         //custom title render
         node.onDrawTitle?.(ctx);
@@ -473,6 +473,8 @@ function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouseOver) {
             ctx.globalAlpha = 1;
         }
     }
+
+    node.drawProgressBar?.(ctx)
 
     // these counter helps in conditioning drawing based on if the node has been executed or an action occurred
     if (node.execute_triggered > 0) node.execute_triggered--;
