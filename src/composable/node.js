@@ -8,6 +8,7 @@ export const toggleWidget = (node, widget, show = false, suffix = "") => {
 		origProps[widget.name] = { origType: widget.type, origComputeSize: widget.computeSize };
 	}
 	const origSize = node.size;
+	widget.hidden = !show;
 	widget.type = show ? origProps[widget.name].origType : "easyHidden" + suffix;
 	widget.computeSize = show ? origProps[widget.name].origComputeSize : () => [0, -4];
 	widget.linkedWidgets?.forEach(w => toggleWidget(node, w, ":" + widget.name, show));
