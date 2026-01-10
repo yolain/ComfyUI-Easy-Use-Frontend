@@ -238,4 +238,18 @@ export default {
     "Stop": "停止",
     "now": "当前",
     "prev": "上一步",
+    // multiAngleWidget
+    "Add New Tab": "添加新标签",
+    "Add Angle Prompt": "添加角度提示词",
+    "Reset": "重置",
+    "Angle Prompt": "角度词",
+    "Image": "图像",
+    "Back": "后面",
+    "Top": "顶部",
+    "Bottom": "底部",
+    "Left": "左侧",
+    "Right": "右侧",
+    "Rotate": "旋转",
+    "Vertical": "垂直",
+    "Zoom": "缩放",
 }

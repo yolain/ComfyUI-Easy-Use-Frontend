@@ -6,6 +6,7 @@ import {useDomWidgetStore} from "@/stores/domWidgetStore.js";
 import {ComponentWidgetImpl} from "@/composable/widgets/domWidget.js";
 import promptAwaitBar from "@/components/graph/widgets/promptAwait.vue";
 import multiSelectWidget from "@/components/graph/widgets/multiSelectWidget.vue";
+import multiAngleWidget from '@/components/graph/widgets/multiAngleWidget.vue';
 import stylesSelector from '@/components/graph/widgets/stylesSelector.vue';
 import {getSetting} from "@/composable/settings.js";
 
@@ -106,6 +107,49 @@ app.registerExtension({
                     margin: 10,
                     getMinHeight: () => 180,
                     getMaxHeight: () => node.size[1] - 75,
+                    getValue: () => widgetValue.value,
+                    setValue: (value) => {
+                        if (value) {
+                            console.log('setValue:', value)
+                            if(!Array.isArray(value)) {
+                                widgetValue.value = value.split(',')
+                            }
+                            else widgetValue.value = value
+                        }
+                    }
+                },
+            })
+            node.addCustomWidget(widget)
+            node.onRemoved = useChainCallback(node.onRemoved, () => {
+                widget.onRemove?.()
+            })
+            node.onResize = useChainCallback(node.onResize, () => {
+                widget.options.beforeResize?.call(widget, node)
+                widget.options.afterResize?.call(widget, node)
+            })
+            useDomWidgetStore().registerWidget(widget)
+            return widget
+        },
+        EASY_MULTI_ANGLE: (node, inputName, inputData, app) => {
+            const widgetValue = ref([{
+                rotate:0,
+                vertical:0,
+                zoom:5,
+                add_angle_prompt:true
+            }])
+            const inputSpec = {
+                type: 'custom',
+                name: inputName,
+            }
+            const widget = new ComponentWidgetImpl({
+                node,
+                name: inputName,
+                component: multiAngleWidget,
+                inputSpec,
+                options: {
+                    margin: 10,
+                    getMinHeight: () => 350,
+                    getMaxHeight: () => node.size[1] - 80,
                     getValue: () => widgetValue.value,
                     setValue: (value) => {
                         if (value) {
