@@ -30,7 +30,7 @@
     <div class="easyuse-multiangle-content flex flex-col gap-2">
       <!-- 3D Cube Interaction Area -->
       <div 
-        class="easyuse-multiangle-cube w-full flex items-center justify-center bg-black rounded-xl overflow-hidden select-none"
+        class="easyuse-multiangle-cube w-full flex items-center justify-center bg-black overflow-hidden select-none"
         @mousedown="startDrag"
         @touchstart="startDrag"
         @wheel.prevent="handleWheel"
@@ -316,8 +316,9 @@ const cubeStyle = computed(() => {
 .easyuse-multiangle-content {
     border: 1px solid var(--p-content-border-color);
     background: var(--p-content-background);
-    border-radius: 6px;
+    border-radius:0 6px 6px 0 ;
     border-top-left-radius: 0;
+    overflow: hidden;
 }
 
 .tab-close {
@@ -393,6 +394,7 @@ const cubeStyle = computed(() => {
     cursor: grab;
     perspective: 800px; 
     height:200px;
+    border-radius:0 4px 8px 8px;
 }
 .easyuse-multiangle-cube:active {
     cursor: grabbing;
@@ -405,7 +407,7 @@ const cubeStyle = computed(() => {
     align-items: center;
     gap: 0px;
     font-size: 8px;
-    color: var(--p-text-secondary-color);
+    color: #ddd;
     cursor: pointer;
     z-index: 10;
 }
@@ -425,7 +427,7 @@ const cubeStyle = computed(() => {
     position: absolute;
     top:6px;
     right:6px;
-    color:var(--p-text-secondary-color);
+    color: #ddd;
     cursor: pointer;
 }
 .easyuse-multiangle-cube .reset-icon i{
