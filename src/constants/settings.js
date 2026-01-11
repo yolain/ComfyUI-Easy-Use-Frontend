@@ -119,5 +119,17 @@ export default {
         type: 'combo',
         options: ['Grid', 'List'],
         defaultValue: 'Grid',
+    },
+    enableAddAnglePrompt:{
+        id: 'EasyUse.MultiAngle.AddAnglePrompt',
+        name: 'Add angle prompt in easy multiAngle',
+        type: 'boolean',
+        defaultValue: false
+    },
+    enableHollowMode:{
+        id: 'EasyUse.MultiAngle.HollowMode',
+        name: 'Enable hollow display mode in easy multiAngle',
+        type: 'boolean',
+        defaultValue: false
     }
 }

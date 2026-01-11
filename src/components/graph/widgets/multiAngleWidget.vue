@@ -2,11 +2,11 @@
   <div class="flex flex-col easyuse-multiangle-widget">
     
     <!-- Tabs -->
-    <div class="flex items-center gap-1 px-1 relative z-10" style="margin-bottom: -1px;">
+    <div class="easyuse-multiangle-tabs flex items-center gap-1 px-1 relative z-10 overflow-x-auto no-scrollbar w-full min-w-0">
       <div 
         v-for="(item, index) in angle_values" 
         :key="index"
-        class="tab-item"
+        class="tab-item whitespace-nowrap flex-shrink-0"
         :class="{ 'active': currentTabIndex === index }"
         @click="switchTab(index)"
       >
@@ -18,8 +18,7 @@
         ></i>
       </div>
       <button 
-        v-if="angle_values.length < 5" 
-        class="tab-add-btn"
+        class="tab-add-btn flex-shrink-0"
         @click="addTab"
         :title="$t('Add New Tab')"
       >
@@ -34,10 +33,20 @@
         @mousedown="startDrag"
         @touchstart="startDrag"
         @wheel.prevent="handleWheel"
+        :class="{'is-hollow': hollow}"
       >
-        <div class="add-prompt-checkbox" @mousedown.stop @click.stop :title="$t('Add Angle Prompt')">
-          <input type="checkbox" v-model="add_angle_prompt" @change="updateValue" id="add-angle-prompt" />
-          <label for="add-angle-prompt">{{ $t('Angle Prompt') }}</label>
+        <div class="settings-icon" @mousedown.stop @click.stop="toggleSettings" :title="$t('Settings')">
+            <i class="pi pi-cog"></i>
+            <div v-if="showSettings" class="settings-dropdown" @click.stop>
+                <div class="settings-item flex items-center">
+                    <input type="checkbox" v-model="add_angle_prompt" @change="_=>updateValue(false)" id="add-angle-prompt" />
+                    <label for="add-angle-prompt" class="whitespace-nowrap">{{ $t('Angle Prompt') }}</label>
+                </div>
+                <div class="settings-item flex items-center">
+                    <input type="checkbox" v-model="hollow" id="hollow-mode" />
+                    <label for="hollow-mode" class="whitespace-nowrap">{{ $t('Hollow') }}</label> 
+                </div>
+            </div>
         </div>
         <div class="reset-icon" @mousedown.stop @click.stop="resetValue" :title="$t('Reset')">
             <i class="pi pi-refresh"></i>
@@ -50,17 +59,34 @@
           <!-- Faces -->
           <div v-for="face in faces" :key="face.name"
               class="absolute flex items-center justify-center font-bold text-xs easyuse-multiangle-cube-face"
-              style="width: 80px; height: 80px; backface-visibility: hidden;"
+              style="width: 80px; height: 80px; backface-visibility: visible;"
               :style="face.style"
+              @dblclick.stop="handleDblClick(face.name)"
           >
-            <template v-if="face.name === 'front'">
-              <div>
+            <template v-if="face.name === 'center'">
+              <div v-if="hollow">
                 <div style="font-size:20px;text-align:center;">🤓</div>
                 <div style="font-size:12px;text-align:center;margin-top:-6px">👕</div>
                 <div style="font-size:12px;text-align:center;margin-top:-6px">👖</div>
               </div>
             </template>
-            <template v-else>{{ face.text }}</template>
+            <template v-else-if="face.name === 'center-back'">
+              <div v-if="hollow" style="filter:grayscale(10)">
+                <div style="font-size:20px;text-align:center;">🌕</div>
+                <div style="font-size:12px;text-align:center;margin-top:-6px">👕</div>
+                <div style="font-size:12px;text-align:center;margin-top:-6px">👖</div>
+              </div>
+            </template>
+            <template v-else>
+                <div v-if="face.name === 'front' && !hollow" class="absolute inset-0 flex flex-col items-center justify-center" style="pointer-events:none;">
+                    <div style="font-size:20px;text-align:center;">🤓</div>
+                    <div style="font-size:12px;text-align:center;margin-top:-6px">👕</div>
+                    <div style="font-size:12px;text-align:center;margin-top:-6px">👖</div>
+                </div>
+                <div v-if="face.text" class="easyuse-cube-face-label">
+                    {{ face.text }} 
+                </div>
+            </template>
           </div>
         </div>
         
@@ -101,9 +127,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeUnmount,defineProps,defineEmits,defineModel } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount,defineEmits,defineModel } from 'vue';
 import { $t } from "@/composable/i18n.js";
 import Slider from 'primevue/slider';
+import { getSetting, setSetting } from '@/composable/settings';
 
 
 const emit = defineEmits(['update:value', 'change']);
@@ -118,21 +145,47 @@ if (!Array.isArray(angle_values.value) || angle_values.value.length === 0) {
 const currentTabIndex = ref(0);
 
 // 从当前标签初始化值
-const initialValue = angle_values.value[currentTabIndex.value] || { rotate: 0, vertical: 0, zoom: 5, add_angle_prompt: true };
+const initialValue = angle_values.value[currentTabIndex.value] || { rotate: 0, vertical: 0, zoom: 5, add_angle_prompt: false };
 const rotate = ref(initialValue.rotate ?? 0);
 const vertical = ref(initialValue.vertical ?? 0);
 const zoom = ref(initialValue.zoom ?? 5);
-const add_angle_prompt = ref(initialValue.add_angle_prompt ?? true);
+const add_angle_prompt = ref(initialValue.add_angle_prompt ?? false);
+const hollow = ref(getSetting('EasyUse.MultiAngle.HollowMode') || false);
+const showSettings = ref(false);
+
+const toggleSettings = () => {
+    showSettings.value = !showSettings.value;
+}
+
+const closeSettings = () => {
+    if (showSettings.value) showSettings.value = false;
+};
+
+onMounted(() => {
+    window.addEventListener('click', closeSettings);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('click', closeSettings);
+    stopDrag(); 
+});
 
 // 监听当前标签的变化
 watch(() => angle_values.value?.[currentTabIndex.value], (newVal) => {
     if (newVal) {
+        let add_angle_prompt = getSetting('EasyUse.MultiAngle.AddAnglePrompt') ?? false;
         if (newVal.rotate !== undefined) rotate.value = newVal.rotate;
         if (newVal.vertical !== undefined) vertical.value = newVal.vertical;
         if (newVal.zoom !== undefined) zoom.value = newVal.zoom;
-        if (newVal.add_angle_prompt !== undefined) add_angle_prompt.value = newVal.add_angle_prompt;
+        if (add_angle_prompt != undefined) add_angle_prompt.value = add_angle_prompt;
     }
 }, { deep: true });
+watch(hollow, (newVal) => {
+    setSetting('EasyUse.MultiAngle.HollowMode', newVal);
+});
+watch(add_angle_prompt, (newVal) => {
+    setSetting('EasyUse.MultiAngle.AddAnglePrompt', newVal);
+});
 
 // 切换标签
 const switchTab = (index) => {
@@ -148,8 +201,14 @@ const switchTab = (index) => {
 
 // 添加新标签
 const addTab = () => {
-    if (angle_values.value.length >= 5) return;
-    const newTab = { rotate: 0, vertical: 0, zoom: 5, add_angle_prompt: true };
+    // 复制当前标签的参数
+    const currentTab = angle_values.value[currentTabIndex.value];
+    const newTab = { 
+        rotate: rotate.value, 
+        vertical: vertical.value, 
+        zoom: zoom.value, 
+        add_angle_prompt: add_angle_prompt.value 
+    };
     angle_values.value.push(JSON.parse(JSON.stringify(newTab))); // 深拷贝
     currentTabIndex.value = angle_values.value.length - 1;
     switchTab(currentTabIndex.value);
@@ -165,12 +224,13 @@ const removeTab = (index) => {
     switchTab(currentTabIndex.value);
 };
 
-const updateValue = () => {
+const updateValue = (closeSettings = false) => {
+    if(closeSettings) showSettings.value = false;
     const newValue = { 
         rotate: rotate.value, 
         vertical: vertical.value, 
         zoom: zoom.value,
-        add_angle_prompt: add_angle_prompt.value
+        add_angle_prompt: add_angle_prompt.value,
     };
     
     // 深拷贝并更新当前标签
@@ -187,18 +247,43 @@ const resetValue = () => {
     rotate.value = 0;
     vertical.value = 0;
     zoom.value = 5;
-    add_angle_prompt.value = true;
+    updateValue();
+};
+
+const handleDblClick = (name) => {
+    switch (name) {
+        case 'front':
+            rotate.value = 0;
+            break;
+        case 'back':
+            rotate.value = 180;
+            break;
+        case 'left':
+            rotate.value = 270;
+            break;
+        case 'right':
+            rotate.value = 90;
+            break;
+        case 'up':
+            vertical.value = 90;
+            break;
+        case 'down':
+            vertical.value = -30;
+            break;
+    }
     updateValue();
 };
 
 // Faces definition
 const faces = computed(() => [
-    { name: 'front', style: { transform: 'translateZ(40px)', background:'var(--p-content-border-color)' } },
-    { name: 'back', text: $t('Back'), style: { transform: 'rotateY(180deg) translateZ(40px)' } },
-    { name: 'top', text: $t('Top'), style: { transform: 'rotateX(90deg) translateZ(40px)' } },
-    { name: 'bottom', text: $t('Bottom'), style: { transform: 'rotateX(-90deg) translateZ(40px)' } },
-    { name: 'left', text: $t('Left'), style: { transform: 'rotateY(-90deg) translateZ(40px)' } },
-    { name: 'right', text: $t('Right'), style: { transform: 'rotateY(90deg) translateZ(40px)' } },
+    { name: 'front', text: '', style: { transform: 'translateZ(40px)' } },
+    { name: 'back', text: $t('B'), style: { transform: 'rotateY(180deg) translateZ(40px)' } },
+    { name: 'up', text: $t('U'), style: { transform: 'rotateX(90deg) translateZ(40px)' } },
+    { name: 'down', text: $t('D'), style: { transform: 'rotateX(-90deg) translateZ(40px)' } },
+    { name: 'left', text: $t('L'), style: { transform: 'rotateY(-90deg) translateZ(40px)' } },
+    { name: 'right', text: $t('R'), style: { transform: 'rotateY(90deg) translateZ(40px)' } },
+    { name: 'center', style: { transform: 'translateZ(0.1px)', border: 'none', background:'transparent', backfaceVisibility: 'hidden' } },
+    { name: 'center-back', style: { transform: 'rotateY(180deg) translateZ(0.1px)', border: 'none', backfaceVisibility: 'hidden', background:'transparent' } },
 ]);
 
 // Dragging Logic
@@ -259,7 +344,6 @@ const stopDrag = () => {
     window.removeEventListener('touchend', stopDrag);
 };
 
-onBeforeUnmount(stopDrag);
 
 const cubeStyle = computed(() => {
     return {
@@ -279,11 +363,15 @@ const cubeStyle = computed(() => {
 }
 
 /* 标签页样式 */
+.easyuse-multiangle-tabs{
+    overflow-y: auto;
+    margin-bottom: -1px;
+}
 .tab-item {
     display: flex;
     align-items: center;
-    gap: 2px;
-    padding: 6px 8px;
+    gap: 4px;
+    padding: 6px 10px;
     border-radius: 6px 6px 0 0;
     background: transparent;
     border: 1px solid transparent;
@@ -338,7 +426,7 @@ const cubeStyle = computed(() => {
     width: 24px;
     height: 24px;
     border-radius: 4px;
-    background: var(--p-content-background);
+    background: transparent;
     border: none;
     cursor: pointer;
     transition: all 0.2s;
@@ -348,7 +436,7 @@ const cubeStyle = computed(() => {
 .tab-add-btn:hover {
     border-color: var(--p-primary-color);
     color: var(--p-primary-color);
-    background: var(--p-primary-color-subtle);
+    background:transparent;
 }
 
 .tab-add-btn i {
@@ -381,8 +469,8 @@ const cubeStyle = computed(() => {
 }
 .easyuse-multiangle-cube-face{
     border: 4px solid var(--p-content-border-color);
-    background: var(--p-content-background);
-    color: var(--p-);
+    color: var(--p-text-muted-color);
+    background:rgba(from var(--p-content-color) r g b / 0.1)
 }
 .easyuse-multiangle-cube-face:hover {
     border-color: var(--p-primary-color);
@@ -399,29 +487,59 @@ const cubeStyle = computed(() => {
 .easyuse-multiangle-cube:active {
     cursor: grabbing;
 }
-.easyuse-multiangle-cube .add-prompt-checkbox {
+.easyuse-multiangle-cube .settings-icon {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    display: flex;
-    align-items: center;
-    gap: 0px;
-    font-size: 8px;
+    top: 6px;
+    left: 6px;
     color: #ddd;
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
 }
-.easyuse-multiangle-cube .add-prompt-checkbox input[type="checkbox"] {
-    cursor: pointer;
-    width: 12px;
-    height: 12px;
+.easyuse-multiangle-cube .settings-icon i {
+    font-size: 12px;
 }
-.easyuse-multiangle-cube .add-prompt-checkbox label {
-    cursor: pointer;
-    user-select: none;
-}
-.easyuse-multiangle-cube .add-prompt-checkbox:hover {
+.easyuse-multiangle-cube .settings-icon:hover {
     color: var(--p-primary-color);
+}
+.easyuse-multiangle-cube .settings-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--p-content-background);
+    border: 1px solid var(--p-content-border-color);
+    border-radius: 4px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 100px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.settings-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--p-text-color);
+}
+.settings-item label {
+    cursor: pointer;
+}
+.easyuse-multiangle-cube:not(.is-hollow) .easyuse-multiangle-cube-face {
+   background: var(--p-content-background);
+}
+.easyuse-cube-face-label {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    pointer-events: none;
+    line-height: 1;
 }
 .easyuse-multiangle-cube .reset-icon{
     position: absolute;
@@ -439,5 +557,12 @@ const cubeStyle = computed(() => {
 .easyuse-mulitangle-slider{
     font-size: 10px;
     padding-bottom:14px;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 </style>
