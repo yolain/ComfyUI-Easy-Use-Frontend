@@ -185,6 +185,11 @@ watch(hollow, (newVal) => {
 });
 watch(add_angle_prompt, (newVal) => {
     setSetting('EasyUse.MultiAngle.AddAnglePrompt', newVal);
+    angle_values.value.forEach((item) => {
+        item.add_angle_prompt = newVal;
+    });
+    emit('update:value', JSON.parse(JSON.stringify(angle_values.value)));
+    emit('change', JSON.parse(JSON.stringify(angle_values.value)));
 });
 
 // 切换标签
