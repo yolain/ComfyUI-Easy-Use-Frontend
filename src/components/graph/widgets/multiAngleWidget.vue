@@ -109,7 +109,7 @@
                   <span class="font-semibold opacity-80">{{ $t('Vertical') }}</span>
                   <span class="font-mono text-primary font-bold">{{ vertical }}°</span>
               </div>
-              <Slider v-model="vertical" :min="-30" :max="90" class="w-full" @update:modelValue="updateValue" />
+              <Slider v-model="vertical" :min="-90" :max="90" class="w-full" @update:modelValue="updateValue" />
           </div>
 
           <!-- Zoom -->
@@ -273,7 +273,7 @@ const handleDblClick = (name) => {
             vertical.value = 90;
             break;
         case 'down':
-            vertical.value = -30;
+            vertical.value = -90;
             break;
     }
     updateValue();
@@ -334,7 +334,7 @@ const onDrag = (e) => {
 
     // Normalize and Clamp
     newRotate = ((newRotate % 360) + 360) % 360; 
-    newVertical = Math.max(-30, Math.min(90, newVertical));
+    newVertical = Math.max(-90, Math.min(90, newVertical));
 
     rotate.value = Math.round(newRotate);
     vertical.value = Math.round(newVertical);
