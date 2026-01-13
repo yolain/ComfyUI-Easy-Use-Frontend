@@ -131,5 +131,12 @@ export default {
         name: 'Enable hollow display mode in easy multiAngle',
         type: 'boolean',
         defaultValue: false
-    }
+    },
+    enableInvertRotate:{
+        id: 'EasyUse.MultiAngle.InvertRotate',
+        name: 'Invert rotate mode in easy multiAngle',
+        tooltip: 'Enable invert rotate mode in easy multiAngle to match the rotation direction of most 3D software',
+        type: 'boolean',
+        defaultValue: false
+    },
 }
