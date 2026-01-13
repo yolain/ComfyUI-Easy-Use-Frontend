@@ -46,6 +46,10 @@
                     <input type="checkbox" v-model="hollow" id="hollow-mode" />
                     <label for="hollow-mode" class="whitespace-nowrap">{{ $t('Hollow') }}</label> 
                 </div>
+                <div class="settings-item flex items-center">
+                    <input type="checkbox" v-model="invert_rotate" id="rotate-3d-mode" />
+                    <label for="rotate-3d-mode" class="whitespace-nowrap">{{ $t('Invert Rotate Mode') }}</label> 
+                </div>
             </div>
         </div>
         <div class="reset-icon" @mousedown.stop @click.stop="resetValue" :title="$t('Reset')">
@@ -109,7 +113,7 @@
                   <span class="font-semibold opacity-80">{{ $t('Vertical') }}</span>
                   <span class="font-mono text-primary font-bold">{{ vertical }}°</span>
               </div>
-              <Slider v-model="vertical" :min="-30" :max="90" class="w-full" @update:modelValue="updateValue" />
+              <Slider v-model="vertical" :min="-90" :max="90" class="w-full" @update:modelValue="updateValue" />
           </div>
 
           <!-- Zoom -->
@@ -151,6 +155,7 @@ const vertical = ref(initialValue.vertical ?? 0);
 const zoom = ref(initialValue.zoom ?? 5);
 const add_angle_prompt = ref(initialValue.add_angle_prompt ?? false);
 const hollow = ref(getSetting('EasyUse.MultiAngle.HollowMode') || false);
+const invert_rotate = ref(getSetting('EasyUse.MultiAngle.3DRotate') || false);
 const showSettings = ref(false);
 
 const toggleSettings = () => {
@@ -182,6 +187,9 @@ watch(() => angle_values.value?.[currentTabIndex.value], (newVal) => {
 }, { deep: true });
 watch(hollow, (newVal) => {
     setSetting('EasyUse.MultiAngle.HollowMode', newVal);
+});
+watch(invert_rotate, (newVal) => {
+    setSetting('EasyUse.MultiAngle.InvertRotate', newVal);
 });
 watch(add_angle_prompt, (newVal) => {
     setSetting('EasyUse.MultiAngle.AddAnglePrompt', newVal);
@@ -273,7 +281,7 @@ const handleDblClick = (name) => {
             vertical.value = 90;
             break;
         case 'down':
-            vertical.value = -30;
+            vertical.value = -90;
             break;
     }
     updateValue();
@@ -324,8 +332,14 @@ const onDrag = (e) => {
     const clientY = e.clientY ?? e.touches[0].clientY;
     
     // Calculate deltas
-    const deltaX = clientX - startPos.x;
-    const deltaY = clientY - startPos.y;
+    let deltaX = clientX - startPos.x;
+    let deltaY = clientY - startPos.y;
+    
+    // Reverse direction for 3D software style
+    if (invert_rotate.value) {
+        deltaX = -deltaX;
+        deltaY = -deltaY;
+    }
 
     // Adjust sensitivity
     const sensitivity = 0.5;
@@ -334,7 +348,7 @@ const onDrag = (e) => {
 
     // Normalize and Clamp
     newRotate = ((newRotate % 360) + 360) % 360; 
-    newVertical = Math.max(-30, Math.min(90, newVertical));
+    newVertical = Math.max(-90, Math.min(90, newVertical));
 
     rotate.value = Math.round(newRotate);
     vertical.value = Math.round(newVertical);

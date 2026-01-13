@@ -241,6 +241,7 @@ export default {
     // multiAngleWidget
     "Add New Tab": "添加新标签",
     "Add Angle Prompt": "添加角度提示词",
+    "Invert Rotate Mode": "反转旋转",
     "Hollow": "镂空展示",
     "Reset": "重置",
     "Angle Prompt": "角度词",
