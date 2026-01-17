@@ -8,9 +8,7 @@ const graph_canvas = document.getElementsByClassName('graph-canvas-container')?.
 const easyuse = document.createElement('div')
 easyuse.id = 'comfyui-easyuse-components'
 graph_canvas ? graph_canvas.append(easyuse) : document.body.append(easyuse)
-
 const app = createApp(App)
-
 app.use(PrimeVue);
 app.use(createPinia())
 app.mount('#'+easyuse.id)

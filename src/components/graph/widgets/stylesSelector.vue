@@ -95,13 +95,13 @@ import {toast} from "@/components/toast.js";
 import {storeToRefs} from "pinia";
 import {useGraphStore} from "@/stores/graph.js";
 import cloneDeep from "lodash/cloneDeep";
+import { set } from "lodash";
 const store = useGraphStore()
 const {selectors_styles} = storeToRefs(store)
 
 const selectedStyle = ref('')
-const selectedItems = defineModel({ required: true })
+const selectedItems = ref([])
 const { widget } = defineProps(['widget'])
-const inputSpec = widget.inputSpec
 
 const locale = computed(_=> getSetting('Comfy.Locale') || 'en')
 
@@ -115,6 +115,9 @@ const searchText = ref('')
 
 watch(_=> layout.value, (newLayout) => {
   setSetting('EasyUse.StylesSelector.DisplayType', newLayout)
+})
+watch(_=>widget.value, (newValue) => {
+   selectedItems.value = newValue.split(',').map(v => v.trim())
 })
 
 // 计算过滤后的样式列表
@@ -218,12 +221,6 @@ const onStyleSelect = (item) => {
   console.log('Updated selection:', newSelection)
 }
 
-// 处理样式选择（保留兼容性）
-const onStylesSelect = (selection) => {
-  console.log('Selected styles:', selection)
-  selectedItems.value = selection
-}
-
 // 清空选中的样式
 const clearSelectedStyles = () => {
   selectedItems.value = []
@@ -231,22 +228,41 @@ const clearSelectedStyles = () => {
 }
 
 onMounted(_=> {
-    const stylesWidget = getWidgetByName(widget.node, 'styles')
-    let style = stylesWidget.value
-    selectedStyle.value = style
-    getStylesList(style).then(success=> success && sortStyles(style))
-    stylesWidget.callback = (style) => {
-        selectedStyle.value = style
-        clearSelectedStyles()
-        getStylesList(style).then(success=> success && sortStyles(style))
+    // watch style widget value change
+    setTimeout(_=>{
+      const stylesWidget = getWidgetByName(widget.node, 'styles')
+      let style = stylesWidget.value
+      selectedStyle.value = style
+      getStylesList(style).then(success=> success && sortStyles(style))
+      stylesWidget.callback = (style) => {
+          selectedStyle.value = style
+          clearSelectedStyles()
+          getStylesList(style).then(success=> success && sortStyles(style))
+      }
+    },1)
+    
+    // selected styles from node value
+    widget.serializeValue = async({node}, index) => {
+      try {
+        let value = selectedItems.value || []
+        value = value.join(',')
+        if(node?.widgets_values){
+          node.widgets_values[index] = value
+          node.widgets[index].value  = value
+        }
+        return value
+      } catch (error) {
+        console.error('Vue Component: Error in serializeValue:', error)
+        return []
+      }
     }
 })
+
 </script>
 
 <style lang="scss">
 .easyuse-styles-selector{
   position: relative;
-  //padding: 6px 10px;
   height: calc(100% - 10px);
   --p-inputtext-padding-y: 4px;
   --p-form-field-padding-x: 6px;

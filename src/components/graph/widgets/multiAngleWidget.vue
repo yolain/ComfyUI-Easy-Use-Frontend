@@ -138,13 +138,8 @@ import { getSetting, setSetting } from '@/composable/settings';
 
 
 const emit = defineEmits(['update:value', 'change']);
-const angle_values = defineModel({ required: true })
-
-// 初始化 angle_values 为数组
-if (!Array.isArray(angle_values.value) || angle_values.value.length === 0) {
-    angle_values.value = [{ rotate: 0, vertical: 0, zoom: 5, add_angle_prompt: true }];
-}
-
+const {widget} = defineProps(['widget']);
+const angle_values = ref([{rotate: 0, vertical: 0, zoom: 5, add_angle_prompt: false }]);
 // 当前活动标签索引
 const currentTabIndex = ref(0);
 
@@ -175,14 +170,20 @@ onBeforeUnmount(() => {
     stopDrag(); 
 });
 
-// 监听当前标签的变化
+watch(_=> widget.value, (newValue) => {
+    if (Array.isArray(newValue)) {
+        angle_values.value = newValue;
+    } else {
+        angle_values.value = JSON.parse(newValue)
+    }
+}, { immediate: true });
 watch(() => angle_values.value?.[currentTabIndex.value], (newVal) => {
     if (newVal) {
-        let add_angle_prompt = getSetting('EasyUse.MultiAngle.AddAnglePrompt') ?? false;
+        let _add_angle_prompt = getSetting('EasyUse.MultiAngle.AddAnglePrompt') ?? false;
         if (newVal.rotate !== undefined) rotate.value = newVal.rotate;
         if (newVal.vertical !== undefined) vertical.value = newVal.vertical;
         if (newVal.zoom !== undefined) zoom.value = newVal.zoom;
-        if (add_angle_prompt != undefined) add_angle_prompt.value = add_angle_prompt;
+        if (add_angle_prompt != undefined) add_angle_prompt.value = _add_angle_prompt;
     }
 }, { deep: true });
 watch(hollow, (newVal) => {
@@ -196,8 +197,6 @@ watch(add_angle_prompt, (newVal) => {
     angle_values.value.forEach((item) => {
         item.add_angle_prompt = newVal;
     });
-    emit('update:value', JSON.parse(JSON.stringify(angle_values.value)));
-    emit('change', JSON.parse(JSON.stringify(angle_values.value)));
 });
 
 // 切换标签
@@ -251,9 +250,6 @@ const updateValue = (closeSettings = false) => {
         angle_values.value = [];
     }
     angle_values.value[currentTabIndex.value] = JSON.parse(JSON.stringify(newValue));
-    
-    emit('update:value', JSON.parse(JSON.stringify(angle_values.value)));
-    emit('change', JSON.parse(JSON.stringify(angle_values.value)));
 };
 
 const resetValue = () => {
@@ -369,6 +365,22 @@ const cubeStyle = computed(() => {
         transform: `scale(${1 + zoom.value * 0.1}) rotateX(${-vertical.value}deg) rotateY(${-rotate.value}deg)`
     };
 });
+
+onMounted(_=> {    
+    widget.serializeValue = async({node}, index) => {
+      try {
+        let value = JSON.stringify(angle_values.value)
+        if(node?.widgets_values){
+          node.widgets_values[index] = value
+          node.widgets[index].value  = value
+        }
+        return value
+      } catch (error) {
+        console.error('Vue Component: Error in serializeValue:', error)
+        return []
+      }
+    }
+})
 </script>
 
 <style>
@@ -423,7 +435,7 @@ const cubeStyle = computed(() => {
 .easyuse-multiangle-content {
     border: 1px solid var(--p-content-border-color);
     background: var(--p-content-background);
-    border-radius:0 6px 6px 0 ;
+    border-radius:0 6px 6px 6px;
     border-top-left-radius: 0;
     overflow: hidden;
 }

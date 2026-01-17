@@ -2,13 +2,13 @@
 graphNodes
 img#easyuse-model-thumbnail
 toolBar(v-if="newMenuPosition == 'Disabled'")
-domWidgets
+//- domWidgets
 </template>
 
 <script setup>
 import graphNodes from "@/components/graph/index.vue";
 import toolBar from "@/components/toolbar/index.vue";
-import domWidgets from "@/components/graph/domWidgets.vue";
+// import domWidgets from "@/components/graph/domWidgets.vue";
 import {ref, onMounted, h, render } from 'vue'
 
 import {api, app} from "@/composable/comfyAPI";

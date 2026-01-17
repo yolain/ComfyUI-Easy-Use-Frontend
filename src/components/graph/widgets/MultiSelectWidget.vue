@@ -18,7 +18,7 @@
 <script setup>
 import MultiSelect from 'primevue/multiselect'
 import {$t} from "@/composable/i18n.js";
-import {computed, onMounted, watch, ref} from "vue";
+import {onMounted, watch, ref} from "vue";
 import {getWidgetByName} from "@/composable/node.js";
 import {HUMAN_SEGMENTATION} from "@/constants/index.js";
 const human_segmentation = Object.keys(HUMAN_SEGMENTATION).reduce((acc, key) => {
@@ -38,16 +38,16 @@ const human_segmentation = Object.keys(HUMAN_SEGMENTATION).reduce((acc, key) => 
   return acc;
 }, {});
 
-const selectedItems = defineModel({ required: true })
+const selectedItems = ref([])
 const { widget } = defineProps(['widget'])
 const inputSpec = widget.inputSpec
-const maxItems = inputSpec.multi_select?.max_selected_labels ?? 3
-const optionLabel = inputSpec.optionLabel ?? 'label'
-const optionValue = inputSpec.optionValue ?? 'value'
-const placeholder = inputSpec.multi_select?.placeholder ? $t(inputSpec.multi_select?.placeholder) : $t('select items')
-const display = inputSpec.multi_select?.chip ? 'chip' : 'comma'
+const maxItems = inputSpec?.multi_select?.max_selected_labels ?? 3
+const optionLabel = inputSpec?.optionLabel ?? 'label'
+const optionValue = inputSpec?.optionValue ?? 'value'
+const placeholder = inputSpec?.multi_select?.placeholder ? $t(inputSpec.multi_select?.placeholder) : $t('select items')
+const display = inputSpec?.multi_select?.chip ? 'chip' : 'comma'
 
-const options = ref(inputSpec.options ?? [])
+const options = ref(inputSpec?.options ?? [])
 
 const changeOptions = (method) => {
   if (method && human_segmentation[method]) {
@@ -60,14 +60,33 @@ const changeOptions = (method) => {
   }
 };
 
+watch(_=>widget.value, (newValue) => {
+   selectedItems.value = newValue.split(',').map(v => v && parseInt(v.trim()))
+})
+
 onMounted(_=>{
-  const nodeType = widget.node.type
-  if(nodeType == 'easy humanSegmentation'){
+  // watch method widget value change
+  setTimeout(_=>{
     const method_widget = getWidgetByName(widget.node, 'method')
     changeOptions(method_widget.value)
     method_widget.callback = (value) => {
       selectedItems.value = []
       changeOptions(value)
+    }
+  },1)
+  // selected styles from node value
+  widget.serializeValue = async({node}, index) => {
+    try {
+      let value = selectedItems.value || []
+      value = value.join(',')
+      if(node?.widgets_values){
+        node.widgets_values[index] = value
+        node.widgets[index].value  = value
+      }
+      return value
+    } catch (error) {
+      console.error('Vue Component: Error in serializeValue:', error)
+      return []
     }
   }
 })
