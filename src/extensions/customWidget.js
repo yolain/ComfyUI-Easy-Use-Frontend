@@ -11,7 +11,6 @@ import multiSelectWidget from "@/components/graph/widgets/multiSelectWidget.vue"
 import multiAngleWidget from '@/components/graph/widgets/multiAngleWidget.vue';
 import stylesSelector from '@/components/graph/widgets/stylesSelector.vue';
 import {getSetting} from "@/composable/settings.js";
-import { set } from 'lodash';
 
 const vueApps = new Map()
 const defaultStyle = {

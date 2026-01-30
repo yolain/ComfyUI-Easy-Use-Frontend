@@ -366,7 +366,11 @@ const cubeStyle = computed(() => {
     };
 });
 
-onMounted(_=> {    
+onMounted(_=> {  
+    hollow.value = getSetting('EasyUse.MultiAngle.HollowMode');  
+    invert_rotate.value = getSetting('EasyUse.MultiAngle.InvertRotate');  
+    add_angle_prompt.value = getSetting('EasyUse.MultiAngle.AddAnglePrompt') || false;
+
     widget.serializeValue = async({node}, index) => {
       try {
         let value = JSON.stringify(angle_values.value)
