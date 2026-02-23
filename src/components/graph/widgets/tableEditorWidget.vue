@@ -31,7 +31,7 @@
         <thead>
           <tr>
             <th class="tew-row-handle"></th>
-            <th v-for="(header, ci) in tableData.headers" :key="'h' + ci" class="tew-header-cell" :style="{ width: colWidth(header) }">
+            <th v-for="(header, ci) in tableData.headers" :key="'h' + ci" class="tew-header-cell" :style="{ width: colWidths[ci] }">
               <div class="tew-cell-inner">
                 <input
                   class="tew-cell-input tew-header-input"
@@ -50,7 +50,7 @@
             <td class="tew-row-handle">
               <button class="tew-row-del" @click="deleteRow(ri)" title="删除行">×</button>
             </td>
-            <td v-for="(cell, ci) in row" :key="'c' + ci" class="tew-body-cell" :style="{ width: colWidth(tableData.headers[ci]) }">
+            <td v-for="(cell, ci) in row" :key="'c' + ci" class="tew-body-cell" :style="{ width: colWidths[ci] }">
               <textarea
                 class="tew-cell-input tew-cell-textarea"
                 :value="cell"
@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted, nextTick } from 'vue'
+import { ref, reactive, watch, onMounted, nextTick, computed } from 'vue'
 
 const { widget, node } = defineProps(['widget', 'node'])
 
@@ -163,14 +163,40 @@ function switchMode(target) {
 }
 
 // ── Table editing ────────────────────────────────────────────────────────────
-function colWidth(header) {
-  // CJK chars ~14px, ASCII chars ~8px, font-size 12px
+// Measure rendered pixel width of a string (CJK ~14px, ASCII ~8px)
+// Strips markdown bold markers (**...**) before measuring
+function measurePx(text) {
   let px = 0
-  for (const ch of String(header)) {
+  for (const ch of String(text || '').replace(/\*\*/g, '')) {
     px += /[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]/.test(ch) ? 14 : 8
   }
-  return (px + 50) + 'px'
+  return px
 }
+
+const MAX_COL_PX = 200
+const MIN_COL_PX = 120
+
+// Reactively compute each column's optimal width based on cell content only
+const COL_PAD = 28   // horizontal padding inside each cell (px)
+const colWidths = computed(() => {
+  // Determine column count from row data, fall back to headers length
+  const numCols = Math.max(
+    tableData.headers.length,
+    ...tableData.rows.map(r => r.length)
+  )
+  return Array.from({ length: numCols }, (_, ci) => {
+    let maxPx = MIN_COL_PX
+    // Only scan cell content to determine width
+    for (const row of tableData.rows) {
+      const cell = String(row[ci] ?? '')
+      for (const line of cell.split('\n')) {
+        maxPx = Math.max(maxPx, measurePx(line) + COL_PAD)
+      }
+    }
+    // Clamp: auto-fit up to MAX_COL_PX; beyond that the cell will word-wrap
+    return Math.min(maxPx, MAX_COL_PX) + 'px'
+  })
+})
 
 function autoResize(textarea) {
   if (!textarea) return
@@ -502,6 +528,9 @@ onMounted(() => {
   vertical-align: top;
   overflow: hidden;
   box-sizing: border-box;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .tew-header-input {
