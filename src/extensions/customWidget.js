@@ -9,6 +9,7 @@ import {ComponentWidgetImpl} from "@/composable/widgets/domWidget.js";
 import promptAwaitBar from "@/components/graph/widgets/promptAwait.vue";
 import multiSelectWidget from "@/components/graph/widgets/multiSelectWidget.vue";
 import multiAngleWidget from '@/components/graph/widgets/multiAngleWidget.vue';
+import tableEditorWidget from '@/components/graph/widgets/tableEditorWidget.vue';
 import stylesSelector from '@/components/graph/widgets/stylesSelector.vue';
 import {getSetting} from "@/composable/settings.js";
 
@@ -143,6 +144,28 @@ app.registerExtension({
                 },
                 styles:{'overflow':'visible'}
             },multiAngleWidget)
+        },
+        // 表格编辑器
+        EASY_TABLE_EDITOR: (node, inputName, inputData, app) => {
+            const widgetValue = ref(JSON.stringify({
+                mode: 'table',
+                headers: ['列1', '列2', '列3'],
+                rows: [['', '', ''], ['', '', '']],
+                markdown: '| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n|     |     |     |\n|     |     |     |',
+            }))
+            return createVueWidget({
+                name: 'table_data',
+                node,
+                options: {
+                    getMinHeight: () => 200,
+                    getMaxHeight: () => node.size[1],
+                    getValue: () => widgetValue.value,
+                    setValue: (value) => {
+                        widgetValue.value = typeof value === 'object' ? JSON.stringify(value) : value
+                    }
+                },
+                styles: { overflow: 'hidden' }
+            }, tableEditorWidget)
         }
     })
 })
