@@ -78,7 +78,7 @@ export const useNodesStore = defineStore('groups', {
     actions:{
         setGroups(groups){
             // 子组嵌套
-            let _groups = cloneDeep(groups)
+            let _groups = cloneDeep(groups.map(g => new Object({ id: g.id, pos: g.pos, size: g.size, title: g.title, pinned: g.pinned, nodes: g.nodes, children: g.children, show_nodes: g.show_nodes})))
             _groups.forEach(group => {
                 group.sub_groups = [];
                 _groups.forEach(innerGroup => {
@@ -103,7 +103,7 @@ export const useNodesStore = defineStore('groups', {
                 )
         },
         setNodes(nodes) {
-            this.nodes = cloneDeep(nodes)
+            this.nodes = cloneDeep(nodes.map(n => new Object({ id: n.id, pos: n.pos, size:n.size, type:n.type, is_edit:n.is_edit, title:n.title, mode:n.mode})))
         },
         update(){
             let activeSidebarTab = app.extensionManager?.activeSidebarTab || app.extensionManager.sidebarTab?.activeSidebarTab?.id

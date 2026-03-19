@@ -168,7 +168,7 @@ const changeGroupMode = (item, longpress=false) =>{
   app.canvas.graph._nodes.forEach(node=>{
     if(group_nodes_ids.includes(node.id)){
       node.mode = is_always ? (longpress ? NODE_MODE.NEVER : NODE_MODE.BYPASS) : NODE_MODE.ALWAYS
-      node.graph.change()
+      app.graph.change()
     }
   })
   store.setNodes(app.canvas.graph._nodes)
@@ -182,7 +182,7 @@ const changeNodeMode = (item, longpress=false) =>{
   const node = app.canvas.graph._nodes.find(node=>node.id == item.id)
   if(node){
     node.mode = is_always ? (longpress ? NODE_MODE.NEVER : NODE_MODE.BYPASS) : NODE_MODE.ALWAYS
-    node.graph.change()
+    app.graph.change()
     store.setNodes(app.canvas.graph._nodes)
   }
 }
