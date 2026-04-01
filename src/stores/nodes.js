@@ -77,8 +77,16 @@ export const useNodesStore = defineStore('groups', {
     },
     actions:{
         setGroups(groups){
-            // 子组嵌套
-            let _groups = cloneDeep(groups.map(g => new Object({ id: g.id, pos: g.pos, size: g.size, title: g.title, pinned: g.pinned, nodes: g.nodes, children: g.children, show_nodes: g.show_nodes})))
+            // Only keep display fields here. Carrying runtime graph references
+            // like nodes/children into cloneDeep can recurse through nested groups.
+            let _groups = cloneDeep(groups.map(g => new Object({
+                id: g.id,
+                pos: Array.isArray(g.pos) ? [...g.pos] : g.pos,
+                size: Array.isArray(g.size) ? [...g.size] : g.size,
+                title: g.title,
+                pinned: g.pinned,
+                show_nodes: g.show_nodes
+            })))
             _groups.forEach(group => {
                 group.sub_groups = [];
                 _groups.forEach(innerGroup => {
