@@ -87,17 +87,6 @@ app.registerExtension({
                     }
                     w.value = list;
                 }
-                requestAnimationFrame(() => {
-                    const sz = this.computeSize();
-                    if (sz[0] < this.size[0]) {
-                        sz[0] = this.size[0];
-                    }
-                    if (sz[1] < this.size[1]) {
-                        sz[1] = this.size[1];
-                    }
-                    this.onResize?.(sz);
-                    app.graph.setDirtyCanvas(true, false);
-                });
             }
 
             // When the node is executed we will be sent the input text, display this in the widget
@@ -129,11 +118,7 @@ app.registerExtension({
 
         // show the info of the image widget
         if(image_dynamic_nodes.includes(node_name)){
-            function populate(arr_text) {
-                var text = '';
-                for (let i = 0; i < arr_text.length; i++){
-                    text += arr_text[i];
-                }
+            function populate(text) {
                 if (this.widgets) {
                     const pos = this.widgets.findIndex((w) => w.name === "info");
                     if (pos !== -1 && this.widgets[pos]) {
@@ -141,22 +126,16 @@ app.registerExtension({
                         w.value = text;
                     }
                 }
-                requestAnimationFrame(() => {
-                    const sz = this.computeSize();
-                    if (sz[0] < this.size[0]) {
-                        sz[0] = this.size[0];
-                    }
-                    if (sz[1] < this.size[1]) {
-                        sz[1] = this.size[1];
-                    }
-                    this.onResize?.(sz);
-                    app.graph.setDirtyCanvas(true, false);
-                });
+
             }
 
             nodeType.prototype.onExecuted = function (message) {
                 onExecuted?.apply(this, arguments);
-                populate.call(this, message.text);
+                var text = '';
+                for (let i = 0; i < message.text.length; i++){
+                    text += message.text[i];
+                }
+                populate.call(this, text);
             };
         }
 
