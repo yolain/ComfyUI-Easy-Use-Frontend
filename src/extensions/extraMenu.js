@@ -306,7 +306,8 @@ const reloadNode = function (node) {
     graph.add(newNode);
 
     const isValidWidgetValue = (widget, type, value) => {
-        if ((widget.origType || widget.type) !== type || value == null) return false;
+        const widgetType = widget.origType || widget.type;
+        if (widgetType !== type || value == null) return false;
 
         const rawValues = widget.options?.values;
         if (rawValues != null) {
@@ -317,6 +318,12 @@ const reloadNode = function (node) {
                     || (Number.isInteger(value) && value >= 0 && value < Object.keys(values).length);
             }
             return false;
+        }
+        if (widgetType === "number" || widgetType === "slider") {
+            if (typeof value !== "number" || !Number.isFinite(value)) return false;
+            const min = widget.options?.min ?? -Infinity;
+            const max = widget.options?.max ?? Infinity;
+            return min <= value && value <= max;
         }
         if (typeof value === "number") {
             const min = widget.options?.min ?? -Infinity;
