@@ -210,7 +210,6 @@ function hideWidget(node, widget, suffix = "") {
     }
 }
 function convertToInput(node, widget, config) {
-    console.log('config:', config)
     hideWidget(node, widget);
 
     const { type } = getWidgetType(config);
@@ -242,144 +241,138 @@ function getWidgetType(config) {
 
 const reloadNode = function (node) {
     const nodeType = node.constructor.type;
-    const origVals = node.properties.origVals || {};
+    const origVals = node.properties?.origVals || {};
 
     const nodeTitle = origVals.title || node.title;
     const nodeColor = origVals.color || node.color;
     const bgColor = origVals.bgcolor || node.bgcolor;
-    const oldNode = node
+    const graph = node.graph || app.graph;
     const options = {
         'size': [...node.size],
         'color': nodeColor,
         'bgcolor': bgColor,
         'pos': [...node.pos]
-    }
+    };
 
-    let inputLinks = []
-    let outputLinks = []
-    if(node.inputs){
-        for (const input of node.inputs) {
-            if (input.link) {
-                const input_name = input.name
-                const input_slot = node.findInputSlot(input_name)
-                const input_node = node.getInputNode(input_slot)
-                const input_link = node.getInputLink(input_slot)
-                inputLinks.push([input_link.origin_slot, input_node, input_name])
-            }
-        }
-    }
-    if(node.outputs) {
-        for (const output of node.outputs) {
-            if (output.links) {
-                const output_name = output.name
+    const getLink = (linkId) => graph.getLink?.(linkId) || graph.links?.get?.(linkId) || graph.links?.[linkId];
+    const inputLinks = [];
+    const outputLinks = [];
+    const inputLabels = new Map(node.inputs?.map(input => [input.name, input.label]) || []);
+    const outputLabels = new Map(node.outputs?.map(output => [output.name, output.label]) || []);
+    const widgetValues = node.widgets?.map(widget => ({
+        name: widget.name,
+        type: widget.origType || widget.type,
+        value: widget.value
+    })) || [];
+    const convertedWidgets = [];
 
-                for (const linkID of output.links) {
-                    const output_link = graph.links[linkID]
-                    const output_node = graph._nodes_by_id[output_link.target_id]
-                    outputLinks.push([output_name, output_node, output_link.target_slot])
-                }
-            }
-        }
-    }
-
-    app.graph.remove(node)
-    let newNode = app.graph.add(LiteGraph.createNode(nodeType, nodeTitle, options));
-
-    newNode.inputs.map((cate,index) => {
-        newNode.inputs[index]['label'] = node.inputs[index]['label']
-    })
-    newNode.outputs.map((cate,index) => {
-        newNode.outputs[index]['label'] = node.outputs[index]['label']
-    })
-
-    function handleLinks() {
-        // re-convert inputs
-        if(oldNode.widgets) {
-            for (let w of oldNode.widgets) {
-                if (w.type === 'converted-widget') {
-                    const WidgetToConvert = newNode.widgets.find((nw) => nw.name === w.name);
-                    for (let i of oldNode.inputs) {
-                        if (i.name === w.name) {
-                            convertToInput(newNode, WidgetToConvert, i.widget);
-                        }
-                    }
-                }
-            }
-        }
-        // replace input and output links
-        for (let input of inputLinks) {
-            const [output_slot, output_node, input_name] = input;
-            output_node.connect(output_slot, newNode.id, input_name)
-        }
-        for (let output of outputLinks) {
-            const [output_name, input_node, input_slot] = output;
-            newNode.connect(output_name, input_node, input_slot)
-        }
-    }
-
-    // fix widget values
-    let values = oldNode.widgets_values;
-    if (!values && newNode.widgets?.length>0) {
-        newNode.widgets.forEach((newWidget, index) => {
-            const oldWidget = oldNode.widgets[index];
-            if (newWidget.name === oldWidget.name && newWidget.type === oldWidget.type) {
-                newWidget.value = oldWidget.value;
-            }
+    node.inputs?.forEach((input, inputSlot) => {
+        if (input.link == null) return;
+        const link = getLink(input.link);
+        if (!link) return;
+        const originNode = graph.getNodeById(link.origin_id);
+        inputLinks.push({
+            inputName: input.name,
+            inputSlot,
+            originId: link.origin_id,
+            originName: originNode?.outputs?.[link.origin_slot]?.name,
+            originSlot: link.origin_slot
         });
-        handleLinks();
-        return;
-    }
-    if(values){
-        let pass = false
-        const isIterateForwards = values?.length <= newNode.widgets?.length;
-        let vi = isIterateForwards ? 0 : values.length - 1 ;
-        function evalWidgetValues(testValue, newWidg) {
-            if (testValue === true || testValue === false) {
-                if (newWidg.options?.on && newWidg.options?.off) {
-                    return { value: testValue, pass: true };
-                }
-            } else if (typeof testValue === "number") {
-                if (newWidg.options?.min <= testValue && testValue <= newWidg.options?.max) {
-                    return { value: testValue, pass: true };
-                }
-            } else if (newWidg.options?.values?.includes(testValue)) {
-                return { value: testValue, pass: true };
-            } else if (newWidg.inputEl && typeof testValue === "string") {
-                return { value: testValue, pass: true };
-            }
-            return { value: newWidg.value, pass: false };
+    });
+    node.outputs?.forEach((output, outputSlot) => {
+        for (const linkId of output.links || []) {
+            const link = getLink(linkId);
+            if (!link) continue;
+            const targetNode = graph.getNodeById(link.target_id);
+            outputLinks.push({
+                outputName: output.name,
+                outputSlot,
+                targetId: link.target_id,
+                targetName: targetNode?.inputs?.[link.target_slot]?.name,
+                targetSlot: link.target_slot
+            });
         }
-        const updateValue = (wi) => {
-            const oldWidget = oldNode.widgets[wi];
-            let newWidget = newNode.widgets[wi];
-            if (newWidget.name === oldWidget.name && newWidget.type === oldWidget.type) {
-                while ((isIterateForwards ? vi < values.length : vi >= 0) && !pass) {
-                    let { value, pass } = evalWidgetValues(values[vi], newWidget);
-                    if (pass && value !== null) {
-                        newWidget.value = value;
-                        break;
-                    }
-                    vi += isIterateForwards ? 1 : -1;
-                }
-                vi++
-                if (!isIterateForwards) {
-                    vi = values.length - (newNode.widgets?.length - 1 - wi);
-                }
-            }
-        };
-        if (isIterateForwards && newNode.widgets?.length>0) {
-            for (let wi = 0; wi < newNode.widgets.length; wi++) {
-                updateValue(wi);
-            }
-        } else if(newNode.widgets?.length>0){
-            for (let wi = newNode.widgets.length - 1; wi >= 0; wi--) {
-                updateValue(wi);
-            }
-        }
-    }
-    handleLinks();
-};
+    });
+    node.widgets?.forEach(widget => {
+        if (widget.type !== CONVERTED_TYPE) return;
+        const input = node.inputs?.find(input => input.widget?.name === widget.name || input.name === widget.name);
+        const config = input?.widget?.[GET_CONFIG]?.();
+        if (config) convertedWidgets.push({name: widget.name, config});
+    });
 
+    const newNode = LiteGraph.createNode(nodeType, nodeTitle, options);
+    if (!newNode) return;
+    graph.remove(node);
+    graph.add(newNode);
+
+    const isValidWidgetValue = (widget, type, value) => {
+        if ((widget.origType || widget.type) !== type || value == null) return false;
+
+        const rawValues = widget.options?.values;
+        if (rawValues != null) {
+            const values = typeof rawValues === "function" ? rawValues(widget, newNode) : rawValues;
+            if (Array.isArray(values)) return values.includes(value);
+            if (values && typeof values === "object") {
+                return Object.prototype.hasOwnProperty.call(values, value)
+                    || (Number.isInteger(value) && value >= 0 && value < Object.keys(values).length);
+            }
+            return false;
+        }
+        if (typeof value === "number") {
+            const min = widget.options?.min ?? -Infinity;
+            const max = widget.options?.max ?? Infinity;
+            return Number.isFinite(value) && min <= value && value <= max;
+        }
+        if (typeof value === "boolean") return widget.type === "toggle" || !!(widget.options?.on && widget.options?.off);
+        return true;
+    };
+
+    // Dynamic combo inputs are created by the combo value setter. Restore valid
+    // widgets in their original order so those inputs exist before reconnecting.
+    // Invalid values deliberately keep the fresh node's default value.
+    for (const {name, type, value} of widgetValues) {
+        const widget = newNode.widgets?.find(newWidget => newWidget.name === name);
+        if (widget && isValidWidgetValue(widget, type, value)) widget.value = value;
+    }
+
+    for (const {name, config} of convertedWidgets) {
+        const widget = newNode.widgets?.find(newWidget => newWidget.name === name);
+        if (widget) convertToInput(newNode, widget, config);
+    }
+
+    newNode.inputs?.forEach(input => {
+        if (inputLabels.has(input.name)) input.label = inputLabels.get(input.name);
+    });
+    newNode.outputs?.forEach(output => {
+        if (outputLabels.has(output.name)) output.label = outputLabels.get(output.name);
+    });
+
+    for (const {inputName, inputSlot, originId, originName, originSlot} of inputLinks) {
+        const originNode = graph.getNodeById(originId);
+        if (!originNode) continue;
+        const sourceSlot = originNode.outputs?.[originSlot]?.name === originName
+            ? originSlot
+            : originNode.findOutputSlot(originName);
+        const targetSlot = newNode.inputs?.[inputSlot]?.name === inputName
+            ? inputSlot
+            : newNode.findInputSlot(inputName);
+        if (sourceSlot >= 0 && targetSlot >= 0) originNode.connect(sourceSlot, newNode, targetSlot);
+    }
+    for (const {outputName, outputSlot, targetId, targetName, targetSlot} of outputLinks) {
+        const targetNode = graph.getNodeById(targetId);
+        if (!targetNode) continue;
+        const sourceSlot = newNode.outputs?.[outputSlot]?.name === outputName
+            ? outputSlot
+            : newNode.findOutputSlot(outputName);
+        const newTargetSlot = targetNode.inputs?.[targetSlot]?.name === targetName
+            ? targetSlot
+            : targetNode.findInputSlot(targetName);
+        if (sourceSlot >= 0 && newTargetSlot >= 0) newNode.connect(sourceSlot, targetNode, newTargetSlot);
+    }
+
+    newNode.setSize(options.size);
+    newNode.setDirtyCanvas?.(true, true);
+};
 
 app.registerExtension({
     name: "Comfy.EasyUse.ExtraMenu",
@@ -418,4 +411,3 @@ app.registerExtension({
         }
     }
 });
-
