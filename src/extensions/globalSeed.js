@@ -1,4 +1,4 @@
-import { api } from "@/composable/comfyAPI";
+import { api, app } from "@/composable/comfyAPI";
 
 // 全局Seed
 function globalSeedHandler(event) {
@@ -27,11 +27,14 @@ function globalSeedHandler(event) {
 
 api.addEventListener("easyuse-global-seed", globalSeedHandler);
 
-const original_queuePrompt = api.queuePrompt;
-async function queuePrompt_with_seed(number, { output, workflow }, options = {}) {
+function addSeedWidgetsToWorkflow(prompt, graph) {
+    const workflow = prompt?.workflow;
+    if (!workflow || typeof workflow !== 'object') return prompt;
+
     workflow.seed_widgets = {};
-    for(let i in app.graph._nodes_by_id) {
-        let widgets = app.graph._nodes_by_id[i].widgets;
+    const nodes = graph?._nodes_by_id || {};
+    for(let i in nodes) {
+        let widgets = nodes[i].widgets;
         if(widgets) {
             for(let j in widgets) {
                 if((widgets[j].name == 'seed_num' || widgets[j].name == 'seed' || widgets[j].name == 'noise_seed') && widgets[j].type != 'converted-widget')
@@ -39,7 +42,17 @@ async function queuePrompt_with_seed(number, { output, workflow }, options = {})
             }
         }
     }
-    return await original_queuePrompt.call(api, number, { output, workflow }, options);
+    return prompt;
 }
 
-api.queuePrompt = queuePrompt_with_seed;
+// Add EasyUse metadata while the workflow is being built. Do not wrap
+// api.queuePrompt: ComfyUI owns its validation/error handling and now passes
+// execution options through that method (partial execution, preview method,
+// authentication, etc.). Wrapping it makes normal prompt validation failures
+// appear to originate from EasyUse and is fragile when the API evolves.
+const original_graphToPrompt = app.graphToPrompt;
+app.graphToPrompt = function graphToPrompt_with_seed(...args) {
+    const graph = args[0] || app.rootGraph || app.graph;
+    return Promise.resolve(original_graphToPrompt.apply(this, args))
+        .then(prompt => addSeedWidgetsToWorkflow(prompt, graph));
+};
