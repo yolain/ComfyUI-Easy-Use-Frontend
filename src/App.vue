@@ -1,8 +1,8 @@
-<template lang="pug">
-graphNodes
-img#easyuse-model-thumbnail
-toolBar(v-if="newMenuPosition == 'Disabled'")
-//- domWidgets
+<template>
+  <graphNodes />
+  <img id="easyuse-model-thumbnail" />
+  <toolBar v-if="newMenuPosition == 'Disabled'" />
+  <!-- <domWidgets /> -->
 </template>
 
 <script setup>

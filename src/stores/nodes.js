@@ -1,7 +1,6 @@
 import {app} from "@/composable/comfyAPI.js";
 import {NODES_MAP_ID} from "@/constants/index";
 import { defineStore } from 'pinia'
-import cloneDeep from "lodash/cloneDeep";
 import {getSetting} from "@/composable/settings.js";
 export const useNodesStore = defineStore('groups', {
     state: _ => ({
@@ -79,10 +78,10 @@ export const useNodesStore = defineStore('groups', {
         setGroups(groups){
             // Only keep display fields here. Carrying runtime graph references
             // like nodes/children into cloneDeep can recurse through nested groups.
-            let _groups = cloneDeep(groups.map(g => new Object({
+            let _groups = structuredClone(groups.map(g => ({
                 id: g.id,
-                pos: Array.isArray(g.pos) ? [...g.pos] : g.pos,
-                size: Array.isArray(g.size) ? [...g.size] : g.size,
+                pos: g.pos,
+                size: g.size,
                 title: g.title,
                 pinned: g.pinned,
                 show_nodes: g.show_nodes
@@ -103,15 +102,15 @@ export const useNodesStore = defineStore('groups', {
                 });
             });
 
-            this.groups = getSetting('EasyUse.NodesMap.Sorting') == 'Manual drag&drop sorting' ? cloneDeep(_groups) :
-                cloneDeep(
+            this.groups = getSetting('EasyUse.NodesMap.Sorting') == 'Manual drag&drop sorting' ? structuredClone(_groups) :
+                structuredClone(
                     _groups
                         .sort((a,b)=> a['pos'][0] - b['pos'][0])
                         .sort((a,b)=> a['pos'][1] - b['pos'][1])
                 )
         },
         setNodes(nodes) {
-            this.nodes = cloneDeep(nodes.map(n => new Object({ id: n.id, pos: n.pos, size:n.size, type:n.type, is_edit:n.is_edit, title:n.title, mode:n.mode})))
+            this.nodes = structuredClone(nodes.map(n => new Object({ id: n.id, pos: n.pos, size:n.size, type:n.type, is_edit:n.is_edit, title:n.title, mode:n.mode})))
         },
         update(){
             let activeSidebarTab = app.extensionManager?.activeSidebarTab || app.extensionManager.sidebarTab?.activeSidebarTab?.id
