@@ -25,9 +25,9 @@ app.registerExtension({
         if(hotkeys !== undefined){
             // Register hotkeys with Up, Down, Left, Right to jump Selected Node
             hotkeys('up,down,left,right', function(event, handler){
-                event.preventDefault();
                 const enableJumpNearestNodes = getSetting('EasyUse.Hotkeys.JumpNearestNodes',null, true);
                 if(!enableJumpNearestNodes) return
+                event.preventDefault();
                 // Get Selected Nodes Jump
                 const selectNodes = getSelectedNodes();
                 if(selectNodes.length === 0) return;
@@ -107,9 +107,9 @@ app.registerExtension({
 
             // Register hotkeys with Shift + Up, Down, Left, Right to align Selected Node
             hotkeys('shift+up,shift+down,shift+left,shift+right,shift+alt+⌘+left,shift+alt+⌘+right,shift+alt+ctrl+left,shift+alt+ctrl+right', function(event, handler){
-                event.preventDefault();
                 const enableAlighSelectedNodes = getSetting('EasyUse.Hotkeys.AlignSelectedNodes',null, true);
                 if(!enableAlighSelectedNodes) return
+                event.preventDefault();
                 // Get Selected Nodes Jump
                 const selectNodes = getSelectedNodes();
                 if(selectNodes.length <= 1) return;
@@ -143,9 +143,9 @@ app.registerExtension({
 
             // Register hotkeys with Shift + Ctrl + Left, Right to normalize Selected Node
             hotkeys('shift+⌘+left,shift+⌘+right,shift+ctrl+left,shift+ctrl+right', function(event, handler) {
-                event.preventDefault();
                 const enableAlighSelectedNodes = getSetting('EasyUse.Hotkeys.NormalizeSelectedNodes', null, true);
                 if (!enableAlighSelectedNodes) return
+                event.preventDefault();
                 // Get Selected Nodes Jump
                 const selectNodes = getSelectedNodes();
                 if (selectNodes.length <= 1) return;
@@ -167,9 +167,9 @@ app.registerExtension({
 
             // Register hotkeys with Shift + g to add selected nodes to a group
             hotkeys('shift+g', function (event, handler) {
-                event.preventDefault();
                 const enableAddGroup = getSetting('EasyUse.Hotkeys.AddGroup',null, true);
                 if(!enableAddGroup) return
+                event.preventDefault();
                 // Get Selected Nodes Jump
                 addSelectedNodesToGroup()
                 // Update NodesStore
@@ -179,9 +179,9 @@ app.registerExtension({
 
             // Clean VRAM Used with Shift + r to unload models and node cache
             hotkeys('shift+r', function (event, handler) {
-                event.preventDefault();
                 const enableClean = getSetting('EasyUse.Hotkeys.cleanVRAMused',null, true);
                 if(!enableClean) return
+                event.preventDefault();
                 // clean VRAM Used
                 cleanVRAM()
             })
@@ -190,6 +190,7 @@ app.registerExtension({
             hotkeys('shift+m', function (event, handler) {
                 const enableToggleMap = getSetting('EasyUse.Hotkeys.toggleNodesMap',null, true);
                 if(!enableToggleMap) return
+                event.preventDefault();
                 let sidebarTab = app.extensionManager?.sidebarTab || app.extensionManager
                 let activeSidebarTab = app.extensionManager.sidebarTab?.activeSidebarTabId || app.extensionManager?.activeSidebarTab
                 if(activeSidebarTab == NODES_MAP_ID) sidebarTab.activeSidebarTabId = null
@@ -200,9 +201,9 @@ app.registerExtension({
             const node_template_keys = []
             Array.from(Array(10).keys()).forEach((i) => node_template_keys.push(`alt+${i}`))
             hotkeys(node_template_keys.join(','), async function (event, handler) {
-                event.preventDefault();
                 const enableNodesTemplate = getSetting('EasyUse.Hotkeys.NodesTemplate',null, true);
                 if(!enableNodesTemplate) return
+                event.preventDefault();
                 const key = handler.key
                 let number = parseInt(key.split('+')[1])
                 const file = await api.getUserData('comfy.templates.json')
