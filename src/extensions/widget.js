@@ -551,12 +551,26 @@ app.registerExtension({
                         set(newVal) {
                             if (newVal !== widgetValue) {
                                 widgetValue = newVal;
+                                // Deferred to avoid mutating widget visibility mid-render (see drawNodeWidgets)
                                 requestAnimationFrame(_=>{
                                     toggleLogic(node, w)
                                 })
                             }
                         }
                     });
+                }
+
+                // Loading a saved workflow restores widget values synchronously via configure(),
+                // but the setter above only re-syncs visibility on the next animation frame. That
+                // leaves a window (e.g. app-mode widget capture) where visibility still reflects
+                // stale defaults. Re-run synchronously right after configure() settles.
+                const onConfigure = node.onConfigure
+                node.onConfigure = function () {
+                    onConfigure?.apply(this, arguments)
+                    for (const w of node.widgets) {
+                        if (!allow_widgets.includes(w.name)) continue
+                        toggleLogic(node, w)
+                    }
                 }
             }
 
