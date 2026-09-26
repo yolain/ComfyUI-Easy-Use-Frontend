@@ -7,7 +7,7 @@ import {useDomWidgetStore} from "@/stores/domWidgetStore.js";
 
 import {ComponentWidgetImpl} from "@/composable/widgets/domWidget.js";
 import promptAwaitBar from "@/components/graph/widgets/promptAwait.vue";
-import multiSelectWidget from "@/components/graph/widgets/multiSelectWidget.vue";
+import multiSelectWidget from "@/components/graph/widgets/MultiSelectWidget.vue";
 import multiAngleWidget from '@/components/graph/widgets/multiAngleWidget.vue';
 import tableEditorWidget from '@/components/graph/widgets/tableEditorWidget.vue';
 import stylesSelector from '@/components/graph/widgets/stylesSelector.vue';
