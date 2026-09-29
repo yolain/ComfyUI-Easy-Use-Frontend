@@ -113,10 +113,10 @@ export class ModelInfoDialog extends ComfyDialog {
 
             let pre = this.customNotes.substring(end, pos);
             if (pre) {
-                pre = pre.replaceAll("\n", "<br>");
                 notes.push(
                     $el("span", {
-                        innerHTML: pre,
+                        textContent: pre,
+                        style: { whiteSpace: "pre-line" },
                     })
                 );
             }
@@ -126,6 +126,7 @@ export class ModelInfoDialog extends ComfyDialog {
                         href: m[0],
                         textContent: m[0],
                         target: "_blank",
+                        rel: "noopener noreferrer",
                     })
                 );
             }
@@ -334,7 +335,9 @@ export class ModelInfoDialog extends ComfyDialog {
                                             const blob = await (await fetch(cate.url)).blob();
 
                                             // Store it in temp
-                                            const name = "temp_preview." + new URL(cate.url).pathname.split(".")[1];
+                                            const extension = ({"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif"})[blob.type]
+                                                || new URL(cate.url).pathname.split(".").pop().toLowerCase();
+                                            const name = "temp_preview." + extension;
                                             const body = new FormData();
                                             body.append("image", new File([blob], name));
                                             body.append("overwrite", "true");
@@ -364,10 +367,13 @@ export class ModelInfoDialog extends ComfyDialog {
                                                 headers: {
                                                     "content-type": "application/json",
                                                 },
-                                            }).then(_=>{
-                                                toast.success($t('Saving Succeed'))
-                                                toast.hideLoading()
-                                            });
+                                            }).then(response => {
+                                                if (!response.ok) throw new Error(`Error saving preview (${response.status})`);
+                                                toast.success($t('Saving Succeed'));
+                                            }).catch(error => {
+                                                console.error(error);
+                                                toast.error($t('Saving Failed'));
+                                            }).finally(() => toast.hideLoading());
                                             this.isSaving = false
                                             app.refreshComboInNodes();
                                         },

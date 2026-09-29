@@ -27,7 +27,14 @@ export const cleanVRAM = async() =>{
 export const reboot = async()=>{
     if (confirm($t("Are you sure you'd like to reboot the server?"))){
         try {
-            api.fetchApi("/easyuse/reboot");
+            const tokenResponse = await api.fetchApi("/easyuse/reboot-token");
+            if (!tokenResponse.ok) throw new Error("Could not get reboot token");
+            const {token} = await tokenResponse.json();
+            const response = await api.fetchApi("/easyuse/reboot", {
+                method: "POST",
+                headers: {"X-EasyUse-Reboot-Token": token},
+            });
+            if (!response.ok) throw new Error("Reboot request failed");
         } catch (exception) {}
     }
 }
