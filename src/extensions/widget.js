@@ -551,12 +551,26 @@ app.registerExtension({
                         set(newVal) {
                             if (newVal !== widgetValue) {
                                 widgetValue = newVal;
+                                // Deferred to avoid mutating widget visibility mid-render (see drawNodeWidgets)
                                 requestAnimationFrame(_=>{
                                     toggleLogic(node, w)
                                 })
                             }
                         }
                     });
+                }
+
+                // Loading a saved workflow restores widget values synchronously via configure(),
+                // but the setter above only re-syncs visibility on the next animation frame. That
+                // leaves a window (e.g. app-mode widget capture) where visibility still reflects
+                // stale defaults. Re-run synchronously right after configure() settles.
+                const onConfigure = node.onConfigure
+                node.onConfigure = function () {
+                    onConfigure?.apply(this, arguments)
+                    for (const w of node.widgets) {
+                        if (!allow_widgets.includes(w.name)) continue
+                        toggleLogic(node, w)
+                    }
                 }
             }
 
@@ -752,17 +766,15 @@ function toggleLogic(node, widget) {
         case 'num_loras':
             var number_to_show = v + 1
             var mode = getWidgetByName(node, 'mode')?.value
-            requestAnimationFrame(_=>{
-                for (let i = 0; i < number_to_show; i++) {
-                    toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_name'), true);
-                    toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_strength'), mode === "simple" ? true : false);
-                    ['lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), mode === "simple" ? false : true))
-                }
-                for (let i = number_to_show; i < 99; i++) {
-                    ['lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
-                }
-                updateNodeHeight(node)
-            })
+            for (let i = 0; i < number_to_show; i++) {
+                toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_name'), true);
+                toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_strength'), mode === "simple" ? true : false);
+                ['lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), mode === "simple" ? false : true))
+            }
+            for (let i = number_to_show; i < 99; i++) {
+                ['lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
+            }
+            updateNodeHeight(node)
             break
         case 'num_controlnet':
             var number_to_show = v + 1
