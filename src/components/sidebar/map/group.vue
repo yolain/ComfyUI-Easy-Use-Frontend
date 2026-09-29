@@ -1,16 +1,47 @@
-<template lang="pug">
-div(:class="prefix" @click="toggle")
-  .left.flex-1
-    i.icon(v-if="item.children" :class="item.info.show_nodes ? 'pi pi-folder-open' : 'pi pi-folder'" :style="{'color':item.info.color}")
-    .edit(v-if="item.info?.is_edit")
-      InputText(ref="modifyRef" v-model="title" variant="outline" size="small" type="text" @blur="setGroupTitle" @keydown.enter="setGroupTitle" @keydown.esc="setGroupTitle" style="width:100%")
-    .label(v-else)
-      span {{item.info.title}}
-  .right.toolbar
-    template(v-if="item.children?.length>0")
-      Button(size="small" :icon="item.children.find(cate=>cate.mode == NODE_MODE.ALWAYS) ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="$emit('changeMode')" @mousedown.stop="$emit('mousedown')" @mouseup.stop="$emit('mouseup')")
-.child(v-if="item.children?.length>0 && item.info.show_nodes")
-  slot
+<template>
+  <div :class="prefix" @click="toggle">
+    <div class="left flex-1">
+      <i
+        v-if="item.children"
+        class="icon"
+        :class="item.info.show_nodes ? 'pi pi-folder-open' : 'pi pi-folder'"
+        :style="{ color: item.info.color }"
+      />
+      <div v-if="item.info?.is_edit" class="edit">
+        <InputText
+          ref="modifyRef"
+          v-model="title"
+          variant="outline"
+          size="small"
+          type="text"
+          @blur="setGroupTitle"
+          @keydown.enter="setGroupTitle"
+          @keydown.esc="setGroupTitle"
+          style="width:100%"
+        />
+      </div>
+      <div v-else class="label">
+        <span>{{ item.info.title }}</span>
+      </div>
+    </div>
+    <div class="right toolbar">
+      <template v-if="item.children?.length > 0">
+        <Button
+          size="small"
+          :icon="item.children.find(cate => cate.mode == NODE_MODE.ALWAYS) ? 'pi pi-eye' : 'pi pi-eye-slash'"
+          text
+          rounded
+          severity="secondary"
+          @click.stop="$emit('changeMode')"
+          @mousedown.stop="$emit('mousedown')"
+          @mouseup.stop="$emit('mouseup')"
+        />
+      </template>
+    </div>
+  </div>
+  <div v-if="item.children?.length > 0 && item.info.show_nodes" class="child">
+    <slot />
+  </div>
 </template>
 
 <script setup>

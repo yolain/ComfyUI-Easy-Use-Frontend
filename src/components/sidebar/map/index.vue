@@ -1,6 +1,7 @@
-<template lang="pug">
-div(:class="prefix")
-  nodesMap
+<template>
+  <div :class="prefix">
+    <nodesMap />
+  </div>
 </template>
 
 <script setup>

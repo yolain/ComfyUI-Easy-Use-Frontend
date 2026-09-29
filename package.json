@@ -13,7 +13,6 @@
   "dependencies": {
     "@vueuse/core": "^13.4.0",
     "hotkeys-js": "^3.13.7",
-    "lodash": "^4.17.21",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",
@@ -22,8 +21,6 @@
   "devDependencies": {
     "@playwright/test": "^1.44.1",
     "@vitejs/plugin-vue": "^5.0.5",
-    "pug": "^2.0.4",
-    "pug-loader": "^2.4.0",
     "rollup-plugin-watch": "^1.0.4",
     "sass": "^1.77.8",
     "sass-loader": "^16.0.0",
