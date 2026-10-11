@@ -27,7 +27,7 @@ class AccountDialog extends ComfyDialog {
                     const dataIndex = Array.prototype.indexOf.call(this.dialog_div.querySelectorAll('.easyuse-account-dialog-item'), e.target.parentNode)
                     api_keys[dataIndex]['name'] = e.target.value
                 },value:api_keys[index]['name']}),
-            $el('input.key',{type:'text',oninput: e=>{
+            $el('input.key',{type:'password',autocomplete:'off',oninput: e=>{
                     const dataIndex = Array.prototype.indexOf.call(this.dialog_div.querySelectorAll('.easyuse-account-dialog-item'), e.target.parentNode)
                     api_keys[dataIndex]['key'] = e.target.value
                 },placeholder:'Enter APIKEY', value:api_keys[index]['key']}),
