@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import cloneDeep from 'lodash/cloneDeep'
 export const useGraphStore = defineStore('graphStore',{
     state: _ => ({
         selectors: [],
@@ -10,16 +9,16 @@ export const useGraphStore = defineStore('graphStore',{
 
     actions:{
         setSelectors(selectors){
-            this.selectors = cloneDeep(selectors)
+            this.selectors = structuredClone(selectors)
         },
         setStyles(key, styles){
             if(!this.selectors_styles[key]) this.selectors_styles[key] = styles
         },
         setSegSelectors(selectors){
-            this.seg_selectors = cloneDeep(selectors)
+            this.seg_selectors = structuredClone(selectors)
         },
         setSliderControls(controls){
-            this.slider_controls = cloneDeep(controls)
+            this.slider_controls = structuredClone(controls)
         }
     }
 })

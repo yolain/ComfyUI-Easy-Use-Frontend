@@ -1,13 +1,55 @@
-<template lang="pug">
-div(:draggable="false" :class="[prefix,{'never':node.mode!==undefined && node.mode==NODE_MODE.NEVER},{'bypass':node.mode!==undefined && node.mode==NODE_MODE.BYPASS}]")
-  .left.flex-1
-    span.node_id(v-if="showNodeID") {{node.id}}
-    .edit(v-if="node?.is_edit")
-      InputText(ref="modifyRef" v-model="title" variant="outline" size="small" type="text" @blur="setNodeTitle" @keydown.enter="setNodeTitle" @keydown.esc="setNodeTitle" style="width:100%")
-    span.label(@dblclick.stop="jumpToNodeId(node.id)" v-else-if="node.title !== undefined") {{node.title}}
-    span.label.error(v-else @dblclick.stop="jumpToNodeId(node.id)") {{node.type}}
-  .right.toolbar
-    Button(size="small" :icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'" text rounded severity="secondary" @click.stop="$emit('changeMode')" @mousedown.stop="$emit('mousedown')" @mouseup.stop="$emit('mouseup')")
+<template>
+  <div
+    :draggable="false"
+    :class="[
+      prefix,
+      { never: node.mode !== undefined && node.mode == NODE_MODE.NEVER },
+      { bypass: node.mode !== undefined && node.mode == NODE_MODE.BYPASS },
+    ]"
+  >
+    <div class="left flex-1">
+      <span v-if="showNodeID" class="node_id">{{ node.id }}</span>
+      <div v-if="node?.is_edit" class="edit">
+        <InputText
+          ref="modifyRef"
+          v-model="title"
+          variant="outline"
+          size="small"
+          type="text"
+          @blur="setNodeTitle"
+          @keydown.enter="setNodeTitle"
+          @keydown.esc="setNodeTitle"
+          style="width:100%"
+        />
+      </div>
+      <span
+        v-else-if="node.title !== undefined"
+        class="label"
+        @dblclick.stop="jumpToNodeId(node.id)"
+      >
+        {{ node.title }}
+      </span>
+      <span
+        v-else
+        class="label error"
+        @dblclick.stop="jumpToNodeId(node.id)"
+      >
+        {{ node.type }}
+      </span>
+    </div>
+    <div class="right toolbar">
+      <Button
+        size="small"
+        :icon="node.mode == NODE_MODE.ALWAYS ? 'pi pi-eye' : 'pi pi-eye-slash'"
+        text
+        rounded
+        severity="secondary"
+        @click.stop="$emit('changeMode')"
+        @mousedown.stop="$emit('mousedown')"
+        @mouseup.stop="$emit('mouseup')"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup>

@@ -1,19 +1,42 @@
-<template lang="pug">
-div(:class="prefix" :data-id="id")
-  template(v-if="values?.length>0 && show")
-    div(:class="[prefix + '-item',{'positive': index == 3 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS}, {'negative': index == 6 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS}]" v-for="(item,index) in values" :key="index")
-      div(:class="prefix + '-item-input'") {{item.value}}
-      div(:class="prefix + '-item-scroll'" ref="scroll")
-        div(:class="prefix + '-item-bar'" ref="bar" :style="{'top':item.top || (100 - calculatePercent(item.default,item.min,item.max) + '%')}" @mousedown="e=>mousedown(e,item,index)" @dblclick="e=>dblclick(e,item,index)")
-        div(:class="prefix + '-item-area'" :style="{'height':item.height || calculatePercent(item.default,item.min,item.max) + '%'}")
-      div(:class="prefix + '-item-label'")
-        span {{item.label}}
+<template>
+  <div :class="prefix" :data-id="id">
+    <template v-if="values?.length > 0 && show">
+      <div
+        v-for="(item, index) in values"
+        :key="index"
+        :class="[
+          prefix + '-item',
+          {
+            positive: index == 3 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS,
+            negative: index == 6 && type == 'sdxl' && mode == IPA_LAYER_WEIGHTS,
+          },
+        ]"
+      >
+        <div :class="prefix + '-item-input'">{{ item.value }}</div>
+        <div ref="scroll" :class="prefix + '-item-scroll'">
+          <div
+            ref="bar"
+            :class="prefix + '-item-bar'"
+            :style="{ top: item.top || (100 - calculatePercent(item.default, item.min, item.max) + '%') }"
+            @mousedown="(e) => mousedown(e, item, index)"
+            @dblclick="(e) => dblclick(e, item, index)"
+          />
+          <div
+            :class="prefix + '-item-area'"
+            :style="{ height: item.height || calculatePercent(item.default, item.min, item.max) + '%' }"
+          />
+        </div>
+        <div :class="prefix + '-item-label'">
+          <span>{{ item.label }}</span>
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script setup>
 import { $t } from '@/composable/i18n.js'
 import { ref, reactive, computed, watch, defineComponent, defineProps, defineEmits, onMounted } from 'vue'
-import cloneDeep from "lodash/cloneDeep";
 
 const prefix = 'comfyui-easyuse-slider'
 defineComponent({name:prefix})
@@ -99,7 +122,7 @@ const mousedown = (e, item, index)=>{
   let event = e || window.event;
   let _scroll = scroll.value[index]
   let _bar = bar.value[index]
-  let _values = cloneDeep(props.values)
+  let _values = structuredClone(props.values)
   let y = event.clientY - _bar.offsetTop;
   document.onmousemove = (e) => {
     let event = e || window.event;
@@ -123,7 +146,7 @@ const mousedown = (e, item, index)=>{
   }
 }
 const dblclick = (e, item, index)=>{
-  let _values = cloneDeep(props.values)
+  let _values = structuredClone(props.values)
   _values[index] = {..._values[index],...{ top:null, height:null, value:item.default}}
   emit('changeValues', _values)
 }

@@ -1,42 +1,76 @@
-<template lang="pug">
-div(:class="prefix")
-  div(:class="prefix+'__header'" @mousedown="e=>$emit('handleHeader',e)")
-    .title {{ $t('NODES MAP') }}
-    .toolbar
-      Button(:icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'" text rounded severity="secondary" @click.stop="expandAll" size="small" v-tooltip.top="isExpand? $t('Collapse All') : $t('Expand All') " v-if="groups?.length>0")
-      slot(name="icon")
-  div(:class="prefix+'__content'")
-    div(:class="prefix+'__content-searchbox'")
-      IconField
-        InputText.search-box-input(v-model="search" :placeholder="$t('Search by Node ID/Name...')" variant="outlined" style="width:100%")
-        InputIcon(v-if="!search" class="pi pi-search")
-        InputIcon(v-else class="pi pi-times" @click="search=''")
-    template(v-if="search_nodes?.length>0 && search")
-      ul
-        li(v-for="(item,i) in search_nodes" :key="i")
-          Node(
-            :node="item"
-            @changeMode="changeNodeMode(item)"
-            @mousedown="mouseDown(item,'node')"
-            @mouseup="mouseUp")
-    template(v-else-if="groups_nodes?.length>0 && !search")
-      ul
-        Tree(v-for="(item,i) in groups_nodes"
-          :key="i"
-          :item="item"
-          :index="i"
-          :showGroupOnly="showGroupOnly"
-          @dragstart="dragstart"
-          @dragend="dragend"
-          @dragover="dragover"
-          @contextmenu="handleContextMenu"
-          @changeGroupMode="changeGroupMode"
-          @changeNodeMode="changeNodeMode"
-          @mousedown="mouseDown"
-          @mouseup="mouseUp")
-    .no_result(v-else style="height:100%")
-      NoResultsPlaceholder(icon="pi pi-sitemap", :title="$t('No Nodes',true)", :message="search ? $t('No nodes found in the search') : $t('No nodes found in the map',true)")
-  ContextMenu(ref="menuRef" :model="menuItems" :autoZIndex="false" appendTo="self")
+<template>
+  <div :class="prefix">
+    <div :class="prefix + '__header'" @mousedown="(e) => $emit('handleHeader', e)">
+      <div class="title">{{ $t('NODES MAP') }}</div>
+      <div class="toolbar">
+        <Button
+          v-if="groups?.length > 0"
+          :icon="isExpand ? 'pi pi-angle-double-down' : 'pi pi-angle-double-up'"
+          text
+          rounded
+          severity="secondary"
+          @click.stop="expandAll"
+          size="small"
+          v-tooltip.top="isExpand ? $t('Collapse All') : $t('Expand All')"
+        />
+        <slot name="icon" />
+      </div>
+    </div>
+    <div :class="prefix + '__content'">
+      <div :class="prefix + '__content-searchbox'">
+        <IconField>
+          <InputText
+            v-model="search"
+            class="search-box-input"
+            :placeholder="$t('Search by Node ID/Name...')"
+            variant="outlined"
+            style="width:100%"
+          />
+          <InputIcon v-if="!search" class="pi pi-search" />
+          <InputIcon v-else class="pi pi-times" @click="search = ''" />
+        </IconField>
+      </div>
+      <template v-if="search_nodes?.length > 0 && search">
+        <ul>
+          <li v-for="(item, i) in search_nodes" :key="i">
+            <Node
+              :node="item"
+              @changeMode="changeNodeMode(item)"
+              @mousedown="mouseDown(item, 'node')"
+              @mouseup="mouseUp"
+            />
+          </li>
+        </ul>
+      </template>
+      <template v-else-if="groups_nodes?.length > 0 && !search">
+        <ul>
+          <Tree
+            v-for="(item, i) in groups_nodes"
+            :key="i"
+            :item="item"
+            :index="i"
+            :showGroupOnly="showGroupOnly"
+            @dragstart="dragstart"
+            @dragend="dragend"
+            @dragover="dragover"
+            @contextmenu="handleContextMenu"
+            @changeGroupMode="changeGroupMode"
+            @changeNodeMode="changeNodeMode"
+            @mousedown="mouseDown"
+            @mouseup="mouseUp"
+          />
+        </ul>
+      </template>
+      <div v-else class="no_result" style="height:100%">
+        <NoResultsPlaceholder
+          icon="pi pi-sitemap"
+          :title="$t('No Nodes', true)"
+          :message="search ? $t('No nodes found in the search') : $t('No nodes found in the map', true)"
+        />
+      </div>
+    </div>
+    <ContextMenu ref="menuRef" :model="menuItems" :autoZIndex="false" appendTo="self" />
+  </div>
 </template>
 
 <script setup>
@@ -57,6 +91,7 @@ import {ref, watch, defineEmits, computed, onMounted} from "vue";
 import {NODE_MODE} from "@/constants/index.js";
 
 const prefix = 'comfyui-easyuse-map-nodes'
+// const LOG_PREFIX = '[NodesMap]'
 
 import {storeToRefs} from "pinia";
 import {useNodesStore} from "@/stores/nodes.js";
@@ -66,7 +101,8 @@ const {groups_nodes, groups, nodes} = storeToRefs(store)
 
 const showGroupOnly = computed(_=> getSetting('EasyUse.NodesMap.DisplayGroupOnly'))
 
-// Expand / Collapse
+
+// ─── Expand / Collapse ───────────────────────────────────────────────────────
 const isExpand = ref(false)
 const expandAll = _=>{
   isExpand.value = !isExpand.value
@@ -76,12 +112,14 @@ const expandAll = _=>{
   store.setGroups(app.canvas.graph._groups)
 }
 
-// Search
+// ─── Search ──────────────────────────────────────────────────────────────────
 const search = ref('')
 const search_nodes = computed(_=>{
   return nodes?.value.filter(node=> node.id?.toString()?.includes(search.value) || node['type']?.includes(search.value) || node['title']?.includes(search.value)) || []
 })
-// Context Menu
+
+
+// ─── Context Menu ─────────────────────────────────────────────────────────────
 const menuRef = ref(null)
 const targetIsNode = ref(false)
 const menuItems = computed(() =>
@@ -128,13 +166,18 @@ const handleContextMenu = (event, groupOrNode) => {
   targetIsNode.value = groupOrNode.children ? false : true
   menuRef.value.show(event)
 }
+
 const JumpNode = (node) =>{
-  jumpToNodeId(node?.info ? node.info.id : node.id)
+  const id = node?.info ? node.info.id : node.id
+  jumpToNodeId(id)
 }
+
 const renameNode = (node) =>{
+  const id = node?.info ? node.info.id : node.id
   if(node.info) node.info.is_edit = true
   else node.is_edit = true
 }
+
 const deleteNode = (node) =>{
   const id = node.info ? node.info.id : node.id
   app.canvas.graph.beforeChange()
@@ -143,49 +186,57 @@ const deleteNode = (node) =>{
   app.canvas.setDirty(true, true)
   store.setNodes(app.canvas.graph._nodes)
 }
+
 const renameGroup = (group) =>{
   group.info.is_edit = true
 }
+
 const deleteGroup = (group) =>{
+  const id = group?.info?.id
   app.canvas.graph.beforeChange()
-  app.canvas.graph._groups.splice(app.canvas.graph._groups.findIndex(g=>g.id == group.info.id),1)
+  app.canvas.graph._groups.splice(app.canvas.graph._groups.findIndex(g=>g.id == id),1)
   app.canvas.graph.afterChange()
   app.canvas.setDirty(true, true)
   store.setGroups(app.canvas.graph._groups)
 }
 
-// Timer
+// ─── Timer / Long-press ──────────────────────────────────────────────────────
 let pressTimer
 let firstTime =0, lastTime =0
 let isHolding = false
+
 const changeGroupMode = (item, longpress=false) =>{
   if(isHolding){
     isHolding = false
     return
   }
   const is_always = item.children.find(cate=>cate.mode == NODE_MODE.ALWAYS)
+  const newMode = is_always ? (longpress ? NODE_MODE.NEVER : NODE_MODE.BYPASS) : NODE_MODE.ALWAYS
   const group_nodes_ids = item.children.map(cate=>cate.id)
   app.canvas.graph._nodes.forEach(node=>{
     if(group_nodes_ids.includes(node.id)){
-      node.mode = is_always ? (longpress ? NODE_MODE.NEVER : NODE_MODE.BYPASS) : NODE_MODE.ALWAYS
+      node.mode = newMode
       app.graph.change()
     }
   })
   store.setNodes(app.canvas.graph._nodes)
 }
+
 const changeNodeMode = (item, longpress=false) =>{
   if(isHolding){
     isHolding = false
     return
   }
   const is_always = item.mode == NODE_MODE.ALWAYS
+  const newMode = is_always ? (longpress ? NODE_MODE.NEVER : NODE_MODE.BYPASS) : NODE_MODE.ALWAYS
   const node = app.canvas.graph._nodes.find(node=>node.id == item.id)
   if(node){
-    node.mode = is_always ? (longpress ? NODE_MODE.NEVER : NODE_MODE.BYPASS) : NODE_MODE.ALWAYS
+    node.mode = newMode
     app.graph.change()
     store.setNodes(app.canvas.graph._nodes)
   }
 }
+
 const mouseDown = (item, type='group') =>{
   firstTime = new Date().getTime();
   clearTimeout(pressTimer);
@@ -193,24 +244,29 @@ const mouseDown = (item, type='group') =>{
     type == 'group' ? changeGroupMode(item,true) : changeNodeMode(item,true)
   },500)
 }
+
 const mouseUp = _=>{
   lastTime = new Date().getTime();
-  if(lastTime - firstTime > 500) isHolding = true
+  const holdDuration = lastTime - firstTime
+  if(holdDuration > 500) {
+    isHolding = true
+  }
   clearTimeout(pressTimer);
 }
 
-// drag
+// ─── Drag & Drop ─────────────────────────────────────────────────────────────
 let draggerIndex = ref(null)
 let toDragIndex = ref(null)
 let isDragging = ref(false)
-const dragstart = (e,index)=>{
-  draggerIndex.value = index
 
+const dragstart = (e,index) =>{
+  draggerIndex.value = index
   e.currentTarget.style.opacity = "0.6";
   e.currentTarget.style.border = "1px dashed yellow";
   e.dataTransfer.effectAllowed = 'move';
 }
-const dragend = (e,index)=>{
+
+const dragend = (e,index) =>{
   e.target.style.opacity = "1";
   e.currentTarget.style.border = "1px dashed transparent";
   const nodes_map_sorting = getSetting('EasyUse.NodesMap.Sorting')
@@ -226,7 +282,7 @@ const dragend = (e,index)=>{
   store.setGroups(app.canvas.graph._groups)
 }
 
-const dragover = (e,index)=>{
+const dragover = (e,index) =>{
   e.preventDefault();
   if (e.currentIndex == draggerIndex.value) return;
   toDragIndex.value = index

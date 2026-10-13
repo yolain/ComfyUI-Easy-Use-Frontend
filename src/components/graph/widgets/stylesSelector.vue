@@ -94,8 +94,6 @@ import {toast} from "@/components/toast.js";
 
 import {storeToRefs} from "pinia";
 import {useGraphStore} from "@/stores/graph.js";
-import cloneDeep from "lodash/cloneDeep";
-import { set } from "lodash";
 const store = useGraphStore()
 const {selectors_styles} = storeToRefs(store)
 
@@ -190,7 +188,7 @@ const hiddenImage = () => {
 
 const sortStyles = _ =>{
   const selectedStyles = selectedItems.value || []
-  const select = cloneDeep(selectors_styles.value[selectedStyle.value])
+  const select = structuredClone(selectors_styles.value[selectedStyle.value])
   // 确保重新创建数组以触发Vue的响应式更新
   styles.value = [...select.sort((a,b)=> a.index - b.index).sort((a,b) => selectedStyles.includes(b.name) - selectedStyles.includes(a.name))]
 }
