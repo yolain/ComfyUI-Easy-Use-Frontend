@@ -176,11 +176,20 @@ app.registerExtension({
 
             nodeType.prototype.configure = function(data) {
                 LiteGraph.LGraphNode.prototype.configure.call(this, data);
-                
+
+                // Restore selection collections as Sets.
+                this.selected_images = new Set(
+                    Array.isArray(data.selected_images) ? data.selected_images : []
+                );
+
+                this.anti_selected = new Set(
+                    Array.isArray(data.anti_selected) ? data.anti_selected : []
+                );
+
                 this.isWaitingSelection = data.isWaitingSelection || false;
                 this.currentMode = data.currentMode || "Always Pause";
                 this.imgs = [];
-                
+
                 this.updateWidgets();
             };
 
