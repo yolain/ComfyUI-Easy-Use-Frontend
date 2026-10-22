@@ -1,12 +1,22 @@
-<template lang="pug">
-sliderControl(:ref="e=>{if(e) slidersRef[item.id] = e}" :type="item.type"  v-for="(item,index) in slider_controls" :key="index" :id="item.id" :show="item.show" :mode="item.mode" :values="item.value" @changeValues="val=>changeSlider(val,index)" @showSlider="showSlider(index)")
+<template>
+  <sliderControl
+    v-for="(item, index) in slider_controls"
+    :key="index"
+    :ref="(e) => { if (e) slidersRef[item.id] = e }"
+    :type="item.type"
+    :id="item.id"
+    :show="item.show"
+    :mode="item.mode"
+    :values="item.value"
+    @changeValues="(val) => changeSlider(val, index)"
+    @showSlider="showSlider(index)"
+  />
 </template>
 
 <script setup>
 import {ref, onMounted} from 'vue'
 import {app} from "@/composable/comfyAPI";
 import sleep from "@/composable/sleep";
-import cloneDeep from 'lodash/cloneDeep'
 
 // store
 import {storeToRefs} from "pinia";
@@ -21,12 +31,12 @@ import {getWidgetByName} from "@/composable/node.js";
 import sliderControl from '@/components/graph/sliderControl.vue'
 const slidersRef = ref({})
 const changeSlider = (val,index) => {
-  let _sliders = cloneDeep(slider_controls.value)
+  let _sliders = structuredClone(slider_controls.value)
   _sliders[index].value = val
   store.setSliderControls(_sliders)
 }
 const showSlider = (index) => {
-  let _sliders = cloneDeep(slider_controls.value)
+  let _sliders = structuredClone(slider_controls.value)
   _sliders[index].show = true
   store.setSliderControls(_sliders)
 }
@@ -39,7 +49,7 @@ const createSliderControl = async(node)=>{
 
   // add slider
   if(node.flags?.collapsed) node.collapse()
-  let _slider_controls = cloneDeep(slider_controls.value)
+  let _slider_controls = structuredClone(slider_controls.value)
   _slider_controls.push({id:node.id, type:type_widget.value ,mode:mode_widget.value, value:old_values, show:false})
   const slider_index = _slider_controls.length - 1
   await store.setSliderControls(_slider_controls)
@@ -59,7 +69,7 @@ const createSliderControl = async(node)=>{
 
   node.setSize(type_widget.value == 'sdxl' ? [375,320] : [455,320])
   type_widget.callback = v => {
-    _slider_controls = cloneDeep(slider_controls.value)
+    _slider_controls = structuredClone(slider_controls.value)
     if(_slider_controls[slider_index]['type'] == v) return
     node.setSize(v == 'sdxl' ? [375,320] : [455,320])
     _slider_controls[slider_index]['value'] = []
@@ -73,7 +83,7 @@ const createSliderControl = async(node)=>{
     onRemoved ? onRemoved?.apply(this, arguments) : undefined;
     let _s_index = slider_controls.value.findIndex(cate=> cate.id == node.id)
     if(_s_index !== undefined){
-      let _s = cloneDeep(slider_controls.value)
+      let _s = structuredClone(slider_controls.value)
       _s.splice(slider_index,1)
       store.setSliderControls(_s)
     }
