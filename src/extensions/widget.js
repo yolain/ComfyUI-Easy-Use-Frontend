@@ -1,7 +1,7 @@
 import {api, app, ComfyWidgets} from "@/composable/comfyAPI.js";
 
 import {$t} from "@/composable/i18n";
-import {toggleWidget, getWidgetByName, updateNodeHeight} from "@/composable/node.js";
+import {toggleWidget, getWidgetByName, updateNodeHeight, getBaseValueSetter} from "@/composable/node.js";
 import {unsafeDrawBackground} from "@/composable/drawBackground.js";
 import {toast} from "@/components/toast";
 import sleep from "@/composable/sleep.js";
@@ -62,6 +62,61 @@ const value_names = {'easy anythingInversedSwitch':'out', 'easy anythingIndexSwi
 
 
 let all_nodes = null
+
+// easy loraStack: the backend appends the lora_N_enabled switches after all other inputs, so that
+// previously saved workflows keep their positional widgets_values. Show each switch right above its
+// LoRA, while still reading and writing widgets_values in the backend (definition) order.
+function placeLoraStackSwitches(node) {
+    const definitionOrder = node.widgets.slice()
+    const isSwitch = w => /^lora_\d+_enabled$/.test(w.name)
+    const displayOrder = []
+    for (const w of definitionOrder) {
+        if (isSwitch(w)) continue
+        const match = /^lora_(\d+)_name$/.exec(w.name)
+        if (match) {
+            const loraSwitch = definitionOrder.find(s => s.name === `lora_${match[1]}_enabled`)
+            if (loraSwitch) displayOrder.push(loraSwitch)
+        }
+        displayOrder.push(w)
+    }
+    if (displayOrder.length !== definitionOrder.length) return
+    node.widgets.splice(0, node.widgets.length, ...displayOrder)
+
+    const configure = node.configure
+    node.configure = function (info) {
+        const values = info?.widgets_values
+        if (Array.isArray(values)) {
+            // Workflows saved before the switches existed have fewer values: those keep the default.
+            info = {...info, widgets_values: displayOrder.map(w => {
+                const index = definitionOrder.indexOf(w)
+                return index < values.length ? values[index] : w.value
+            })}
+        }
+        return configure.call(this, info)
+    }
+    const onSerialize = node.onSerialize
+    node.onSerialize = function (o) {
+        onSerialize?.apply(this, arguments)
+        const values = o?.widgets_values
+        if (Array.isArray(values) && values.length === displayOrder.length) {
+            o.widgets_values = definitionOrder.map(w => values[displayOrder.indexOf(w)])
+        }
+    }
+
+    // "+ Add LoRA" button, like Power Lora Loader: shows one more LoRA row by raising num_loras.
+    // Not serialized and kept last, so it doesn't shift the positional widgets_values.
+    const numLoras = getWidgetByName(node, 'num_loras')
+    if (!numLoras) return
+    const addButton = node.addWidget('button', $t('+ Add LoRA'), null, () => {
+        const max = numLoras.options?.max ?? 10
+        if (numLoras.value < max) numLoras.value = numLoras.value + 1
+    })
+    addButton.serialize = false
+    addButton.options ??= {}
+    addButton.options.serialize = false
+    node.loraStackAddButton = addButton
+}
+
 /* Register Extension */
 app.registerExtension({
     name: 'Comfy.EasyUse.Widget',
@@ -540,10 +595,12 @@ app.registerExtension({
     nodeCreated(node) {
         // toggle widgets
         if (OWN_NODES.has(node.comfyClass)) {
+            if (node.comfyClass === 'easy loraStack' && node.widgets) placeLoraStackSwitches(node)
             if(node.widgets){
                 for (const w of node.widgets) {
                     if (!allow_widgets.includes(w.name)) continue
                     let widgetValue = w.value;
+                    const baseSetter = getBaseValueSetter(w)
                     toggleLogic(node, w)
                     // Define getters and setters for widget values
                     Object.defineProperty(w, 'value', {
@@ -551,6 +608,9 @@ app.registerExtension({
                         set(newVal) {
                             if (newVal !== widgetValue) {
                                 widgetValue = newVal;
+                                // Keep the frontend's widget state in sync: Vue nodes (Nodes 2.0) render
+                                // from it, and would otherwise keep showing the default value.
+                                baseSetter?.call(w, newVal)
                                 // Deferred to avoid mutating widget visibility mid-render (see drawNodeWidgets)
                                 requestAnimationFrame(_=>{
                                     toggleLogic(node, w)
@@ -767,13 +827,15 @@ function toggleLogic(node, widget) {
             var number_to_show = v + 1
             var mode = getWidgetByName(node, 'mode')?.value
             for (let i = 0; i < number_to_show; i++) {
+                toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_enabled'), true);
                 toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_name'), true);
                 toggleWidget(node, getWidgetByName(node, 'lora_' + i + '_strength'), mode === "simple" ? true : false);
                 ['lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), mode === "simple" ? false : true))
             }
             for (let i = number_to_show; i < 99; i++) {
-                ['lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
+                ['lora_' + i + '_enabled', 'lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
             }
+            if (node.loraStackAddButton) toggleWidget(node, node.loraStackAddButton, v < (widget.options?.max ?? 10))
             updateNodeHeight(node)
             break
         case 'num_controlnet':

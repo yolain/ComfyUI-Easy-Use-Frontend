@@ -103,6 +103,7 @@ export default {
     "At least one account is required": "删除失败: 至少需要一个账户",
     "APIKEY is not Empty": "APIKEY 不能为空",
     "Add Account": "添加账号",
+    "+ Add LoRA": "+ 添加LoRA",
     "Getting Your APIKEY": "获取您的APIKEY",
     // choosers
     "Canceling": "正在取消",
