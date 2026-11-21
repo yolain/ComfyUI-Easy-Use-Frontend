@@ -22,6 +22,16 @@ export const toggleWidget = (node, widget, show = false, suffix = "") => {
 	node.setSize([node.size[0], height]);
 	node.setDirtyCanvas?.(true, true);
 }
+// Widgets whose `value` property is redefined (see nodeCreated in extensions/widget.js) no longer
+// go through the frontend's own setter, which is what keeps Vue nodes (Nodes 2.0) in sync.
+// Returns that original setter so it can still be called.
+export const getBaseValueSetter = (widget) => {
+	for (let proto = Object.getPrototypeOf(widget); proto; proto = Object.getPrototypeOf(proto)) {
+		const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
+		if (descriptor?.set) return descriptor.set;
+	}
+	return null;
+}
 export const getWidgetValue = (node, slot = 0) => {
 	if (!node) return undefined;
 	if (node.widgets?.[slot]) return node.widgets[slot].value;
