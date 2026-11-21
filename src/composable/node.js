@@ -1,4 +1,19 @@
 const origProps = new WeakMap();
+const pendingVueRefresh = new WeakSet();
+// Vue nodes (Nodes 2.0) build their widget list from the widgets array and don't notice when a
+// widget's type or hidden flag changes, so rows shown again by toggleWidget stayed empty or missing.
+// They do rebuild whenever the array is mutated: do a no-op push/pop, once per node per tick.
+export const refreshVueNodeWidgets = (node) => {
+	if (!node?.widgets || pendingVueRefresh.has(node)) return;
+	pendingVueRefresh.add(node);
+	queueMicrotask(() => {
+		pendingVueRefresh.delete(node);
+		const widgets = node.widgets;
+		if (!widgets?.length) return;
+		widgets.push(widgets[widgets.length - 1]);
+		widgets.pop();
+	});
+}
 export const getWidgetByName = (node, name) => node.widgets.find((w) => w.name === name);
 export const doesInputWithNameExist = (node, name) => node.inputs ? node.inputs.some((input) => input.name === name) : false;
 export const doesInputWithNameLink = (node, name, show) => node.inputs ? node.inputs.some((input) => (input.name === name || input.widget?.name === name) && input.link != null && !show) : false;
@@ -21,6 +36,7 @@ export const toggleWidget = (node, widget, show = false, suffix = "") => {
 	const height = show ? Math.max(node.computeSize()[1], origHeight) : node.size[1];
 	node.setSize([node.size[0], height]);
 	node.setDirtyCanvas?.(true, true);
+	refreshVueNodeWidgets(node);
 }
 // Widgets whose `value` property is redefined (see nodeCreated in extensions/widget.js) no longer
 // go through the frontend's own setter, which is what keeps Vue nodes (Nodes 2.0) in sync.

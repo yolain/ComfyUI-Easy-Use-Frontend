@@ -102,6 +102,19 @@ function placeLoraStackSwitches(node) {
             o.widgets_values = definitionOrder.map(w => values[displayOrder.indexOf(w)])
         }
     }
+
+    // "+ Add LoRA" button, like Power Lora Loader: shows one more LoRA row by raising num_loras.
+    // Not serialized and kept last, so it doesn't shift the positional widgets_values.
+    const numLoras = getWidgetByName(node, 'num_loras')
+    if (!numLoras) return
+    const addButton = node.addWidget('button', $t('+ Add LoRA'), null, () => {
+        const max = numLoras.options?.max ?? 10
+        if (numLoras.value < max) numLoras.value = numLoras.value + 1
+    })
+    addButton.serialize = false
+    addButton.options ??= {}
+    addButton.options.serialize = false
+    node.loraStackAddButton = addButton
 }
 
 /* Register Extension */
@@ -822,6 +835,7 @@ function toggleLogic(node, widget) {
             for (let i = number_to_show; i < 99; i++) {
                 ['lora_' + i + '_enabled', 'lora_' + i + '_name', 'lora_' + i + '_strength', 'lora_' + i + '_model_strength', 'lora_' + i + '_clip_strength'].map(name => toggleWidget(node, getWidgetByName(node, name), false))
             }
+            if (node.loraStackAddButton) toggleWidget(node, node.loraStackAddButton, v < (widget.options?.max ?? 10))
             updateNodeHeight(node)
             break
         case 'num_controlnet':
